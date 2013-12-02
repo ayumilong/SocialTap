@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  time_started: 
+  time_stopped: 2013-11-21 14:07:30
+  error: MyString
+
+two:
+  time_started: 
+  time_stopped: 2013-11-21 14:07:30
+  error: MyString

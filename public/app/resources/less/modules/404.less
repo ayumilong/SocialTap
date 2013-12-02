@@ -1,0 +1,36 @@
+
+@404Color: rgb(55,55,55);
+
+.dmActiveModule_404 .dmSubNav {
+	background-color: @404Color;
+
+	.dmSubNavBackButton div, .dmFullscreenButton {
+		background-color: darken(@404Color, 15%);
+	}
+}
+
+.no_touch .dmActiveModule_404 {
+	.dmSubNavBackButton div:hover, .dmFullscreenButton:hover {
+		background-color: darken(@404Color, 30%);
+	}
+}
+
+.dmActiveModule_404 {
+	.dmSubNavBackButton:active div, .dmFullscreenButton:active {
+		background-color: darken(@404Color, 30%);
+	}
+}
+
+.dj_phone .dmActiveModule_404 .dmSubNav {
+	border-bottom: 5px solid darken(@404Color, 15%);
+}
+
+.Four04Module {
+	.dmModuleView {
+		padding: 15px;
+
+		h1 {
+			margin: 0;
+		}
+	}
+}

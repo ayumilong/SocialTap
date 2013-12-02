@@ -1,0 +1,2854 @@
+@import url("../../../dojox/mobile/themes/custom/RoundRectList.css");
+
+@import url("../../../dojox/mobile/themes/custom/EdgeToEdgeList.css");
+
+@import url("../../../dojox/mobile/themes/custom/ListItem.css");
+
+@import url("../../../dojox/mobile/themes/custom/ProgressIndicator.css");
+
+@import url("../../../dojox/mobile/themes/custom/Button.css");
+
+@import url("../../../dojox/mobile/themes/custom/ScrollablePane.css");
+
+@import url("../../../dojox/mobile/themes/custom/SimpleDialog.css");
+/* dojo-mama variables */
+/* dojox/mobile/themes variables */
+/* dojo-mama css */
+.dmListItem {
+  list-style: none;
+}
+.dmListItem .dmListItemIcon {
+  float: left;
+}
+.dmListItem .dmListItemRightText {
+  float: right;
+}
+.dmListItem .dmRightIcon {
+  position: absolute;
+  right: 0;
+}
+.dmListItem.dmLinkListItem a {
+  display: block;
+}
+.dmListItem.dmLinkListItem a .dmRightIcon:before {
+  height: 100%;
+}
+.dmListItem {
+  list-style: none;
+}
+.dmListItem .dmListItemIcon {
+  float: left;
+}
+.dmListItem .dmListItemRightText {
+  float: right;
+}
+.dmListItem .dmRightIcon {
+  position: absolute;
+  right: 0;
+}
+.dmListItem.dmLinkListItem a {
+  display: block;
+}
+.dmListItem.dmLinkListItem a .dmRightIcon:before {
+  height: 100%;
+}
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
+}
+.fullscreen_mode .dmLayout {
+  bottom: 0 !important;
+  left: 0 !important;
+  margin-left: 0 !important;
+  max-width: none !important;
+  top: 0 !important;
+}
+.fullscreen_mode .dmLeftPane {
+  display: none !important;
+}
+.fullscreen_mode .dmRightPane {
+  left: 0 !important;
+  width: 100% !important;
+}
+.fullscreen_mode .dmModuleContent {
+  top: 73px !important;
+}
+.fullscreen_mode .dmMetaNav {
+  display: none;
+}
+.fullscreen_mode .dmRootView .dmLeftPane {
+  display: block !important;
+}
+/* Helper classes for responsive display */
+.dj_phone .hidden_phone {
+  display: none !important;
+}
+.dj_tablet .hidden_tablet {
+  display: none !important;
+}
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
+.hidden {
+  display: none !important;
+}
+.stretch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+}
+/**
+ * TOP BAR
+ */
+/* Shared styles across top bar */
+.dmTitle,
+.dmMetaNav {
+  padding: 0;
+  margin: 0;
+  height: 70px;
+  position: relative;
+}
+.dmSubNav {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 73px;
+}
+.dj_phone .dmSubNav {
+  height: 60px;
+}
+.dmTitle,
+.dmMetaNav {
+  border-bottom: 1px solid black;
+}
+/**
+ * Left & right panes, responsive classes
+ */
+/* Title heading */
+.dmTitleHeading {
+  padding: 20px 0 0 0;
+  margin: 0;
+  font-size: 1.1em;
+  width: auto;
+  height: 20px;
+  float: left;
+  margin-left: 1em !important;
+}
+/* Left pane */
+.dmLeftPane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: white;
+  z-index: 2;
+}
+.dj_tablet .dmLeftPane {
+  width: 270px;
+}
+.dj_phone .dmLeftPane,
+.dmRootView .dmLeftPane {
+  width: 100%;
+}
+/* Right pane */
+.dmRightPane {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+.dj_tablet .dmRightPane {
+  left: 270px;
+}
+.dj_phone .dmRightPane {
+  left: 0;
+}
+/* Module wrapper */
+.dmModuleContent {
+  position: absolute;
+  top: 143px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+}
+.dj_phone .dmModuleContent {
+  top: 60px;
+}
+/**
+ * PRIMARY NAV
+ */
+/* Primary nav list */
+.dmPrimaryNav {
+  position: absolute !important;
+  left: 0;
+  top: 70px;
+  bottom: 0;
+  width: 100%;
+}
+/**
+ * SECONDARY NAV
+ */
+/* Meta nav (menu bar, popup menu) and sub nav */
+.dj_phone .dmMenuBarItem {
+  display: none;
+}
+.dj_phone .dmMenuBarItem.dmMenuBarPopupItem,
+.dj_phone .dmPopupMenu .dmMenuBarItem {
+  display: block;
+}
+/* Meta nav and sub nav container */
+.dmMetaNav,
+.dmSubNav {
+  width: 100%;
+}
+/* Menu bar, containing the popup menu */
+.dmMenuBar {
+  position: relative;
+  float: right;
+  margin-right: 1em;
+}
+/* Popup menu */
+/* Menu bar item */
+.dmMenuBarItem {
+  display: inline-block;
+  margin-left: 10px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+/* Popup menu item */
+.dmMetaNav,
+.dmTitle {
+  z-index: 9;
+}
+.dj_phone .dmSubNav {
+  z-index: 9;
+}
+.dmPopupMenu {
+  display: none;
+  position: absolute;
+  background: white;
+  right: 0;
+  top: 55px;
+  z-index: 9;
+  border: 1px solid black;
+}
+.dmPopupMenu.visible {
+  display: block;
+}
+.dmPopupMenu .dmMenuBarItem {
+  display: block;
+  text-align: center;
+  margin-left: 0;
+  margin-top: 0;
+  font-size: 15px;
+  padding: 15px;
+}
+/* Sub nav (breadcrumbs, back functionality) */
+/* Sub nav container */
+.dj_tablet .dmSubNavTitle {
+  line-height: 73px;
+}
+.dmSubNavTitle,
+.dmSubNavBackButton,
+.dmSubNavDropDownButton {
+  height: 73px;
+  line-height: 73px;
+}
+.dmSubNavBackButton {
+  cursor: pointer;
+}
+.dmSubNavModuleList {
+  position: absolute;
+  z-index: 99;
+}
+/* Module views */
+.dmModuleView {
+  position: absolute !important;
+  top: 0;
+  bottom: 0;
+  height: auto !important;
+}
+.dj_tablet .dmModuleView {
+  left: 0;
+  right: 0;
+}
+.dj_phone .dmModuleView {
+  width: 100%;
+}
+/* No padding on ScrollableViews */
+.dmModuleView.mblScrollableView {
+  padding: 0 !important;
+}
+/* Override inline height on dojox.mobile.ScrollableView on iOS */
+.dmModuleView.mblScrollableView {
+  position: absolute !important;
+  height: auto !important;
+}
+.dmListItem {
+  list-style: none;
+}
+.dmListItem .dmListItemIcon {
+  float: left;
+}
+.dmListItem .dmListItemRightText {
+  float: right;
+}
+.dmListItem .dmRightIcon {
+  position: absolute;
+  right: 0;
+}
+.dmListItem.dmLinkListItem a {
+  display: block;
+}
+.dmListItem.dmLinkListItem a .dmRightIcon:before {
+  height: 100%;
+}
+/* dojox/mobile css */
+/* base.css */
+html.mobile,
+.mobile body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.mobile body {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: none;
+  font-family: Helvetica;
+  font-size: 17px;
+  color: #000000;
+}
+.mblBackground {
+  background-color: #ba5377;
+}
+/* Button Colors */
+.mblColorBlue {
+  color: #deadbe;
+  background-color: #048bf4;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#48adfc), to(#048bf4));
+  background-image: linear-gradient(to bottom, #48adfc 0%, #048bf4 100%);
+}
+.mblColorBlue45 {
+  background-image: -webkit-gradient(linear, left top, right bottom, from(#048bf4), to(#48adfc));
+  background-image: linear-gradient(to right bottom, #048bf4 0%, #48adfc 100%);
+}
+/* Default Button Colors */
+.mblColorDefault {
+  color: #000000;
+  background-color: #993d5d;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#cd839d), to(#993d5d));
+  background-image: linear-gradient(to bottom, #cd839d 0%, #993d5d 100%);
+}
+.mblColorDefault45 {
+  background-image: -webkit-gradient(linear, left top, right bottom, from(#cd839d), to(#993d5d));
+  background-image: linear-gradient(to right bottom, #cd839d 0%, #993d5d 100%);
+}
+.mblColorDefaultSel {
+  color: #deadbe;
+  background-color: #883753;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#b74d72), to(#883753));
+  background-image: linear-gradient(to bottom, #b74d72 0%, #883753 100%);
+}
+.mblColorDefaultSel45 {
+  background-image: -webkit-gradient(linear, left top, right bottom, from(#b74d72), to(#883753));
+  background-image: linear-gradient(to right bottom, #b74d72 0%, #883753 100%);
+}
+.mblSpriteIcon {
+  position: absolute;
+}
+.mblSpriteIconParent {
+  position: relative;
+  font-size: 1px;
+}
+.mblImageIcon {
+  vertical-align: top;
+}
+/* use the less counterparts for new dependencies, if available */
+/*
+@import url("../../../dojox/mobile/themes/custom/Heading.css");
+@import url("../../../dojox/mobile/themes/custom/View.css");
+@import url("../../../dojox/mobile/themes/custom/ToolBarButton.css");
+@import url("../../../dojox/mobile/themes/custom/RoundRect.css");
+@import url("../../../dojox/mobile/themes/custom/EdgeToEdgeCategory.css");
+@import url("../../../dojox/mobile/themes/custom/RoundRectCategory.css");*/
+/*@import url("../../../dojox/mobile/themes/custom/Switch.css"); */
+/* common styles */
+/*
+@import url("../../../dojox/mobile/themes/common/domButtons.css");
+@import url("../../../dojox/mobile/themes/common/transitions.css");
+*/
+/* widget styles */
+/*
+@import url("../../../dojox/mobile/themes/custom/Accordion.css");
+*/
+/*
+@import url("../../../dojox/mobile/themes/custom/Carousel.css");
+@import url("../../../dojox/mobile/themes/custom/CheckBox.css");
+@import url("../../../dojox/mobile/themes/custom/ComboBox.css");
+@import url("../../../dojox/mobile/themes/custom/FixedSplitter.css");
+@import url("../../../dojox/mobile/themes/custom/GridLayout.css");
+@import url("../../../dojox/mobile/themes/custom/IconContainer.css");
+@import url("../../../dojox/mobile/themes/custom/IconMenu.css");
+@import url("../../../dojox/mobile/themes/custom/Opener.css");
+@import url("../../../dojox/mobile/themes/custom/PageIndicator.css");
+@import url("../../../dojox/mobile/themes/custom/ProgressBar.css");
+@import url("../../../dojox/mobile/themes/custom/RadioButton.css");
+*/
+/*@import url("../../../dojox/mobile/themes/custom/Slider.css");
+@import url("../../../dojox/mobile/themes/custom/SpinWheel.css");
+@import url("../../../dojox/mobile/themes/custom/TabBar.css");
+@import url("../../../dojox/mobile/themes/custom/TextArea.css");
+@import url("../../../dojox/mobile/themes/custom/SearchBox.css");
+@import url("../../../dojox/mobile/themes/custom/ToggleButton.css");
+@import url("../../../dojox/mobile/themes/custom/ValuePicker.css");
+@import url("../../../dojox/mobile/themes/custom/FormLayout.css");
+*/
+/* custom theme */
+/* icons.css -- my.Clemson icons and fonts */
+@font-face {
+  font-family: 'my-Clemson-Fonts';
+  src: url('../../../../app/resources/fonts/my-Clemson-Fonts.eot');
+  src: url('../../../../app/resources/fonts/my-Clemson-Fonts.eot?#iefix') format('embedded-opentype'), /* url('../../../../app/resources/fonts/my-Clemson-Fonts.woff') format('woff'), */
+   url('../../../../app/resources/fonts/my-Clemson-Fonts.ttf') format('truetype'), url('../../../../app/resources/fonts/my-Clemson-Fonts.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+.dmSubNavBackButton,
+.dmMenuBarPopupItem,
+.icon-phone,
+.icon-mail,
+.icon-pencil,
+.icon-vcard,
+.icon-map,
+.icon-printer,
+.icon-chat,
+.icon-user,
+.icon-graduation,
+.icon-camera,
+.icon-calendar,
+.icon-publish,
+.icon-suitcase,
+.icon-close,
+.icon-cross,
+.icon-arrow-left,
+.icon-arrow-right,
+.icon-book,
+.icon-back,
+.icon-list,
+.icon-video,
+.icon-screen,
+.icon-location,
+.icon-paw,
+.icon-chevron-right-large,
+.icon-chevron-right-medium,
+.icon-chevron-right-small,
+.icon-play,
+.icon-pause,
+.icon-volume,
+.icon-sound,
+.icon-marker,
+.icon-resize-enlarge,
+.icon-resize-shrink,
+.icon-refresh,
+.icon-chevron-left-large,
+.icon-chevron-left-medium,
+.icon-chevron-left-small,
+.icon-link,
+.icon-check {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+/* ignore font face when using Cufon on windows phone */
+.cufon {
+  padding-bottom: 6px;
+}
+.cufon:before {
+  content: '' !important;
+}
+.icon-user:before {
+  content: "\e00f";
+}
+.icon-phone:before {
+  content: "\e002";
+}
+.icon-mail:before {
+  content: "\e006";
+}
+.icon-pencil:before {
+  content: "\e008";
+}
+.icon-vcard:before {
+  content: "\e012";
+}
+.icon-map:before {
+  content: "\e015";
+}
+.icon-printer:before {
+  content: "\e028";
+}
+.icon-chat:before {
+  content: "\e021";
+}
+.icon-graduation:before {
+  content: "\e038";
+}
+.icon-camera:before {
+  content: "\e030";
+}
+.icon-calendar:before {
+  content: "\e041";
+}
+.icon-publish:before {
+  content: "\e059";
+}
+.icon-suitcase:before {
+  content: "\e054";
+}
+.icon-close:before {
+  content: "\e080";
+}
+.icon-arrow-left:before {
+  content: "\e0c7";
+}
+.icon-arrow-right:before {
+  content: "\e0ca";
+}
+.icon-book:before {
+  content: "\e039";
+}
+.icon-back:before {
+  content: "\e093";
+}
+.icon-list:before {
+  content: "\e098";
+}
+.icon-video:before {
+  content: "\e09f";
+}
+.icon-screen:before {
+  content: "\e062";
+}
+.icon-location:before {
+  content: "\e017";
+}
+.icon-paw:before {
+  content: "\e000";
+}
+.icon-cross:before {
+  content: "\e001";
+}
+.icon-chevron-right-large:before {
+  content: "\e0da";
+}
+.icon-chevron-right-medium:before {
+  content: "\e0d2";
+}
+.icon-chevron-right-small:before {
+  content: "\e0d6";
+}
+.icon-play:before {
+  content: "\e0ad";
+}
+.icon-pause:before {
+  content: "\e0ae";
+}
+.icon-volume:before {
+  content: "\e0b8";
+}
+.icon-sound:before {
+  content: "\e0b8";
+}
+.icon-marker:before {
+  content: "\e014";
+}
+.icon-resize-enlarge:before {
+  content: "\e0b5";
+}
+.icon-resize-shrink:before {
+  content: "\e0b6";
+}
+.icon-refresh:before {
+  content: "\e08a";
+}
+.icon-chevron-left-large:before {
+  content: "\e0d7";
+}
+.icon-chevron-left-small:before {
+  content: "\e0d3";
+}
+.icon-chevron-left-medium:before {
+  content: "\e0cf";
+}
+.icon-link:before {
+  content: "\e02a";
+}
+.icon-check:before {
+  content: "\e079";
+}
+.buttonMixin {
+  background: #87826a;
+  border: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-radius: 6px;
+  color: #c1beb0;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 7px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: auto;
+  min-width: 80px;
+}
+.button {
+  background: #87826a;
+  border: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-radius: 6px;
+  color: #c1beb0;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 7px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: auto;
+  min-width: 80px;
+}
+.button:disabled {
+  background: #9f9b85;
+}
+.button.small {
+  min-width: 15px !important;
+}
+.no_touch .button:hover {
+  background: #6b6754;
+  text-decoration: none;
+  /* Many buttons are also links, so must override a styles */
+
+}
+.button {
+  /* Many buttons are also links, so must override a styles */
+
+}
+.button:active {
+  background: #6b6754;
+}
+.button:active {
+  color: #c1beb0;
+  text-decoration: none;
+}
+/* Colors for primary nav items and subnav */
+.dmPrimaryNavItem_athletics .dmPrimaryNavItemColor {
+  background-color: #ea6a20;
+}
+.dmPrimaryNavItem_athletics .dmPrimaryNavItemContent {
+  background-color: #ad4a10;
+}
+.dmPrimaryNavItem_athletics a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_athletics .dmSubNav {
+  background-color: #ea6a20;
+}
+.dmSelectedPrimaryNavItem_athletics .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_athletics .dmSubNav .dmFullscreenButton {
+  background-color: #ad4a10;
+}
+.no_touch .dmSelectedPrimaryNavItem_athletics .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_athletics .dmFullscreenButton:hover {
+  background-color: #672c0a;
+}
+.dmSelectedPrimaryNavItem_athletics .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_athletics .dmFullscreenButton:active {
+  background-color: #672c0a;
+}
+.dj_phone .dmSelectedPrimaryNavItem_athletics .dmSubNav {
+  border-bottom: 5px solid #ad4a10;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_athletics.dmPrimaryNavItemSelected {
+  background-color: #ad4a10;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_athletics.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_athletics.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_athletics a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_athletics a {
+  background-color: #ad4a10;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_athletics a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_athletics a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_athletics a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_athletics .dmPrimaryNavItemColor:hover {
+  background-color: #ee8345;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_athletics .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_athletics .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #ad4a10;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_athletics .dmPrimaryNavItemColor:active {
+  background-color: #ee8345;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_athletics .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_athletics .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #ad4a10;
+}
+.dmPrimaryNavItem_map .dmPrimaryNavItemColor {
+  background-color: #3a4958;
+}
+.dmPrimaryNavItem_map .dmPrimaryNavItemContent {
+  background-color: #1c232a;
+}
+.dmPrimaryNavItem_map a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_map .dmSubNav {
+  background-color: #3a4958;
+}
+.dmSelectedPrimaryNavItem_map .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_map .dmSubNav .dmFullscreenButton {
+  background-color: #1c232a;
+}
+.no_touch .dmSelectedPrimaryNavItem_map .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_map .dmFullscreenButton:hover {
+  background-color: #000000;
+}
+.dmSelectedPrimaryNavItem_map .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_map .dmFullscreenButton:active {
+  background-color: #000000;
+}
+.dj_phone .dmSelectedPrimaryNavItem_map .dmSubNav {
+  border-bottom: 5px solid #1c232a;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_map.dmPrimaryNavItemSelected {
+  background-color: #1c232a;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_map.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_map.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_map a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_map a {
+  background-color: #1c232a;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_map a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_map a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_map a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_map .dmPrimaryNavItemColor:hover {
+  background-color: #4a5d71;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_map .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_map .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #1c232a;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_map .dmPrimaryNavItemColor:active {
+  background-color: #4a5d71;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_map .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_map .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #1c232a;
+}
+.dmPrimaryNavItem_directory .dmPrimaryNavItemColor {
+  background-color: #9f905c;
+}
+.dmPrimaryNavItem_directory .dmPrimaryNavItemContent {
+  background-color: #6f6440;
+}
+.dmPrimaryNavItem_directory a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_directory .dmSubNav {
+  background-color: #9f905c;
+}
+.dmSelectedPrimaryNavItem_directory .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_directory .dmSubNav .dmFullscreenButton {
+  background-color: #6f6440;
+}
+.no_touch .dmSelectedPrimaryNavItem_directory .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_directory .dmFullscreenButton:hover {
+  background-color: #3e3824;
+}
+.dmSelectedPrimaryNavItem_directory .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_directory .dmFullscreenButton:active {
+  background-color: #3e3824;
+}
+.dj_phone .dmSelectedPrimaryNavItem_directory .dmSubNav {
+  border-bottom: 5px solid #6f6440;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_directory.dmPrimaryNavItemSelected {
+  background-color: #6f6440;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_directory.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_directory.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_directory a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_directory a {
+  background-color: #6f6440;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_directory a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_directory a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_directory a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_directory .dmPrimaryNavItemColor:hover {
+  background-color: #afa275;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_directory .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_directory .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #6f6440;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_directory .dmPrimaryNavItemColor:active {
+  background-color: #afa275;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_directory .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_directory .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #6f6440;
+}
+.dmPrimaryNavItem_news .dmPrimaryNavItemColor {
+  background-color: #a25016;
+}
+.dmPrimaryNavItem_news .dmPrimaryNavItemContent {
+  background-color: #5f2f0d;
+}
+.dmPrimaryNavItem_news a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_news .dmSubNav {
+  background-color: #a25016;
+}
+.dmSelectedPrimaryNavItem_news .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_news .dmSubNav .dmFullscreenButton {
+  background-color: #5f2f0d;
+}
+.no_touch .dmSelectedPrimaryNavItem_news .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_news .dmFullscreenButton:hover {
+  background-color: #1b0d04;
+}
+.dmSelectedPrimaryNavItem_news .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_news .dmFullscreenButton:active {
+  background-color: #1b0d04;
+}
+.dj_phone .dmSelectedPrimaryNavItem_news .dmSubNav {
+  border-bottom: 5px solid #5f2f0d;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_news.dmPrimaryNavItemSelected {
+  background-color: #5f2f0d;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_news.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_news.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_news a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_news a {
+  background-color: #5f2f0d;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_news a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_news a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_news a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_news .dmPrimaryNavItemColor:hover {
+  background-color: #c6621b;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_news .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_news .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #5f2f0d;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_news .dmPrimaryNavItemColor:active {
+  background-color: #c6621b;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_news .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_news .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #5f2f0d;
+}
+.dmPrimaryNavItem_events .dmPrimaryNavItemColor {
+  background-color: #562e19;
+}
+.dmPrimaryNavItem_events .dmPrimaryNavItemContent {
+  background-color: #1b0e08;
+}
+.dmPrimaryNavItem_events a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_events .dmSubNav {
+  background-color: #562e19;
+}
+.dmSelectedPrimaryNavItem_events .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_events .dmSubNav .dmFullscreenButton {
+  background-color: #1b0e08;
+}
+.no_touch .dmSelectedPrimaryNavItem_events .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_events .dmFullscreenButton:hover {
+  background-color: #000000;
+}
+.dmSelectedPrimaryNavItem_events .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_events .dmFullscreenButton:active {
+  background-color: #000000;
+}
+.dj_phone .dmSelectedPrimaryNavItem_events .dmSubNav {
+  border-bottom: 5px solid #1b0e08;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_events.dmPrimaryNavItemSelected {
+  background-color: #1b0e08;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_events.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_events.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_events a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_events a {
+  background-color: #1b0e08;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_events a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_events a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_events a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_events .dmPrimaryNavItemColor:hover {
+  background-color: #763f22;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_events .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_events .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #1b0e08;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_events .dmPrimaryNavItemColor:active {
+  background-color: #763f22;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_events .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_events .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #1b0e08;
+}
+.dmPrimaryNavItem_safety .dmPrimaryNavItemColor {
+  background-color: #0c7f9c;
+}
+.dmPrimaryNavItem_safety .dmPrimaryNavItemContent {
+  background-color: #074555;
+}
+.dmPrimaryNavItem_safety a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_safety .dmSubNav {
+  background-color: #0c7f9c;
+}
+.dmSelectedPrimaryNavItem_safety .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_safety .dmSubNav .dmFullscreenButton {
+  background-color: #074555;
+}
+.no_touch .dmSelectedPrimaryNavItem_safety .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_safety .dmFullscreenButton:hover {
+  background-color: #010b0e;
+}
+.dmSelectedPrimaryNavItem_safety .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_safety .dmFullscreenButton:active {
+  background-color: #010b0e;
+}
+.dj_phone .dmSelectedPrimaryNavItem_safety .dmSubNav {
+  border-bottom: 5px solid #074555;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_safety.dmPrimaryNavItemSelected {
+  background-color: #074555;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_safety.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_safety.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_safety a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_safety a {
+  background-color: #074555;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_safety a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_safety a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_safety a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_safety .dmPrimaryNavItemColor:hover {
+  background-color: #0f9ec2;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_safety .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_safety .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #074555;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_safety .dmPrimaryNavItemColor:active {
+  background-color: #0f9ec2;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_safety .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_safety .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #074555;
+}
+.dmPrimaryNavItem_academics .dmPrimaryNavItemColor {
+  background-color: #522d80;
+}
+.dmPrimaryNavItem_academics .dmPrimaryNavItemContent {
+  background-color: #2e1947;
+}
+.dmPrimaryNavItem_academics a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_academics .dmSubNav {
+  background-color: #522d80;
+}
+.dmSelectedPrimaryNavItem_academics .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_academics .dmSubNav .dmFullscreenButton {
+  background-color: #2e1947;
+}
+.no_touch .dmSelectedPrimaryNavItem_academics .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_academics .dmFullscreenButton:hover {
+  background-color: #09050f;
+}
+.dmSelectedPrimaryNavItem_academics .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_academics .dmFullscreenButton:active {
+  background-color: #09050f;
+}
+.dj_phone .dmSelectedPrimaryNavItem_academics .dmSubNav {
+  border-bottom: 5px solid #2e1947;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_academics.dmPrimaryNavItemSelected {
+  background-color: #2e1947;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_academics.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_academics.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_academics a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_academics a {
+  background-color: #2e1947;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_academics a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_academics a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_academics a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_academics .dmPrimaryNavItemColor:hover {
+  background-color: #65389e;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_academics .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_academics .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #2e1947;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_academics .dmPrimaryNavItemColor:active {
+  background-color: #65389e;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_academics .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_academics .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #2e1947;
+}
+.dmPrimaryNavItem_campus-life .dmPrimaryNavItemColor {
+  background-color: #566127;
+}
+.dmPrimaryNavItem_campus-life .dmPrimaryNavItemContent {
+  background-color: #262a11;
+}
+.dmPrimaryNavItem_campus-life a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_campus-life .dmSubNav {
+  background-color: #566127;
+}
+.dmSelectedPrimaryNavItem_campus-life .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_campus-life .dmSubNav .dmFullscreenButton {
+  background-color: #262a11;
+}
+.no_touch .dmSelectedPrimaryNavItem_campus-life .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_campus-life .dmFullscreenButton:hover {
+  background-color: #000000;
+}
+.dmSelectedPrimaryNavItem_campus-life .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_campus-life .dmFullscreenButton:active {
+  background-color: #000000;
+}
+.dj_phone .dmSelectedPrimaryNavItem_campus-life .dmSubNav {
+  border-bottom: 5px solid #262a11;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_campus-life.dmPrimaryNavItemSelected {
+  background-color: #262a11;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_campus-life.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_campus-life.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_campus-life a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_campus-life a {
+  background-color: #262a11;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_campus-life a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_campus-life a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_campus-life a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_campus-life .dmPrimaryNavItemColor:hover {
+  background-color: #707e33;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_campus-life .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_campus-life .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #262a11;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_campus-life .dmPrimaryNavItemColor:active {
+  background-color: #707e33;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_campus-life .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_campus-life .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #262a11;
+}
+.dmPrimaryNavItem_profile .dmPrimaryNavItemColor {
+  background-color: #685c53;
+}
+.dmPrimaryNavItem_profile .dmPrimaryNavItemContent {
+  background-color: #3d3631;
+}
+.dmPrimaryNavItem_profile a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_profile .dmSubNav {
+  background-color: #685c53;
+}
+.dmSelectedPrimaryNavItem_profile .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_profile .dmSubNav .dmFullscreenButton {
+  background-color: #3d3631;
+}
+.no_touch .dmSelectedPrimaryNavItem_profile .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_profile .dmFullscreenButton:hover {
+  background-color: #13110f;
+}
+.dmSelectedPrimaryNavItem_profile .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_profile .dmFullscreenButton:active {
+  background-color: #13110f;
+}
+.dj_phone .dmSelectedPrimaryNavItem_profile .dmSubNav {
+  border-bottom: 5px solid #3d3631;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_profile.dmPrimaryNavItemSelected {
+  background-color: #3d3631;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_profile.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_profile.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_profile a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_profile a {
+  background-color: #3d3631;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_profile a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_profile a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_profile a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_profile .dmPrimaryNavItemColor:hover {
+  background-color: #7f7065;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_profile .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_profile .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #3d3631;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_profile .dmPrimaryNavItemColor:active {
+  background-color: #7f7065;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_profile .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_profile .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #3d3631;
+}
+.dmPrimaryNavItem_vis .dmPrimaryNavItemColor {
+  background-color: #0c7f9c;
+}
+.dmPrimaryNavItem_vis .dmPrimaryNavItemContent {
+  background-color: #074555;
+}
+.dmPrimaryNavItem_vis a {
+  text-decoration: none;
+}
+.dmSelectedPrimaryNavItem_vis .dmSubNav {
+  background-color: #0c7f9c;
+}
+.dmSelectedPrimaryNavItem_vis .dmSubNav .dmSubNavBackButton div,
+.dmSelectedPrimaryNavItem_vis .dmSubNav .dmFullscreenButton {
+  background-color: #074555;
+}
+.no_touch .dmSelectedPrimaryNavItem_vis .dmSubNavBackButton div:hover,
+.no_touch .dmSelectedPrimaryNavItem_vis .dmFullscreenButton:hover {
+  background-color: #010b0e;
+}
+.dmSelectedPrimaryNavItem_vis .dmSubNavBackButton:active div,
+.dmSelectedPrimaryNavItem_vis .dmFullscreenButton:active {
+  background-color: #010b0e;
+}
+.dj_phone .dmSelectedPrimaryNavItem_vis .dmSubNav {
+  border-bottom: 5px solid #074555;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_vis.dmPrimaryNavItemSelected {
+  background-color: #074555;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_vis.dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+}
+.dj_tablet .dmPrimaryNav .dmPrimaryNavItem_vis.dmPrimaryNavItemSelected .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_vis a,
+.dmRootView .dmPrimaryNav .dmPrimaryNavItem_vis a {
+  background-color: #074555;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_vis a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_vis a .dmPrimaryNavItemColor {
+  bottom: 5px;
+}
+.dj_phone .dmPrimaryNav .dmPrimaryNavItem_vis a:active {
+  background-color: transparent;
+  outline: none;
+  position: relative;
+  top: 5px;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_vis .dmPrimaryNavItemColor:hover {
+  background-color: #0f9ec2;
+}
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_vis .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemIcon,
+.dj_tablet.no_touch .dmRootView .dmPrimaryNav .dmPrimaryNavItem_vis .dmPrimaryNavItemColor:hover ~ .dmPrimaryNavItemLabel {
+  color: #074555;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_vis .dmPrimaryNavItemColor:active {
+  background-color: #0f9ec2;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_vis .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItem_vis .dmPrimaryNavItemColor:active ~ .dmPrimaryNavItemLabel {
+  color: #074555;
+}
+/* Content in primary nav items in tablet root view */
+.dmPrimaryNavItem_athletics .dmPrimaryNavItemContent:before {
+  content: 'Scores, News & Schedules';
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_map .dmPrimaryNavItemContent:before {
+  content: 'Locate buildings on campus';
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_directory .dmPrimaryNavItemContent:before {
+  content: 'Look up email addresses';
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_news .dmPrimaryNavItemContent:before {
+  content: 'Latest Clemson information';
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_events .dmPrimaryNavItemContent:before {
+  content: "What's going on";
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_safety .dmPrimaryNavItemContent:before {
+  content: 'Emergency phone numbers';
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_academics .dmPrimaryNavItemContent:before {
+  content: 'Admissions, Courses, Financial';
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_campus-life .dmPrimaryNavItemContent:before {
+  content: 'Campus places & information';
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_profile .dmPrimaryNavItemContent:before {
+  content: 'Self-service tools';
+  margin-left: 10px;
+}
+.dmPrimaryNavItem_vis .dmPrimaryNavItemContent:before {
+  content: 'Visualize';
+  margin-left: 10px;
+}
+/* Primary nav icons */
+.dmPrimaryNavItem_athletics .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_athletics .dmPrimaryNavItemIcon:before {
+  content: "\e000";
+}
+.dmPrimaryNavItem_map .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_map .dmPrimaryNavItemIcon:before {
+  content: "\e015";
+}
+.dmPrimaryNavItem_directory .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_directory .dmPrimaryNavItemIcon:before {
+  content: "\e012";
+}
+.dmPrimaryNavItem_news .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_news .dmPrimaryNavItemIcon:before {
+  content: "\e021";
+}
+.dmPrimaryNavItem_events .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_events .dmPrimaryNavItemIcon:before {
+  content: "\e041";
+}
+.dmPrimaryNavItem_safety .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_safety .dmPrimaryNavItemIcon:before {
+  content: "\e001";
+}
+.dmPrimaryNavItem_academics .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_academics .dmPrimaryNavItemIcon:before {
+  content: "\e038";
+}
+.dmPrimaryNavItem_campus-life .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_campus-life .dmPrimaryNavItemIcon:before {
+  content: "\e039";
+}
+.dmPrimaryNavItem_profile .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_profile .dmPrimaryNavItemIcon:before {
+  content: "\e00f";
+}
+.dmPrimaryNavItem_vis .dmPrimaryNavItemIcon {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.dmPrimaryNavItem_vis .dmPrimaryNavItemIcon:before {
+  content: "\e00f";
+}
+.dmPrimaryNav {
+  background-color: #e7e7de;
+}
+.dmPrimaryNav ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+.dmPrimaryNav li {
+  background-color: #e7e7de;
+  color: white;
+  list-style-type: none;
+  overflow: hidden;
+  cursor: pointer;
+}
+.dmPrimaryNav .dmPrimaryNavItemLabel {
+  float: left;
+}
+.dmPrimaryNav .dmPrimaryNavItemIcon {
+  float: left;
+}
+.dj_tablet .dmPrimaryNav li {
+  font-size: 15px;
+  font-weight: bold;
+  height: 55px;
+  padding: 0;
+  position: relative;
+  transition: background-color 0.3s;
+  -moz-transition: background-color 0.3s;
+  -o-transition: background-color 0.3s;
+  -webkit-transition: background-color 0.3s;
+  width: 100%;
+}
+.dj_tablet .dmPrimaryNav li:focus {
+  background-color: white;
+}
+.dj_tablet .dmPrimaryNav li:nth-child(even) {
+  background-color: #d7d7cf;
+}
+.dj_tablet .dmPrimaryNavItemColor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  width: 5px;
+  transition: width 0.3s;
+  -moz-transition: width 0.3s;
+  -o-transition: width 0.3s;
+  -webkit-transition: width 0.3s;
+  z-index: 1;
+}
+.dj_tablet .dmPrimaryNavItemIcon {
+  color: #828282;
+  font-size: 24px;
+  line-height: 55px;
+  margin-left: 5px;
+  position: relative;
+  text-align: center;
+  transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  -o-transition: color 0.3s;
+  -webkit-transition: color 0.3s;
+  width: 55px;
+  z-index: 2;
+}
+.dj_tablet .dmPrimaryNavItemLabel {
+  color: #828282;
+  left: 72px;
+  line-height: 55px;
+  position: absolute;
+  text-transform: uppercase;
+  transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  -o-transition: color 0.3s;
+  -webkit-transition: color 0.3s;
+  z-index: 2;
+}
+.dj_tablet .dmPrimaryNavItemContent {
+  display: none;
+}
+.dj_tablet .dmPrimaryNavItemSelected {
+  background-color: white;
+}
+.dj_tablet .dmPrimaryNavItemSelected .dmPrimaryNavItemColor {
+  width: 60px;
+}
+.dj_tablet .dmPrimaryNavItemSelected .dmPrimaryNavItemIcon {
+  color: white;
+}
+.dj_tablet .dmRootView .dmPrimaryNav ul {
+  margin-top: 21px;
+}
+.dj_tablet .dmRootView .dmPrimaryNav li {
+  border-bottom: none;
+  display: inline-block;
+  height: 105px;
+  margin-bottom: 16px;
+  margin-left: 4.347%;
+  width: 43.478%;
+}
+@media (min-width: 650px) {
+  .dj_tablet .dmRootView .dmPrimaryNav li {
+    margin-left: 2.941%;
+    width: 29.411%;
+  }
+}
+@media (min-width: 900px) {
+  .dj_tablet .dmRootView .dmPrimaryNav li {
+    margin-left: 2.222%;
+    width: 22.222%;
+  }
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItemColor {
+  bottom: 40px;
+  transition: background-color 0.3s;
+  -moz-transition: background-color 0.3s;
+  -o-transition: background-color 0.3s;
+  -webkit-transition: background-color 0.3s;
+  width: 100%;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItemIcon {
+  border-right: none;
+  color: white;
+  font-size: 30px;
+  line-height: 65px;
+  margin-left: 0;
+  pointer-events: none;
+  width: 65px;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItemLabel {
+  color: white;
+  font-size: 22px;
+  font-weight: normal;
+  left: 65px;
+  line-height: 65px;
+  pointer-events: none;
+  text-transform: none;
+  transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  -o-transition: color 0.3s;
+  -webkit-transition: color 0.3s;
+}
+.dj_tablet .dmRootView .dmPrimaryNav .dmPrimaryNavItemContent {
+  color: #ffffff;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
+  clear: left;
+  font-weight: normal;
+  float: left;
+  height: 40px;
+  line-height: 40px;
+  position: relative;
+  width: 100%;
+  z-index: 2;
+}
+.no_touch.dj_tablet .dmPrimaryNav li a:hover .dmPrimaryNavItemIcon,
+.no_touch.dj_tablet .dmPrimaryNav li a:hover .dmPrimaryNavItemLabel {
+  color: #373737;
+}
+.no_touch.dj_tablet .dmPrimaryNav li.dmPrimaryNavItemSelected a:hover .dmPrimaryNavItemIcon,
+.no_touch.dj_tablet .dmPrimaryNav li.dmPrimaryNavItemSelected a:hover .dmPrimaryNavItemLabel {
+  color: white;
+}
+.no_touch.dj_tablet .dmRootView .dmPrimaryNav {
+  /*.dmPrimaryNavItemContent {
+				&:hover {
+					color: white;
+				}
+			}*/
+
+}
+.no_touch.dj_tablet .dmRootView .dmPrimaryNav li a:hover .dmPrimaryNavItemIcon,
+.no_touch.dj_tablet .dmRootView .dmPrimaryNav li a:hover .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_tablet .dmPrimaryNav li a:active .dmPrimaryNavItemIcon,
+.dj_tablet .dmPrimaryNav li a:active .dmPrimaryNavItemLabel {
+  color: #373737;
+}
+.dj_tablet .dmPrimaryNav li.dmPrimaryNavItemSelected a:active .dmPrimaryNavItemIcon,
+.dj_tablet .dmPrimaryNav li.dmPrimaryNavItemSelected a:active .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_tablet .dmRootView .dmPrimaryNav {
+  /*.dmPrimaryNavItemContent {
+				&:active {
+					color: white;
+				}
+			}*/
+
+}
+.dj_tablet .dmRootView .dmPrimaryNav li a:active .dmPrimaryNavItemIcon,
+.dj_tablet .dmRootView .dmPrimaryNav li a:active .dmPrimaryNavItemLabel {
+  color: white;
+}
+.dj_phone .dmPrimaryNav {
+  border-right: none;
+}
+.dj_phone .dmPrimaryNav ul {
+  margin: 10px 0 0;
+}
+.dj_phone .dmPrimaryNav li {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 16px;
+  height: 48px;
+  line-height: 48px;
+  margin: 0 0 7px 4.0625%;
+  position: relative;
+  width: 43.90625%;
+}
+.dj_phone .dmPrimaryNav li a {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+  padding: 0 10px;
+}
+.dj_phone .dmPrimaryNav li .dmPrimaryNavItemColor {
+  /*-webkit-border-top-left-radius: 3px;
+			-webkit-border-top-right-radius: 3px;
+			-moz-border-radius-topleft: 3px;
+			-moz-border-radius-topright: 3px;
+			border-top-left-radius: 3px;
+			border-top-right-radius: 3px;*/
+
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+.dj_phone .dmPrimaryNav li .dmPrimaryNavItemIcon {
+  color: white;
+  font-size: 18px;
+  line-height: 48px;
+  position: relative;
+  /* z-index only works on positioned elements */
+
+  top: -2px;
+  z-index: 2;
+  /* Bring in front of color node */
+
+}
+.dj_phone .dmPrimaryNav li .dmPrimaryNavItemLabel {
+  color: white;
+  font-size: 16px;
+  left: 37px;
+  line-height: 45px;
+  position: absolute;
+  text-overflow: ellipsis;
+  right: 10px;
+  z-index: 2;
+  /* Bring in front of color node */
+
+}
+.dj_phone .dmPrimaryNav li .dmPrimaryNavItemContent {
+  display: none;
+}
+.dj_tablet .dmPrimaryNav li .mblProgressIndicator {
+  left: 30px;
+  top: 10px;
+}
+.dj_tablet .dmRootView .dmPrimaryNav li .mblProgressIndicator {
+  left: 33px;
+  top: 14px;
+}
+.dj_phone .dmPrimaryNav li .mblProgressIndicator {
+  left: 18px;
+  top: 7px;
+}
+.dmSubNav {
+  background-color: #37be4f;
+  height: 45px !important;
+  line-height: 45px;
+  position: relative;
+  outline: none;
+}
+.dmSubNavTitle {
+  color: white;
+  display: block;
+  font-size: 20px;
+  left: 65px;
+  line-height: 45px;
+  overflow: hidden;
+  position: absolute;
+  right: 50px;
+  text-overflow: ellipsis;
+  top: 0;
+  white-space: nowrap;
+}
+.dmSubNavTitle:focus {
+  outline: none;
+}
+.dj_phone .dmSubNavTitle {
+  height: 45px;
+  line-height: 45px;
+}
+.dj_tablet .dmSubNavTitle {
+  left: 76px;
+  line-height: 45px;
+  right: 60px;
+}
+.dmSubNavBackButton {
+  left: 0px;
+  height: 50px;
+  outline: none;
+  position: absolute;
+  top: 50%;
+  margin-top: -25px;
+  width: 60px;
+}
+.dmSubNavBackButton div {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  font-size: 20px;
+  border: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-radius: 6px;
+  color: white;
+  font-size: 18px;
+  height: 30px;
+  line-height: 30px;
+  margin-left: 10px;
+  margin-top: 10px;
+  outline: none;
+  text-align: center;
+  text-decoration: none;
+  width: 40px;
+}
+.dmSubNavBackButton div:before {
+  content: "\e093";
+}
+/* Subnav color for modules in meta nav */
+.dmActiveModule_help .dmSubNav {
+  background-color: #685c53;
+}
+.dmActiveModule_help .dmSubNav .dmSubNavBackButton div,
+.dmActiveModule_help .dmSubNav .dmFullscreenButton {
+  background-color: #3d3631;
+}
+.no_touch .dmActiveModule_help .dmSubNavBackButton div:hover,
+.no_touch .dmActiveModule_help .dmFullscreenButton:hover {
+  background-color: #13110f;
+}
+.dmActiveModule_help .dmSubNavBackButton:active div,
+.dmActiveModule_help .dmFullscreenButton:active {
+  background-color: #13110f;
+}
+.dmActiveModule_feedback .dmSubNav {
+  background-color: #74808c;
+}
+.dmActiveModule_feedback .dmSubNav .dmSubNavBackButton div,
+.dmActiveModule_feedback .dmSubNav .dmFullscreenButton {
+  background-color: #515a62;
+}
+.no_touch .dmActiveModule_feedback .dmSubNavBackButton div:hover,
+.no_touch .dmActiveModule_feedback .dmFullscreenButton:hover {
+  background-color: #2f3338;
+}
+.dmActiveModule_feedback .dmSubNavBackButton:active div,
+.dmActiveModule_feedback .dmFullscreenButton:active {
+  background-color: #2f3338;
+}
+.dmTitle {
+  background-color: #373737;
+  border-bottom: 0;
+  height: 55px;
+}
+.dmTitleHeading {
+  color: #b1b1b1;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: -1px;
+  outline: none;
+  padding-top: 15px;
+  text-decoration: none;
+}
+.no_touch .dmTitleHeading:hover {
+  color: #e7e7de;
+  text-decoration: none;
+}
+.dmTitleHeading:active {
+  color: #e7e7de;
+  text-decoration: none;
+}
+.dmMenuBar {
+  background: transparent;
+  height: 55px;
+  line-height: 55px;
+  margin-right: 0;
+  outline: none;
+}
+.dmMenuBar .dmMenuBarItem {
+  color: #b1b1b1;
+  cursor: pointer;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1;
+  margin-left: 0;
+  margin-right: 10px;
+  margin-top: 0;
+  outline: none;
+}
+.dmMenuBar .dmMenuBarPopupItem {
+  font-size: 24px;
+  padding: 10px;
+  margin-right: 10px;
+  margin-top: 2px;
+  position: relative;
+  top: 3px;
+  outline: none;
+}
+.dmMenuBar .dmPopupMenu {
+  background-color: #373737;
+  background-color: rgba(55, 55, 55, 0.95);
+  border-color: #eeefe6;
+  border-color: rgba(238, 239, 230, 0.95);
+  border-style: solid;
+  border-width: 1px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+.dmMenuBar .dmPopupMenu .dmMenuBarItem {
+  color: #eeefe6;
+  margin: 0;
+  padding: 17px 20px;
+}
+.dmMenuBar .dmPopupMenu .dmMenuBarItem:last-child {
+  border-bottom: none;
+}
+.dmMenuBar .dmPopupMenu:before {
+  background: transparent;
+  border-bottom: 10px solid rgba(238, 239, 230, 0.95);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  content: '';
+  height: 0;
+  position: absolute;
+  right: 16px;
+  top: -10px;
+  width: 0;
+}
+.dmMenuBar .dmPopupMenu:after {
+  background: transparent;
+  border-bottom: 9px solid #373737;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  content: '';
+  height: 0;
+  position: absolute;
+  right: 17px;
+  top: -9px;
+  width: 0;
+}
+.no_touch .dmMenuBar .dmMenuBarItem:hover {
+  color: #e7e7de;
+  text-decoration: none;
+}
+.dmMenuBar .dmMenuBarItem:active {
+  color: #e7e7de;
+  text-decoration: none;
+}
+.dj_phone .dmMenuBarPopupItem {
+  margin-right: 5px;
+}
+.dj_phone .dmPopupMenu:before {
+  right: 11px;
+}
+.dj_phone .dmPopupMenu:after {
+  right: 12px;
+}
+.dj_tablet .dmMenuBarPopupItem.dmMenuBarPopupItemHiddenTablet {
+  visibility: hidden;
+  margin-right: 15px;
+  padding: 0;
+  width: 0;
+}
+.mblEdgeToEdgeList {
+  margin: 0 10px;
+  background: transparent;
+}
+.dj_tablet .mblEdgeToEdgeList {
+  margin: 10px 15px;
+}
+.dmListDivider {
+  background-color: #f2f2ea;
+  color: #373737;
+  font-size: 17px;
+  font-weight: bold;
+  height: 35px;
+  line-height: 35px;
+  padding-left: 15px;
+}
+.dmListItem {
+  border-bottom: 1px solid #e7e7de;
+  color: #373737;
+  font-weight: bold;
+  margin-bottom: 0;
+  overflow: hidden;
+  position: relative;
+  padding: 15px 12px 15px 0;
+}
+.dmListItem.dmLinkListItem {
+  padding: 0;
+}
+.dmListItem.dmLinkListItem a {
+  overflow: hidden;
+  padding: 15px 20px 15px 0;
+}
+.dmListItem.dmLinkListItem a .dmRightIcon {
+  margin-top: -9px;
+  right: 0;
+  top: 50%;
+}
+.dmListItem.dmLinkListItem a,
+.dmListItem.dmLinkListItem a:visited,
+.dmListItem.dmLinkListItem a:hover,
+.dmListItem.dmLinkListItem a:active {
+  color: inherit;
+  text-decoration: inherit;
+}
+.dmListItem:focus {
+  outline: none;
+}
+.dmListItem:last-child {
+  border-bottom: none;
+}
+.dmListItem .dmListItemText {
+  color: #F66733;
+  color: #373737;
+  overflow: hidden;
+}
+.dmListItem .dmListItemIcon {
+  margin: 0;
+}
+.dmListItem .dmListItemRightText {
+  font-weight: normal;
+  text-align: right;
+}
+.searchBar {
+  height: 45px;
+  position: absolute;
+  right: 60px;
+  top: -59px;
+  width: 50%;
+}
+.searchBar .textBoxWrapper {
+  left: 0;
+  position: absolute;
+  right: 110px;
+  top: 5px;
+}
+.searchBar .mblTextBox {
+  border: none;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-radius: 12px;
+  color: #4d4d4d;
+  font-size: 17px;
+  height: 20px;
+  margin-top: 3px;
+  padding: 5px 10px;
+  width: 100%;
+}
+.searchBar .mblTextBox:focus {
+  outline: none;
+}
+.searchBar .searchButton {
+  background: #87826a;
+  border: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-radius: 6px;
+  color: #c1beb0;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 7px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: auto;
+  min-width: 80px;
+  margin-top: 8px;
+  position: absolute;
+  right: 0;
+}
+.dj_phone .searchBar {
+  background: #c1beb0;
+  height: 50px;
+  right: 0;
+  top: 0px;
+  width: 100%;
+}
+.dj_phone .searchBar .textBoxWrapper {
+  left: 10px;
+  right: 120px;
+}
+.dj_phone .searchBar .mblTextBox {
+  margin-top: 5px;
+}
+.dj_phone .searchBar .searchButton {
+  margin-top: 10px;
+  right: 10px;
+}
+.dialog {
+  background: #373737;
+  background: rgba(55, 55, 55, 0.95);
+  border: 1px solid #373737;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-radius: 6px;
+  height: 150px;
+  left: 50%;
+  margin-left: -140px;
+  margin-top: -75px;
+  position: absolute;
+  top: 50%;
+  width: 280px;
+  z-index: 100;
+}
+.dialog .dialogTitle {
+  border-bottom: 1px solid white;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 49px;
+  height: 49px;
+  margin: 0 10px;
+  text-align: center;
+}
+.dialog .dialogMessage {
+  color: white;
+  font-size: 16px;
+  height: 35px;
+  padding: 10px;
+  text-align: center;
+}
+.dialog .dialogButtons {
+  height: 45px;
+  text-align: center;
+}
+.dialog .dialogButtons .button {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  margin-right: 10px;
+}
+.dialog .dialogButtons .button:last-child {
+  margin-right: 0;
+}
+.dialog .dialogButtons .button:active {
+  background: #1e1e1e;
+}
+.dialogOverlay {
+  background: #8c8c8c;
+  background: rgba(140, 140, 140, 0.65);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 99;
+}
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000000;
+  z-index: 10000;
+}
+.lightbox .button {
+  font-size: 30px;
+  cursor: pointer;
+  margin: 2px;
+}
+.lightbox .lightboxTitleBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #000000;
+  color: white;
+  text-align: center;
+}
+.lightbox .lightboxTitleBar .lightboxExit {
+  font-size: 30px;
+  cursor: pointer;
+  margin: 2px;
+  position: fixed;
+  right: 10px;
+  top: 5px;
+}
+.lightbox .lightboxTitleBar .lightboxTitle {
+  margin-top: 12px;
+  margin-left: 50px;
+  margin-right: 50px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.lightbox .lightboxToolbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background-color: #000000;
+  color: white;
+  text-align: center;
+}
+.lightbox .lightboxToolbar .lightboxPrevButton {
+  display: inline-block;
+  font-size: 30px;
+  cursor: pointer;
+  margin: 2px;
+  text-align: center;
+}
+.lightbox .lightboxToolbar .lightboxNextButton {
+  display: inline-block;
+  font-size: 30px;
+  cursor: pointer;
+  margin: 2px;
+  text-align: center;
+}
+.lightbox .lightboxToolbar .lightboxPlayButton {
+  display: inline-block;
+  text-align: center;
+  width: 100px;
+  font-size: 30px;
+  cursor: pointer;
+  margin: 2px;
+}
+.lightbox .lightboxItem {
+  position: absolute;
+  width: 100px;
+  margin-left: -50px;
+  height: 100px;
+  margin-top: -50px;
+  background-color: #323232;
+  left: 50%;
+  top: 50%;
+  /*
+		-webkit-box-reflect: below 10px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(50%, transparent), to(rgba(255,255,255,0.3)));
+		*/
+
+}
+.lightbox .lightboxItem.transition {
+  transition: transform 0.5s;
+  -webkit-transition: -webkit-transform 0.5s;
+}
+.toasterContainer {
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+}
+.toasterContainer .toasterMessage {
+  position: relative;
+  background: rgba(55, 55, 55, 0.95);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-radius: 3px;
+  z-index: 10;
+  margin: 10px 15px;
+  padding: 7px 15px;
+  color: white;
+}
+.toasterContainer .toasterMessage.toasterError {
+  background-color: rgba(255, 48, 16, 0.9);
+}
+.toasterContainer .toasterMessage.toasterSuccess {
+  background-color: rgba(0, 255, 112, 0.9);
+}
+.toasterContainer .toasterMessage.toasterWarning {
+  background-color: rgba(255, 176, 0, 0.9);
+}
+.toasterContainer .toasterMessage.toasterInformation {
+  background-color: rgba(112, 112, 255, 0.9);
+}
+/*
+.toasterMessage {
+	background: rgba(55,55,55,0.95);
+	border-radius: 3px;
+	color: rgb(238,239,230);
+	height: auto;
+	left: 50%;
+	margin-left: -130px;
+	padding: 20px;
+	position: absolute;
+	top: 15px;
+	width: 220px;
+
+	-webkit-animation-duration: 0.75s;
+	-moz-animation-duration: 0.75s;
+	-o-animation-duration: 0.75s;
+	animation-duration: 0.75s;
+	-webkit-animation-fill-mode: both;
+	-moz-animation-fill-mode: both;
+	-o-animation-fill-mode: both;
+	animation-fill-mode: both;
+	-webkit-animation-name: fadeInDown;
+	-moz-animation-name: fadeInDown;
+	-o-animation-name: fadeInDown;
+	animation-name: fadeInDown;
+}
+
+@-webkit-keyframes fadeInDown {
+	0% {
+		opacity: 0;
+		-webkit-transform: translateY(-20px);
+	}
+
+	100% {
+		opacity: 1;
+		-webkit-transform: translateY(0);
+	}
+}
+
+@-moz-keyframes fadeInDown {
+	0% {
+		opacity: 0;
+		-moz-transform: translateY(-20px);
+	}
+
+	100% {
+		opacity: 1;
+		-moz-transform: translateY(0);
+	}
+}
+
+@-o-keyframes fadeInDown {
+	0% {
+		opacity: 0;
+		-o-transform: translateY(-20px);
+	}
+
+	100% {
+		opacity: 1;
+		-o-transform: translateY(0);
+	}
+}
+
+@keyframes fadeInDown {
+	0% {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.dj_tablet .toasterMessage {
+	margin-left: -220px;
+	top: 40px;
+	width: 400px;
+}
+
+*/
+.toasterClose {
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  position: absolute;
+  text-align: center;
+  width: 34px;
+  right: 0;
+  top: 1px;
+  /*
+	margin-top: -16px;
+	right: 10px;
+	top: 50%;
+	height: 34px;
+	line-height: 34px;
+	*/
+
+}
+/* dojox.mobile.Slider */
+.mblSlider {
+  background: #e7e7de;
+  border: 1px solid #c1beb0;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-radius: 10px;
+  padding-left: 19px;
+  margin: 15px;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+.mblSliderH {
+  height: 8px;
+  width: 200px;
+}
+.mblSliderH .mblSliderProgressBar {
+  height: 100%;
+}
+.mblSliderH .mblSliderHandle {
+  top: 50%;
+}
+.mblSliderV {
+  height: 200px;
+  width: 8px;
+}
+.mblSliderV .mblSliderProgressBar {
+  width: 100%;
+}
+.mblSliderV .mblSliderHandle {
+  left: 50%;
+}
+.mblSliderProgressBar {
+  background: #c1beb0;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
+  border-bottom-left-radius: 9px;
+  border-bottom-right-radius: 9px;
+  border-radius: 9px;
+  margin-left: -19px;
+  padding-left: 19px;
+}
+.mblSliderHandle {
+  background: #e7e7de;
+  border: 1px solid #c1beb0;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
+  border-bottom-left-radius: 9px;
+  border-bottom-right-radius: 9px;
+  border-radius: 9px;
+  height: 18px;
+  margin: -10px 0 0 -19px;
+  width: 18px;
+}
+.mblSliderTransition {
+  -webkit-transition-duration: 400ms;
+  transition-duration: 400ms;
+}
+.mblSliderTouchBox {
+  background-color: transparent;
+  border: none;
+  height: 100%;
+  left: -12pt;
+  margin: 0;
+  margin-left: -19px;
+  padding: 16px;
+  padding-left: 35px;
+  top: -12pt;
+  width: 100%;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+.linkContainer {
+  background: white;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 99;
+}
+.linkContainer .header {
+  background: #373737;
+  border-top: 5px solid #f66733;
+  height: 45px;
+  position: absolute;
+  width: 100%;
+}
+.linkContainer .header .backButton,
+.linkContainer .header .openButton {
+  height: 50px;
+  margin-top: -25px;
+  position: absolute;
+  text-decoration: none;
+  top: 50%;
+  width: 60px;
+}
+.linkContainer .header .backButton div,
+.linkContainer .header .openButton div {
+  background: #111111;
+  font-size: 20px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 18px;
+  height: 30px;
+  line-height: 30px;
+  margin-left: 10px;
+  margin-top: 10px;
+  outline: none;
+  text-align: center;
+  text-decoration: none;
+  width: 40px;
+}
+.linkContainer .header .backButton:active div,
+.linkContainer .header .openButton:active div {
+  background: #000000;
+}
+.linkContainer .header .backButton {
+  left: 10px;
+}
+.linkContainer .header .openButton {
+  right: 10px;
+}
+.linkContainer .header .title {
+  color: white;
+  font-size: 20px;
+  height: 45px;
+  line-height: 45px;
+  left: 70px;
+  overflow: hidden;
+  position: absolute;
+  right: 70px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.linkContainer .frameWrapper {
+  bottom: 0;
+  position: absolute;
+  top: 50px;
+  width: 100%;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+.linkContainer iframe {
+  border: 0;
+  height: 100%;
+  outline: 0;
+  width: 100%;
+}
+.dj_tablet .linkContainer .header {
+  height: 65px;
+}
+.dj_tablet .linkContainer .header .title {
+  height: 65px;
+  line-height: 65px;
+}
+.dj_tablet .linkContainer .frameWrapper {
+  top: 70px;
+}
+.no_touch .linkContainer .header .backButton div:hover,
+.no_touch .linkContainer .header .shareButton div:hover {
+  background: #000000;
+}
+.font-mixin {
+  font-family: Helvetica, Arial, sans-serif;
+}
+html.mobile,
+.mobile body {
+  font-family: Helvetica, Arial, sans-serif;
+  background: #cdcbc3;
+  color: #373737;
+  /* Do not show gray boxes when long pressing on an element in iOS */
+
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+a,
+a:active {
+  color: #F66733;
+  text-decoration: none;
+}
+.no_touch a:hover {
+  text-decoration: underline;
+}
+input,
+textarea,
+button,
+select {
+  font-family: Helvetica, Arial, sans-serif;
+}
+::-webkit-input-placeholder {
+  font-family: Helvetica, Arial, sans-serif;
+  color: #828282;
+}
+:-moz-placeholder {
+  font-family: Helvetica, Arial, sans-serif;
+  color: #828282;
+}
+::-moz-placeholder {
+  font-family: Helvetica, Arial, sans-serif;
+  color: #828282;
+}
+::-ms-placeholder {
+  font-family: Helvetica, Arial, sans-serif;
+  color: #828282;
+}
+.dmLayout {
+  width: 100%;
+  height: 100%;
+}
+.dmModuleContent {
+  background: white;
+  outline: none;
+  top: 100px;
+}
+.dj_tablet .dmLayout {
+  bottom: 0;
+  height: auto;
+  position: absolute;
+  max-width: 1100px;
+  top: 0;
+  width: 100%;
+}
+@media (min-width: 1100px) {
+  .dj_tablet .dmLayout {
+    bottom: 0;
+    left: 50%;
+    margin-left: -550px;
+    top: 0;
+  }
+}
+@media (min-width: 1100px) and (max-width: 1220px) {
+  .dj_tablet .dmLayout {
+    bottom: 5px;
+    top: 5px;
+  }
+}
+@media (min-width: 1220px) {
+  .dj_tablet .dmLayout {
+    bottom: 10px;
+    top: 10px;
+  }
+}
+@media (min-width: 1600px) {
+  .dj_tablet .dmLayout {
+    bottom: 25px;
+    top: 25px;
+  }
+}
+/**
+ * import module-level css here, e.g.:
+ *  @import './my_module.less';
+ *  @import '../css/my_module.css';
+ */
+.rootView .footer {
+  color: #373737;
+  display: block;
+  font-size: 22px;
+  margin-top: 50px;
+  text-align: center;
+  width: 100%;
+}
+.rootView .footer .title {
+  font-size: 33px;
+  font-weight: bold;
+}
+.rootView .footer .subtitle {
+  font-size: 27px;
+  font-weight: lighter;
+  font-style: italic;
+}
+.rootView .footer .icon {
+  font-size: 42px;
+  margin-top: 10px;
+}
+.visModule .selectorBar {
+  margin: 0;
+  padding: 10px 0;
+  background: #c1beb0;
+  text-align: center;
+}
+.visModule .selectorBar a {
+  background: #87826a;
+  border: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-radius: 6px;
+  color: #c1beb0;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 7px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: auto;
+  min-width: 80px;
+  margin-right: 10px;
+}
+.visModule .selectorBar a:last-child {
+  margin-right: 0;
+}
+.visModule .listItem {
+  height: 20px;
+  width: 100%;
+  display: inline-block;
+}
+.visModule .listItem .author {
+  width: 20%;
+}
+.visModule .listItem .body {
+  width: 80%;
+}
+.visModule .prevDayButton,
+.visModule .nextDayButton {
+  min-width: 14px !important;
+}
+.visModule .prevDayButton {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.visModule .prevDayButton:before {
+  content: "\e0d7";
+}
+.visModule .nextDayButton {
+  font-family: 'my-Clemson-Fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+}
+.visModule .nextDayButton:before {
+  content: "\e0da";
+}
+.dmActiveModule_404 .dmSubNav {
+  background-color: #373737;
+}
+.dmActiveModule_404 .dmSubNav .dmSubNavBackButton div,
+.dmActiveModule_404 .dmSubNav .dmFullscreenButton {
+  background-color: #111111;
+}
+.no_touch .dmActiveModule_404 .dmSubNavBackButton div:hover,
+.no_touch .dmActiveModule_404 .dmFullscreenButton:hover {
+  background-color: #000000;
+}
+.dmActiveModule_404 .dmSubNavBackButton:active div,
+.dmActiveModule_404 .dmFullscreenButton:active {
+  background-color: #000000;
+}
+.dj_phone .dmActiveModule_404 .dmSubNav {
+  border-bottom: 5px solid #111111;
+}
+.Four04Module .dmModuleView {
+  padding: 15px;
+}
+.Four04Module .dmModuleView h1 {
+  margin: 0;
+}

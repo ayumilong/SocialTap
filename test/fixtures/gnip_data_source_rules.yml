@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  value: MyString
+  tag: MyString
+  log_file_path: MyString
+
+two:
+  value: MyString
+  tag: MyString
+  log_file_path: MyString

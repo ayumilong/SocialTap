@@ -1,0 +1,40 @@
+.visModule {
+
+	.selectorBar {
+		margin: 0;
+		padding: 10px 0;
+		background: rgb(193,190,176);
+		text-align: center;
+		a {
+			.buttonMixin;
+			margin-right: 10px;
+
+			&:last-child {
+				margin-right: 0;
+			}
+		}
+	}
+
+	.listItem {
+		height: 20px;
+		width: 100%;
+		display: inline-block;
+		.author {
+			width: 20%;
+		}
+		.body {
+			width: 80%;
+		}
+	}
+	.prevDayButton, .nextDayButton {
+		min-width: 14px !important;
+	}
+
+	.prevDayButton {
+		.icon-chevron-left-large;
+	}
+
+	.nextDayButton {
+		.icon-chevron-right-large;
+	}
+}

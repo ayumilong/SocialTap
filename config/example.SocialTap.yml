@@ -1,0 +1,21 @@
+# Config file for the SocialTap app
+
+defaults: &defaults
+    Elasticsearch:
+        hostname: localhost
+        port: 9200
+        default_index: DEFAULT INDEX FOR NEW DATASETS
+    Gnip:
+        powertrack_stream_url: YOUR STREAM URL
+        powertrack_rules_url: YOUR RULES URL
+        username: YOUR GNIP USERNAME
+        password: YOUR GNIP PASSWORD
+
+development:
+    <<: *defaults
+
+test:
+    <<: *defaults
+
+production:
+    <<: *defaults
