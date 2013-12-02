@@ -11,6 +11,12 @@
 # Ignore config file with sensitive data
 config/SocialTap.yml
 
+# Ignore Dojo
+/public/dojo
+/public/dojox
+/public/dijit
+/public/util
+
 # Ignore generated assets
 public/app/resources/css/application.css
 public/demo/resources/css/application.css
