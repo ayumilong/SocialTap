@@ -11,13 +11,13 @@ define([
 		,"dojo/DeferredList"
 		,"dojo/on"
 		,"dojo/date/locale"
-		
+
 
 		,"dojox/mobile/ListItem"
 		,"dojox/mobile/ContentPane"
 
-		
-		
+
+
 		,"dojo/ready"
 
 	], function(
@@ -33,29 +33,29 @@ define([
 		,DeferredList
 		,on
 		,locale
-		
-		
+
+
 		,ListItem
 		,Pane
-		
+
 		,ready
 	){
 		return declare("DataListItem",[Pane], {
 			variableHeight: true,
 			"class": "feedItemListItemClass",
-			
+
 			constructor: function(args){
 			},
-			
+
 			postCreate: function(){
 				this.buildView();
 			},
 
 			resize: function() {
-				console.log("this happens");	
+				console.log("this happens");
 			},
-			
-			buildView: function(){				
+
+			buildView: function(){
 				var sentiment, hashtags = "", mentions = "", links ="";
 				var i;
 				switch(this.data.sentiment) {
@@ -92,8 +92,8 @@ define([
 						mentions = mentions + ", ";
 					}
 				}
-				
-				
+
+
 
 				this.content = new Pane({
 					"class": "content"
@@ -174,11 +174,11 @@ define([
 				this.addChild(this.content);
 				this.content.addChild(this.userInfo);
 				this.content.addChild(this.tweetInfo);
-		
+
 			},
-			dateFormat: function(incoming, fmt) { 
+			dateFormat: function(incoming, fmt) {
 				var date = new Date(incoming);
-				return locale.format( date, {selector:"date", datePattern:fmt } ); 
+				return locale.format( date, {selector:"date", datePattern:fmt } );
 			}
 		});
 	}

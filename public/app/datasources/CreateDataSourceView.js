@@ -101,9 +101,14 @@ define(['dojo/_base/declare',
 				innerHTML: 'Gnip Rule'
 			}, this.gnipRuleField.domNode, 'before');
 
-			domConstruct.create('p', {
+			domConstruct.create('a', {
 				'class': 'note',
-				innerHTML: '<a href="http://support.gnip.com/customer/portal/articles/600659-powertrack-generic#Rules" target="_blank">Gnip Rule Documentation</a>'
+				href: 'http://support.gnip.com/customer/portal/articles/600659-powertrack-generic#Rules',
+				target: '_blank',
+				innerHTML: 'Gnip Rule Documentation',
+				style: {
+					display: 'block'
+				}
 			}, this.gnipFormContainer.domNode);
 
 			/* File upload inputs */

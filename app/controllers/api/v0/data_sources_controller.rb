@@ -3,13 +3,15 @@ class Api::V0::DataSourcesController < ApplicationController
   # GET /api/v0/data_sources
   # GET /api/v0/data_sources.json
   def index
-    @data_sources = DataSource.all
+    types = DataSource.uniq.pluck(:type)
 
-    if (params[:type])
-      @data_sources = @data_sources.select { |ds| ds.type == (params[:type].capitalize + "DataSource") }
+    sources_by_type = Hash.new
+
+    types.each do |type|
+      sources_by_type[type] = DataSource.where(type: type).to_a
     end
 
-    render json: @data_sources
+    render json: sources_by_type
   end
 
   # GET /api/v0/data_sources/1

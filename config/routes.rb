@@ -6,8 +6,10 @@ SocialTap::Application.routes.draw do
       resources :vizs, except: [:new, :edit]
       resources :data_sources, except: [:new, :edit, :update]
       resources :datasets, except: [:new, :edit] do
+        get 'imports', on: :member
         post 'search', on: :member
       end
+      resources :import_operations, except: [:new, :edit]
       resources :inquiries, except: [:new, :edit] do
         get 'search', on: :member
       end

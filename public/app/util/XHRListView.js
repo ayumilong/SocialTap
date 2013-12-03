@@ -9,10 +9,15 @@ define(['dojo/_base/declare',
 
 	return declare([ModuleScrollableView], {
 
+		// computedDataUrl: String
+		//     The data URL returned by dataUrlFromRoute.
+		computedDataUrl: null,
+
 		dataPromise: null,
 
 		// dataUrl: String
-		//     The default URL to retrieve data from.
+		//     The URL to retrieve data from. Data is loaded from the URL returned by
+		//     dataUrlFromRoute which by default returns this value.
 		dataUrl: null,
 
 		// fetchErrorMessage: String
@@ -82,18 +87,14 @@ define(['dojo/_base/declare',
 			});
 		},
 
-		activate: function(e) {
-			this.inherited(arguments);
-
-			var dataUrl = this.dataUrlFromRoute(e);
-
+		refreshData: function() {
 			if (this.dataPromise !== null) {
 				this.dataPromise.cancel();
 			}
 
 			toaster.clearMessages();
 			this.list.destroyDescendants();
-			this.dataPromise = xhr.get(dataUrl, {
+			this.dataPromise = xhr.get(this.computedDataUrl, {
 				handleAs: 'json'
 			})
 				.then(lang.hitch(this, function(data) {
@@ -117,6 +118,12 @@ define(['dojo/_base/declare',
 					this.onFetchError(err);
 					this.dataPromise = null;
 				}));
+		},
+
+		activate: function(e) {
+			this.inherited(arguments);
+			this.computedDataUrl = this.dataUrlFromRoute(e);
+			this.refreshData();
 		}
 
 	});

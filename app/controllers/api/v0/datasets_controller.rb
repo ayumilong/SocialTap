@@ -13,7 +13,14 @@ class Api::V0::DatasetsController < ApplicationController
   def show
     @dataset = Dataset.find(params[:id])
 
-    render json: @dataset.to_json(:include => :import_operations)
+    render json: @dataset
+  end
+
+  # GET /api/v0/datasets/1/imports
+  # GET /api/v0/datasets/1/imports.json
+  def imports
+    @dataset = Dataset.find(params[:id])
+    render json: @dataset.import_operations.as_json(:methods => :data_source)
   end
 
   # POST /api/v0/datasets

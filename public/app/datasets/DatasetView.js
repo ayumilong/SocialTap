@@ -23,6 +23,8 @@ define(['dojo/_base/declare',
 		//     Promise for loading dataset from API
 		datasetPromise: null,
 
+		importsLink: null,
+
 		infoPane: null,
 
 		visList: null,
@@ -41,6 +43,11 @@ define(['dojo/_base/declare',
 			this.browseLink = domConstruct.create('a', {
 				'class': 'button',
 				innerHTML: 'Browse Data'
+			}, this.domNode);
+
+			this.importsLink = domConstruct.create('a', {
+				'class': 'button',
+				innerHTML: 'View Data Imports'
 			}, this.domNode);
 
 			var deleteButton = new Button({
@@ -90,9 +97,11 @@ define(['dojo/_base/declare',
 
 			if (dataset) {
 				domAttr.set(this.browseLink, 'href', '#/datasets/' + dataset.id + '/browse');
+				domAttr.set(this.importsLink, 'href', '#/datasets/' + dataset.id + '/imports');
 			}
 			else {
 				domAttr.remove(this.browseLink, 'href');
+				domAttr.remove(this.importsLink, 'href');
 			}
 
 			this.visList.destroyDescendants();

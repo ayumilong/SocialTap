@@ -11,7 +11,7 @@ class ImportOperation < ActiveRecord::Base
 		# as stopped with an error.
 		puts "Begin import #{self.id}!"
 
-		self.time_started = DateTime.now
+		self.time_started = Time.zone.now
 
 		if self.data_source.is_a? GnipDataSource
 
@@ -30,7 +30,7 @@ class ImportOperation < ActiveRecord::Base
 			end
 
 			if !gnip_running
-				self.time_stopped = DateTime.now
+				self.time_stopped = Time.zone.now
 				self.error = "Gnip index-powertrack import not running"
 			end
 
