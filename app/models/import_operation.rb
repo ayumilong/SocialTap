@@ -3,6 +3,13 @@ class ImportOperation < ActiveRecord::Base
 	belongs_to :data_source
 	belongs_to :dataset
 
+	# Do not save if there is already an import operation for this dataset and data source in progress
+	before_save :prevent_duplicates
+	def prevent_duplicates
+		ops = ImportOperation.where(dataset_id: self.dataset_id, data_source_id: self.data_source_id).to_a
+		ops.select { |op| op != self && op.in_progress? } .count == 0
+	end
+
 	after_create :begin_import
 	def begin_import
 
@@ -46,6 +53,10 @@ class ImportOperation < ActiveRecord::Base
 
 		self.save
 
+	end
+
+	def in_progress?
+		self.time_stopped.nil?
 	end
 
 end
