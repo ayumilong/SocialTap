@@ -14,12 +14,15 @@ define(['dojo/_base/declare',
 		//     Called with new value
 		'onChange': null,
 
-		// onChangeHanlde: object
+		// onChangeHandle: object
 		//     dojo/on handle for select event.
 		onChangeHandle: null,
 
-		// options: array
-		//     Array of objects {val:, label:}
+		// options: Object
+		//     Options to populate select tag with.
+		//     For a basic list of options, set with an array of objects {value:, label:}
+		//     For optgroups, set with an object whose keys are the titles of the optgroups and
+		//     values are an array of objects {value:, label:} of options for the optgroup.
 		options: null,
 
 		// value: string
@@ -54,11 +57,29 @@ define(['dojo/_base/declare',
 			domConstruct.empty(this.domNode);
 
 			var i;
-			for (i = 0; i < options.length; i++) {
-				domConstruct.create('option', {
-					value: options[i].value,
-					innerHTML: options[i].label
-				}, this.domNode);
+			if (options.constructor == Array) {
+				for (i = 0; i < options.length; i++) {
+					domConstruct.create('option', {
+						value: options[i].value,
+						innerHTML: options[i].label
+					}, this.domNode);
+				}
+			}
+			else if (options.constructor == Object) {
+				var group, groupNode;
+				for (group in options) {
+					if (options.hasOwnProperty(group)) {
+						groupNode = domConstruct.create('optgroup', {
+							label: group
+						}, this.domNode);
+						for (i = 0; i < options[group].length; i++) {
+							domConstruct.create('option', {
+								value: options[group][i].value,
+								innerHTML: options[group][i].label
+							}, groupNode);
+						}
+					}
+				}
 			}
 		},
 
