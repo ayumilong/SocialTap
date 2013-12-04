@@ -10,19 +10,37 @@ function(declare, BaseListItem) {
 		_setImportOpAttr: function(importOp) {
 			this._set('importOp', importOp);
 
-			var label = '';
+			var startTime = new Date(Date.parse(importOp.time_started));
+			var stopTime = (importOp.time_stopped !== null) ? new Date(Date.parse(importOp.time_stopped)) : null;
 
+			var source;
 			if (importOp.data_source.type === 'FileDataSource') {
-				label += 'File: ' + importOp.data_source.file.path;
+				source = 'File: ' + importOp.data_source.file.path;
 			}
-
 			else if (importOp.data_source.type === 'GnipDataSource') {
-				label += 'Gnip Rule: ' + importOp.data_source.rule.value;
+				source = 'Gnip Rule: ' + importOp.data_source.rule.value;
 			}
 
-			this.set('text', label);
+			var text = '';
+			text += '<span class="startTime">Started ' + startTime.toLocaleDateString() + ' ' + startTime.toLocaleTimeString() + '</span>';
+			text += '<br>';
+			text += '<span class="source">' + source + '</span>';
+			text += '<br>';
+			if (importOp['in_progress?']) {
+				text += '<span class="status"><span style="color: green;">In Progress</span></span>';
+			}
+			else {
+				var stopMessage = 'Stopped ' + stopTime.toLocaleDateString() + ' ' + stopTime.toLocaleTimeString();
+				if (importOp['failed?']) {
+					stopMessage = '<span style="color: red;">' + stopMessage + ' (' + importOp.stop_error_message + ')</span>';
+				}
+				text += '<span class="status">' + stopMessage + '</span>';
+			}
 
-			// TODO: Add other import operation attributes
+			text += '<br>';
+			text += '<span class="activityCount">' + importOp.activities_imported + ' activities imported</span>';
+
+			this.set('text', text);
 		}
 	});
 });

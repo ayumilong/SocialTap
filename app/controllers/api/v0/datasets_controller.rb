@@ -20,7 +20,7 @@ class Api::V0::DatasetsController < ApplicationController
   # GET /api/v0/datasets/1/imports.json
   def imports
     @dataset = Dataset.find(params[:id])
-    render json: @dataset.import_operations.as_json(:methods => :data_source)
+    render json: @dataset.import_operations.as_json(methods: [:data_source, :failed?, :in_progress?])
   end
 
   # POST /api/v0/datasets
