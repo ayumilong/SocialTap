@@ -1,32 +1,20 @@
 {
-	"name": "my.Clemson",
-	"version": "0.2.0",
-	"description": "my.Clemson -- Everything Clemson. Everywhere.",
-	"homepage": "https://my.clemson.edu",
-	"bugs": "mailto:mobile-admin@lists.clemson.edu",
-	"keywords": ["JavaScript", "Dojo", "Mobile", "Responsive", "Mama"],
+	"name": "SocialTap",
+	"version": "0.0.1",
+	"description": "This is SocialTap! Turning social media up to 11",
+	"bugs": {
+		"url": "https://github.com/OpenClemson/SocialTap/issues"
+	},
+	"keywords": ["Social", "Media", "Analysis", "Visualization", "Twitter"],
 	"maintainers": [{
-		"name": "Matt Chambers",
-		"email": "chambe5@clemson.edu"
-	},{
-		"name": "Dave Lee",
-		"email": "drlee@clemson.edu"
-	},{
-		"name": "Dan Lewis",
-		"email": "jdanl@clemson.edu"
+		"name": "Chris Guirl",
+		"email": "guirl@clemson.edu"
 	},{
 		"name": "Nick Watts",
 		"email": "watts4@clemson.edu"
-	}],
-	"contributors": [{
-		"name": "Doug Dawson",
-		"email": "dawson3@clemson.edu"
 	},{
-		"name": "Josh Groppe",
-		"email": "charle8@g.clemson.edu"
-	},{
-		"name": "David Kerr",
-		"email": "kerr8@clemson.edu"
+		"name": "Wil Collins",
+		"email": "wrcolli@clemson.edu"
 	}],
 	"main": "main",
 	"dependencies": {
@@ -38,8 +26,8 @@
 	},
 	"licenses": [
 		{
-			"type": "",
-			"url": ""
+			"type": "LGPL",
+			"url": "https://raw.github.com/OpenClemson/SocialTap/master/LICENSE"
 		}
 	],
 	"dojoBuild": "package.js"
