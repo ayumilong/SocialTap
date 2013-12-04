@@ -13,11 +13,11 @@ function(declare, BaseListItem) {
 			var label = '';
 
 			if (importOp.data_source.type === 'FileDataSource') {
-				label += 'File: ' + importOp.data_source.file_data_source_file.path;
+				label += 'File: ' + importOp.data_source.file.path;
 			}
 
 			else if (importOp.data_source.type === 'GnipDataSource') {
-				label += 'Gnip Rule: ' + importOp.data_source.gnip_data_source_rule.value;
+				label += 'Gnip Rule: ' + importOp.data_source.rule.value;
 			}
 
 			this.set('text', label);

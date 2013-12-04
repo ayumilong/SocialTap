@@ -81,11 +81,11 @@ define(['dojo/_base/declare',
 								});
 
 								if (source.type === 'GnipDataSource') {
-									li.set('text', source.gnip_data_source_rule.value);
+									li.set('text', source.rule.value);
 								}
 								else if (source.type === 'FileDataSource') {
-									li.set('text', source.file_data_source_file.path);
-									li.set('rightText', source.file_data_source_file.format);
+									li.set('text', source.file.path);
+									li.set('rightText', source.file.format);
 								}
 
 								list.addChild(li);

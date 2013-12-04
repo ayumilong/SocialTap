@@ -1,10 +1,13 @@
 class GnipDataSource < DataSource
-	has_one :gnip_data_source_rule, dependent: :destroy
+	has_one :rule, { class_name: 'GnipDataSourceRule',
+					 foreign_key: 'gnip_data_source_id',
+					 inverse_of: :gnip_data_source,
+					 dependent: :destroy }
 
-	accepts_nested_attributes_for :gnip_data_source_rule
+	accepts_nested_attributes_for :rule
 
-	validates :gnip_data_source_rule, presence: true
-	validates_associated :gnip_data_source_rule
+	validates :rule, presence: true
+	validates_associated :rule
 
 	def log_file_path
 		if id.nil?
@@ -26,6 +29,6 @@ class GnipDataSource < DataSource
 	end
 
 	def as_json(options = {})
-		super(options.merge(:include => :gnip_data_source_rule))
+		super(options.merge(:include => :rule))
 	end
 end

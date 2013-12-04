@@ -199,13 +199,13 @@ define(['dojo/_base/declare',
 			var type = this.get('selectedDataSourceType');
 			if (type === 'gnip') {
 				request.type = 'GnipDataSource';
-				request.gnip_data_source_rule_attributes = {
+				request.rule_attributes = {
 					value: this.gnipRuleField.get('value')
 				};
 			}
 			else if (type === 'file') {
 				request.type = 'FileDataSource';
-				request.file_data_source_file_attributes = {
+				request.file_attributes = {
 					path: this.filePathField.get('value'),
 					format: this.fileFormatSelect.get('value')
 				};

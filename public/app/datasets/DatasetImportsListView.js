@@ -91,10 +91,10 @@ define(['dojo/_base/declare',
 
 								label = '';
 								if (type === 'FileDataSource') {
-									label = data[type][i].file_data_source_file.path;
+									label = data[type][i].file.path;
 								}
 								else if (type === 'GnipDataSource') {
-									label = data[type][i].gnip_data_source_rule.value;
+									label = data[type][i].rule.value;
 								}
 
 								typeOptions.push({
