@@ -1,17 +1,6 @@
 
 /* Colors for primary nav items and subnav */
 
-@athleticsColor: rgb(234,106,32);
-@mapColor: rgb(58,73,88);
-@directoryColor: #9F905C;
-@newsColor: rgb(162,80,22);
-@eventsColor: rgb(86,46,25);
-@safetyColor: #0C7F9C;
-@academicsColor: rgb(82,45,128);
-@campusLifeColor: rgb(86,97,39);
-@profileColor: rgb(104,92,83);
-@visColor: #0C7F9C;
-
 #genPrimaryNavColor(@name, @color) {
 	.dmPrimaryNavItem_@{name} {
 		.dmPrimaryNavItemColor {
@@ -123,17 +112,6 @@
 	}
 }
 
-#genPrimaryNavColor(athletics, @athleticsColor);
-#genPrimaryNavColor(map, @mapColor);
-#genPrimaryNavColor(directory, @directoryColor);
-#genPrimaryNavColor(news, @newsColor);
-#genPrimaryNavColor(events, @eventsColor);
-#genPrimaryNavColor(safety, @safetyColor);
-#genPrimaryNavColor(academics, @academicsColor);
-#genPrimaryNavColor(campus-life, @campusLifeColor);
-#genPrimaryNavColor(profile, @profileColor);
-#genPrimaryNavColor(vis, @visColor);
-
 /* Content in primary nav items in tablet root view */
 
 #genModuleContent(@name, @text) {
@@ -143,59 +121,6 @@
 			margin-left: 10px;
 		}
 	}
-}
-
-#genModuleContent(athletics, 'Scores, News & Schedules');
-#genModuleContent(map, 'Locate buildings on campus');
-#genModuleContent(directory, 'Look up email addresses');
-#genModuleContent(news, 'Latest Clemson information');
-#genModuleContent(events, "What's going on");
-#genModuleContent(safety, 'Emergency phone numbers');
-#genModuleContent(academics, 'Admissions, Courses, Financial');
-#genModuleContent(campus-life, 'Campus places & information');
-#genModuleContent(profile, 'Self-service tools');
-#genModuleContent(vis, 'Visualize');
-
-/* Primary nav icons */
-
-.dmPrimaryNavItem_athletics {
-	.dmPrimaryNavItemIcon { .icon-paw; }
-}
-
-.dmPrimaryNavItem_map {
-	.dmPrimaryNavItemIcon { .icon-map; }
-}
-
-.dmPrimaryNavItem_directory {
-	.dmPrimaryNavItemIcon { .icon-vcard; }
-}
-
-.dmPrimaryNavItem_news {
-	.dmPrimaryNavItemIcon { .icon-chat; }
-}
-
-.dmPrimaryNavItem_events {
-	.dmPrimaryNavItemIcon { .icon-calendar; }
-}
-
-.dmPrimaryNavItem_safety {
-	.dmPrimaryNavItemIcon { .icon-cross; }
-}
-
-.dmPrimaryNavItem_academics {
-	.dmPrimaryNavItemIcon { .icon-graduation; }
-}
-
-.dmPrimaryNavItem_campus-life {
-	.dmPrimaryNavItemIcon { .icon-book; }
-}
-
-.dmPrimaryNavItem_profile {
-	.dmPrimaryNavItemIcon { .icon-user; }
-}
-
-.dmPrimaryNavItem_vis {
-	.dmPrimaryNavItemIcon { .icon-user; }
 }
 
 
