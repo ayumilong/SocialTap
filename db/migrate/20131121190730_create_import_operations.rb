@@ -6,7 +6,7 @@ class CreateImportOperations < ActiveRecord::Migration
 
       t.timestamp :time_started
       t.timestamp :time_stopped
-      t.string :error
+      t.string :stop_error_message
       t.integer :pid
       t.integer :activities_imported
 

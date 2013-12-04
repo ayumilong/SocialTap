@@ -68,7 +68,7 @@ ActiveRecord::Schema.define(version: 20131202154100) do
     t.integer  "data_source_id"
     t.datetime "time_started"
     t.datetime "time_stopped"
-    t.string   "error"
+    t.string   "stop_error_message"
     t.integer  "pid"
     t.integer  "activities_imported"
     t.datetime "created_at"

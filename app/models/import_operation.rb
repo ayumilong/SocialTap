@@ -38,7 +38,7 @@ class ImportOperation < ActiveRecord::Base
 
 			if !gnip_running
 				self.time_stopped = Time.zone.now
-				self.error = "Gnip index-powertrack import not running"
+				self.stop_error_message = "Gnip index-powertrack import not running"
 			end
 
 

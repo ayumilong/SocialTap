@@ -68,7 +68,7 @@ Signal.trap('HUP') do
 	gnip_imports = ImportOperation.find_by_time_stopped(nil).select { |io| io.data_source.is_a? GnipDataSource }
 	gnip_imports.each do |io|
 		io.time_stopped = DateTime.now
-		io.error = "Gnip index-powertrack import stopped"
+		io.stop_error_message = "Gnip index-powertrack import stopped"
 		io.save
 	end
 
