@@ -16,66 +16,7 @@ define(['dojo/_base/declare',
 
 	// cufonGlyphMap: [private] Object
 	//     Map of CSS selectors to icon font glyphs.
-	var cufonGlyphMap = {
-		// nav
-		'.dmPrimaryNavItem_academics .dmPrimaryNavItemIcon': 'e038',  //  icon-graduation
-		'.dmPrimaryNavItem_athletics .dmPrimaryNavItemIcon': 'e000',  //  icon-paw
-		'.dmPrimaryNavItem_map .dmPrimaryNavItemIcon': 'e015',  //  icon-map
-		'.dmPrimaryNavItem_directory .dmPrimaryNavItemIcon': 'e012',  //  icon-vcard
-		'.dmPrimaryNavItem_news .dmPrimaryNavItemIcon': 'e021',  //  icon-chat
-		'.dmPrimaryNavItem_events .dmPrimaryNavItemIcon': 'e041',  //  icon-calendar
-		'.dmPrimaryNavItem_safety .dmPrimaryNavItemIcon': 'e001',  //  icon-cross
-		'.dmPrimaryNavItem_campus-life .dmPrimaryNavItemIcon': 'e039',  //  icon-book
-		'.dmSubNavBackButton div': 'e093',  // icon-back
-		'.dmMenuBarPopupItem': 'e098',  // icon-list
-		// custom classes
-		'.footer .paw': 'e038',  // icon-paw
-		'.mapButton': 'e015',  // icon-map
-		'.placesButton': 'e014',  // icon-marker
-		'.locationButton': 'e017',  // icon-location
-		'.prevMonthButton': 'e0d7',  // icon-chevron-left-large
-		'.nextMonthButton': 'e0da',  // icon-chevron-right-large
-		// icon classes
-		'.icon-user': 'e00f',
-		'.icon-phone': 'e002',
-		'.icon-mail': 'e006',
-		'.icon-pencil': 'e008',
-		'.icon-vcard': 'e012',
-		'.icon-map': 'e015',
-		'.icon-printer': 'e028',
-		'.icon-chat': 'e021',
-		'.icon-graduation': 'e038',
-		'.icon-camera': '030',
-		'.icon-calendar': 'e041',
-		'.icon-publish': 'e059',
-		'.icon-suitcase': 'e054',
-		'.icon-close': 'e080',
-		'.icon-arrow-left': 'e0c7',
-		'.icon-arrow-right': 'e0ca',
-		'.icon-book': 'e039',
-		'.icon-back': 'e093',
-		'.icon-list': 'e093',
-		'.icon-video': 'e09f',
-		'.icon-screen': 'e062',
-		'.icon-location': 'e017',
-		'.icon-paw': 'e000',
-		'.icon-cross': 'e001',
-		'.icon-chevron-right-large': 'e0da',
-		'.icon-chevron-right-medium': 'e0d2',
-		'.icon-chevron-right-small': 'e0d6',
-		'.icon-play': 'e0ad',
-		'.icon-pause': 'e0ae',
-		'.icon-volume': 'e0b7',
-		'.icon-sound': 'e0b8',
-		'.icon-marker': 'e014',
-		'.icon-resize-enlarge': 'e0b5',
-		'.icon-resize-shrink': 'e0b6',
-		'.icon-refresh': 'e08a',
-		'.icon-chevron-left-large': 'e0d7',
-		'.icon-chevron-left-small': 'e0d3',
-		'.icon-chevron-left-medium': 'e0cf',
-		'.icon-link': 'e02a'
-	};
+	var cufonGlyphMap = {};
 
 	var cufonReplace = function() {
 		// summary:
@@ -300,7 +241,7 @@ define(['dojo/_base/declare',
 
 			console.log('On end transition duration (ms):');
 			console.log(transitionDuration);
-			
+
 			var createTransitionEndHandler = function() {
 				// remember if we finished or not
 				var done = false, handler;
