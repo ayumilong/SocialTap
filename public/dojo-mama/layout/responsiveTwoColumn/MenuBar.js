@@ -69,7 +69,7 @@ define(['dojo/_base/declare',
 
 			// create the popup menu icon
 			this.cog = domConstruct.create('a', {
-				'class': 'dmMenuBarItem dmMenuBarPopupItem icon-list dmMenuBarPopupItemHiddenTablet'
+				'class': 'dmMenuBarItem dmMenuBarPopupItem fa fa-bars dmMenuBarPopupItemHiddenTablet'
 			});
 
 			this.popupMenu = domConstruct.create('div', {

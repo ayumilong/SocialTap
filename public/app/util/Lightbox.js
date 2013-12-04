@@ -102,7 +102,7 @@ define(['dojo/_base/declare',
 				'class': 'lightboxTitleBar'
 			}, this.domNode);
 			this.exitButton = domConstruct.create('div', {
-				'class': 'lightboxExit icon-close'
+				'class': 'lightboxExit fa fa-times-circle-o'
 			}, this.titleBarDiv);
 			this.title= domConstruct.create('h4', {
 				'class': 'lightboxTitle',
@@ -113,13 +113,13 @@ define(['dojo/_base/declare',
 			}, this.domNode);
 
 			this.prevButton = domConstruct.create('div', {
-				'class': 'lightboxPrevButton icon-arrow-left'
+				'class': 'lightboxPrevButton fa fa-arrow-left'
 			}, this.toolbarDiv);
 			this.playButton = domConstruct.create('div', {
-				'class': 'lightboxPlayButton icon-play'
+				'class': 'lightboxPlayButton fa fa-play'
 			}, this.toolbarDiv);
 			this.nextButton = domConstruct.create('div', {
-				'class': 'lightboxNextButton icon-arrow-right'
+				'class': 'lightboxNextButton fa fa-arrow-right'
 			}, this.toolbarDiv);
 
 
@@ -151,7 +151,7 @@ define(['dojo/_base/declare',
 			on(this.playButton, 'click', function (e) {
 				e.stopPropagation();
 				console.log('got play/pause button press');
-				if (domClass.contains(_this.playButton, 'icon-play')) {
+				if (domClass.contains(_this.playButton, 'fa-play')) {
 					_this.play();
 				} else {
 					_this.pause();
@@ -326,7 +326,7 @@ define(['dojo/_base/declare',
 			//     Called when the play button is pressed. Override this to enable it's functionality.
 			//     Make sure you call inherrited, since it handles the icon swap.
 			console.log('lightbox play!');
-			domClass.replace(this.playButton, 'icon-pause', 'icon-play');
+			domClass.replace(this.playButton, 'fa-pause', 'fa-play');
 		},
 
 		pause: function () {
@@ -334,7 +334,7 @@ define(['dojo/_base/declare',
 			//     Called when the pause button is pressed. Override this to enable it's functionality.
 			//     Make sure you call inherrited, since it handles the icon swap.
 			console.log('lightbox pause!');
-			domClass.replace(this.playButton, 'icon-play', 'icon-pause');
+			domClass.replace(this.playButton, 'fa-play', 'fa-pause');
 		},
 
 		exit: function() {
@@ -376,9 +376,9 @@ define(['dojo/_base/declare',
 			}
 
 			// REMOVED, was causing routing issues. See ticket #128
-			// force a refresh: 
+			// force a refresh:
 			//var index = this.currentIndex;
-			this.currentIndex = null; 
+			this.currentIndex = null;
 			//if (index !== null) {
 			//	console.log("LIGHTBOX REFRESHING");
 			//	this.gotoIndex(index);
@@ -568,7 +568,7 @@ define(['dojo/_base/declare',
 							_this.exit();
 							break;
 						case keys.SPACE:
-							if (domClass.contains(_this.playButton, 'icon-play')) {
+							if (domClass.contains(_this.playButton, 'fa-play')) {
 								_this.play();
 							} else {
 								_this.pause();

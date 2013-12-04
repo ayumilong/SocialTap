@@ -14,7 +14,7 @@ define(['dojo/_base/declare',
 				'class': 'footer',
 				innerHTML: '<div class="title">This is <strong>SocialTap</strong></div>' +
 					'<div class="subtitle">Social media turned up to 11</div>' +
-					'<div class="icon icon-volume"></div>'
+					'<div class="icon fa fa-volume-up"></div>'
 			}, this.domNode);
 
 			domConstruct.create('a', {
