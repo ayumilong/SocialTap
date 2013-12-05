@@ -9,7 +9,10 @@ SocialTap::Application.routes.draw do
         get 'imports', on: :member
         post 'search', on: :member
       end
-      resources :import_operations, except: [:new, :edit]
+      resources :import_operations, except: [:new, :edit] do
+        get 'stop', on: :member
+        get 'restart', on: :member
+      end
       resources :inquiries, except: [:new, :edit] do
         get 'search', on: :member
       end

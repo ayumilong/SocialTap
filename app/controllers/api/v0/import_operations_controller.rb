@@ -15,6 +15,20 @@ class Api::V0::ImportOperationsController < ApplicationController
     render json: @import_operation
   end
 
+  # GET /api/v0/import_operations/1/stop
+  # GET /api/v0/import_operations/1/stop.json
+  def stop
+    @import_operation = ImportOperation.find(params[:id])
+    render json: @import_operation.stop!
+  end
+
+  # GET /api/v0/import_operations/1/stop
+  # GET /api/v0/import_operations/1/stop.json
+  def restart
+    @import_operation = ImportOperation.find(params[:id])
+    render json: @import_operation.restart
+  end
+
   # POST /api/v0/import_operations
   # POST /api/v0/import_operations.json
   def create
