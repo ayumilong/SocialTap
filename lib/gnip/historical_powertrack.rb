@@ -27,19 +27,11 @@ module Gnip
         'rules' => rules
       }]
 
-      # puts "Job request:"
-      # pp request_data
-
-      begin
-        response = Curl::Easy.http_post @url, request_data do |req|
-          req.http_auth_types = :basic
-          req.username = @username
-          req.password = @password
-          req.verbose = true
-        end
-      rescue e
-        puts "Curl failed with error: #{e}"
-        return nil
+      response = Curl::Easy.http_post @url, request_data do |req|
+        req.http_auth_types = :basic
+        req.username = @username
+        req.password = @password
+        req.verbose = true
       end
 
       response_data = JSON[response.body_str]
@@ -49,19 +41,7 @@ module Gnip
         pp response_data
       end
 
-      # response_data.each do |key, value|
-      #   if request_data.has_key? key
-      #     if request_data[key] != value
-      #       puts "Warning: response value for job parameter #{key} differs from request."
-      #       puts "request[#{key}]: #{request_data[key]}"
-      #       puts "response[#{key}]: #{value}"
-      #     end
-      #   else
-      #     puts "#{key}: #{value}"
-      #   end
-      # end
-
-      File.open(job_log_path, "w+") do |job_log|
+      File.open(job_log_path, "w") do |job_log|
         job_log.write request_data
         job_log.write response_data
       end
@@ -78,7 +58,7 @@ module Gnip
 
       response_data = JSON[response.body_str]
       # pp response_data
-      File.open(job_log_path, "w+") do |job_log|
+      File.open(job_log_path, "w") do |job_log|
         job_log.write response_data
       end
 
@@ -95,14 +75,39 @@ module Gnip
 
       response_data = JSON[response.body_str]
       # pp response_data
-      File.open(job_log_path, "w+") do |job_log|
+      File.open(job_log_path, "w") do |job_log|
         job_log.write response_data
       end
 
       response_data
     end
 
-    def respond_to_request
+    def respond_to_quote job_url, accept = false
+      job_status = accept ? "accept" : "reject"
+      puts job_status
+
+      request_data = JSON[{'status' => job_status}]
+      pp request_data
+
+      response = Curl::Easy.http_put job_url, request_data do |req|
+        req.http_auth_types = :basic
+        req.username = @username
+        req.password = @password
+        req.verbose = true
+      end
+
+      response_data = JSON[response.body_str]
+
+      if response_data["status"] == "error"
+        puts "Error:"
+        pp response_data
+      end
+
+      File.open(job_log_path, "w") do |job_log|
+        job_log.write request_data
+        job_log.write response_data
+      end
+
     end
 
 private
