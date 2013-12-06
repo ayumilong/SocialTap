@@ -21,7 +21,7 @@ class ESStorage
 		@es.update({
 			index: dataset.es_index,
 			type: dataset.es_mapping,
-			id: activity['id'],
+			id: activity[:id],
 			body: {
 				script: "if (ctx._source.socialtap.datasets.contains(id)) { ctx.op = \"none\" } else { ctx._source.socialtap.datasets += id }",
 				params: {

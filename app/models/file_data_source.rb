@@ -5,6 +5,7 @@ class FileDataSource < DataSource
 					 dependent: :destroy }
 	has_one :data_mapping
 
+	accepts_nested_attributes_for :data_mapping
 	accepts_nested_attributes_for :file
 
 	validates :file, presence: true

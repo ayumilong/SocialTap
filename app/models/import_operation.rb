@@ -49,7 +49,7 @@ class ImportOperation < ActiveRecord::Base
 
 		# For a file data source, start a new background process to import the data.
 		elsif self.data_source.is_a? FileDataSource
-			self.pid = Process.spawn('rails', 'runner', './lib/run_file_import_operation.rb', self.id.to_s, {
+			self.pid = Process.spawn('rails', 'runner', "ImportOperation.run(#{self.id})", {
 				:out => [Rails.root.join('log', "file_import.log"), 'a'],
 				:err => [Rails.root.join('log', "file_import.err"), 'a']
 			})
@@ -76,6 +76,43 @@ class ImportOperation < ActiveRecord::Base
 	def restart
 		copy = ImportOperation.new(dataset: self.dataset, data_source: self.data_source)
 		copy.save
+	end
+
+	def self.run(import_id)
+
+		if import_id.nil?
+			$stderr.puts "No import operation ID given"
+			exit
+		end
+
+		import = ImportOperation.find_by_id(import_id)
+		if import.nil?
+			$stderr.puts "[#{DateTime.now}] Import operation with ID #{import_id} does not exist"
+			exit
+		end
+
+		mapping = import.data_source.data_mapping
+
+		count = 0
+
+		mapping.on_error do |err|
+			$stderr.puts "[#{DateTime.now}] #{import_id}: err"
+			$stderr.puts "[#{DateTime.now}] #{import_id}: Failed after importing #{count} activities"
+			abort
+		end
+
+		es = ESStorage.new
+
+		mapping.process(import.data_source.file.path) do |activity|
+			es.store_activity_in_dataset(activity, import.dataset)
+			count += 1
+		end
+
+		puts "[#{DateTime.now}] #{import_id}: Imported #{count} activities"
+
+		import.time_stopped = DateTime.now
+		import.save
+
 	end
 
 end
