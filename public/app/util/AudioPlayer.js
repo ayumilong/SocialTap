@@ -54,7 +54,7 @@ define(['dojo/_base/declare',
 			this.inherited(arguments);
 
 			this.playButton = new Button({
-				'class': 'button playButton icon-play',
+				'class': 'button playButton fa fa-play',
 				duration: 0
 			});
 			this.playButton.placeAt(this.domNode);
@@ -63,11 +63,11 @@ define(['dojo/_base/declare',
 			this.playButton.set('onClick', lang.hitch(this, function() {
 				if (!this.audio || this.audio.domNode.paused) {
 					this.play();
-					domClass.replace(this.playButton.domNode, 'icon-pause', 'icon-play');
+					domClass.replace(this.playButton.domNode, 'fa-pause', 'fa-play');
 				}
 				else {
 					this.pause();
-					domClass.replace(this.playButton.domNode, 'icon-play', 'icon-pause');
+					domClass.replace(this.playButton.domNode, 'fa-play', 'fa-pause');
 				}
 				domUtils.cufonify();
 			}));

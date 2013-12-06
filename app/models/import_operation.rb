@@ -68,4 +68,14 @@ class ImportOperation < ActiveRecord::Base
 		!self.stop_error_message.nil?
 	end
 
+	def stop!
+		self.time_stopped = Time.zone.now
+		self.save
+	end
+
+	def restart
+		copy = ImportOperation.new(dataset: self.dataset, data_source: self.data_source)
+		copy.save
+	end
+
 end

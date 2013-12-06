@@ -42,6 +42,8 @@ consumer = Thread.new do
 
 					imports.each do |io|
 						es.store_activity_in_dataset(activity, io.dataset)
+						io.activities_imported += 1
+						io.save
 					end
 				end
 			end

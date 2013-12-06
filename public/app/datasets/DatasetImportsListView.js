@@ -4,13 +4,12 @@ define(['dojo/_base/declare',
 		'dojo/request/xhr',
 		'dojo/topic',
 		'dojox/mobile/Button',
-		'dojo-mama/util/LinkListItem',
 		'dojo-mama/util/toaster',
 		'app/datasets/ImportOpListItem',
 		'app/util/Select',
 		'app/util/XHRListView'
-], function(declare, lang, domConstruct, xhr, topic, Button, LinkListItem, toaster,
-	ImportOpListItem, Select, XHRListView)
+], function(declare, lang, domConstruct, xhr, topic, Button, toaster, ImportOpListItem, Select,
+	XHRListView)
 {
 	return declare([XHRListView], {
 
@@ -71,6 +70,80 @@ define(['dojo/_base/declare',
 			var li = new ImportOpListItem({
 				importOp: obj
 			});
+
+			if (obj['in_progress?']) {
+				var stopButton = new Button({
+					'class': 'button',
+					duration: 0,
+					label: 'Stop',
+					onClick: lang.hitch(this, function() {
+						xhr.get('/api/v0/import_operations/' + obj.id + '/stop', {
+							handleAs: 'json'
+						}).then(
+							lang.hitch(this, function(success) {
+								if (success) {
+									this.refreshData();
+								}
+								else {
+									toaster.displayMessage({
+										text: 'Unable to stop import',
+										type: 'error',
+										time: -1
+									});
+								}
+							}),
+							lang.hitch(this, function(err) {
+								console.error(err);
+								toaster.displayMessage({
+									text: 'Unable to stop import',
+									type: 'error',
+									time: -1
+								});
+							}));
+					}),
+					style: {
+						textAlign: 'center'
+					}
+				});
+				li.set('rightTextNode', stopButton.domNode);
+			}
+			else {
+				var restartButton = new Button({
+					'class': 'button',
+					duration: 0,
+					label: 'Restart',
+					onClick: lang.hitch(this, function() {
+						xhr.get('/api/v0/import_operations/' + obj.id + '/restart', {
+							handleAs: 'json'
+						}).then(
+							lang.hitch(this, function(success) {
+								if (success) {
+									this.refreshData();
+								}
+								else {
+									toaster.displayMessage({
+										text: 'Unable to restart import',
+										type: 'error',
+										time: -1
+									});
+								}
+							}),
+							lang.hitch(this, function(err) {
+								console.error(err);
+								toaster.displayMessage({
+									text: 'Unable to restart import',
+									type: 'error',
+									time: -1
+								});
+							}));
+					}),
+					style: {
+						textAlign: 'center'
+					}
+				});
+				li.set('rightTextNode', restartButton.domNode);
+			}
+
 			return li;
 		},
 
