@@ -50,8 +50,8 @@ class ImportOperation < ActiveRecord::Base
 		# For a file data source, start a new background process to import the data.
 		elsif self.data_source.is_a? FileDataSource
 			self.pid = Process.spawn('rails', 'runner', './lib/run_file_import_operation.rb', self.id.to_s, {
-				:out => [Rails.root.join('log', "file_import_#{self.id}.log"), 'a'],
-				:err => [Rails.root.join('log', "file_importoperation_#{self.id}.log"), 'a']
+				:out => [Rails.root.join('log', "file_import.log"), 'a'],
+				:err => [Rails.root.join('log', "file_import.err"), 'a']
 			})
 			Process.detach(self.pid)
 		end
