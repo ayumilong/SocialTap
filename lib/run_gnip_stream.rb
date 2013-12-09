@@ -26,24 +26,28 @@ consumer = Thread.new do
 			activities_log.puts activity_string
 
 			begin
-				activity = JSON.parse(activity_string)
+				activity = JSON.parse(activity_string, symbolize_names: true)
+				puts activity
 			rescue
 				$stderr.puts "[#{DateTime.now}] Received invalid activity"
 				$stderr.puts activity_string
 				next
 			end
-			activity_id = activity['id']
 
 			# Determine which datasets the activity belongs to and store
 			# it in the appropriate location
-			activity['gnip']['matching_rules'].each do |rule|
-				if !rule['tag'].nil? && (match = rule['tag'].match(/^socialtap:data_source:(\d+)$/))
+			activity[:gnip][:matching_rules].each do |rule|
+				if !rule[:tag].nil? && (match = rule[:tag].match(/^socialtap:data_source:(\d+)$/))
 					imports = DataSource.find_by_id(match.captures[0]).import_operations.select { |io| io.time_stopped.nil? }
 
 					imports.each do |io|
-						es.store_activity_in_dataset(activity, io.dataset)
-						io.activities_imported += 1
-						io.save
+						begin
+							es.store_activity_in_dataset(activity, io.dataset)
+							io.activities_imported += 1
+							io.save
+						rescue
+							$stderr.puts "[#{DateTime.now}] Failed to save activity #{activity[:id]} to Elasticsearch"
+						end
 					end
 				end
 			end
