@@ -11,6 +11,8 @@ class FileDataSource < DataSource
 	validates :file, presence: true
 	validates_associated :file
 
+	validates :data_mapping, presence: true
+
 	def as_json(options = {})
 		super(options.merge(:include => :file))
 	end

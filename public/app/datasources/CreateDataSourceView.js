@@ -131,9 +131,9 @@ define(['dojo/_base/declare',
 
 			this.fileFormatSelect = new Select({
 				options: [
-					{value: "activity", label: "Activity Streams"},
-					{value: "tweet", label: "Tweets"},
-					{value: "csv", label: "CSV"}
+					{value: "Activity Streams", label: "Activity Streams"},
+					{value: "Twitter", label: "Twitter"},
+					{value: "CSV", label: "CSV"}
 				]
 			});
 			this.fileFormatSelect.placeAt(this.fileFormContainer.domNode);
@@ -205,10 +205,19 @@ define(['dojo/_base/declare',
 			}
 			else if (type === 'file') {
 				request.type = 'FileDataSource';
+
+				var format = this.fileFormatSelect.get('value');
+
 				request.file_attributes = {
 					path: this.filePathField.get('value'),
 					format: this.fileFormatSelect.get('value')
 				};
+
+				if (format === 'Twitter') {
+					request.data_mapping_attributes = {
+						type: 'TweetDataMapping'
+					};
+				}
 			}
 
 			console.warn('Sending request');
@@ -233,6 +242,8 @@ define(['dojo/_base/declare',
 
 					// Reset form
 					this.gnipRuleField.set('value', '');
+					this.filePathField.set('value', '');
+					this.fileFormatSelect.set('value', 'Activity Streams');
 
 					domAttr.remove(this.submitButton.domNode, 'disabled');
 					toaster.clearMessages();
