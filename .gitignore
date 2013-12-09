@@ -27,6 +27,7 @@ public/demo/resources/css/application.css
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
+/log/*.err
 /log/**/
 /tmp
 *.rbc

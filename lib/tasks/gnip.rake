@@ -13,8 +13,8 @@ namespace 'index-powertrack' do
     end
 
     child_pid = Process.spawn('rails', 'runner', './lib/run_gnip_stream.rb', {
-      :out => [Rails.root.join('log', 'gnip_stream.log'), 'a'],
-      :err => [Rails.root.join('log', 'gnip_error.log'), 'a']
+      :out => [Rails.root.join('log', 'index-powertrack.log'), 'a'],
+      :err => [Rails.root.join('log', 'index-powertrack.err'), 'a']
     })
     puts "Started new Gnip PowerTrack stream consumption process #{child_pid} => #{pid_filename}"
     File.open(pid_filename, 'w') { |file| file.write(child_pid) }
