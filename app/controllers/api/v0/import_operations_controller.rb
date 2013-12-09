@@ -22,8 +22,8 @@ class Api::V0::ImportOperationsController < ApplicationController
     render json: @import_operation.stop!
   end
 
-  # GET /api/v0/import_operations/1/stop
-  # GET /api/v0/import_operations/1/stop.json
+  # GET /api/v0/import_operations/1/restart
+  # GET /api/v0/import_operations/1/restart.json
   def restart
     @import_operation = ImportOperation.find(params[:id])
     render json: @import_operation.restart
