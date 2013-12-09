@@ -101,10 +101,17 @@ class ImportOperation < ActiveRecord::Base
 
 		es = ESStorage.new
 
-		mapping.process(import.data_source.file.path) do |activity|
-			es.store_activity_in_dataset(activity, import.dataset)
-			import.activities_imported += 1
-			import.save
+		mapping.process(File.join(APP_CONFIG['data_files']['import_directory'], import.data_source.file.path)) do |activity|
+			begin
+				es.store_activity_in_dataset(activity, import.dataset)
+				import.activities_imported += 1
+				import.save
+			rescue
+				import.stop_error_message = "Unable to connect to Elasticsearch"
+				import.time_stopped = Time.zone.now
+				import.save
+				abort
+			end
 		end
 
 		puts "[#{DateTime.now}] #{import_id}: Imported #{count} activities"
