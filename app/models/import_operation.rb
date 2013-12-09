@@ -93,8 +93,6 @@ class ImportOperation < ActiveRecord::Base
 
 		mapping = import.data_source.data_mapping
 
-		count = 0
-
 		mapping.on_error do |err|
 			$stderr.puts "[#{DateTime.now}] #{import_id}: err"
 			$stderr.puts "[#{DateTime.now}] #{import_id}: Failed after importing #{count} activities"
@@ -105,12 +103,13 @@ class ImportOperation < ActiveRecord::Base
 
 		mapping.process(import.data_source.file.path) do |activity|
 			es.store_activity_in_dataset(activity, import.dataset)
-			count += 1
+			import.activities_imported += 1
+			import.save
 		end
 
 		puts "[#{DateTime.now}] #{import_id}: Imported #{count} activities"
 
-		import.time_stopped = DateTime.now
+		import.time_stopped = Time.zone.now
 		import.save
 
 	end
