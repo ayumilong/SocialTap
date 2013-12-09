@@ -27,7 +27,6 @@ consumer = Thread.new do
 
 			begin
 				activity = JSON.parse(activity_string, symbolize_names: true)
-				puts activity
 			rescue
 				$stderr.puts "[#{DateTime.now}] Received invalid activity"
 				$stderr.puts activity_string
@@ -58,6 +57,15 @@ consumer = Thread.new do
 	end
 
 	activities_log.close
+
+	# Mark all current Gnip import operations as stopped
+	gnip_imports = ImportOperation.find_all_by_time_stopped(nil).select { |io| io.data_source is_a? GnipDataSource }
+	gnip_imports.each do |io|
+		io.time_stopped = Time.zone.now
+		io.stop_error_message = "Gnip index-powertrack import stopped"
+		io.save
+	end
+
 end
 
 client.on_activity do |activity|
@@ -69,16 +77,7 @@ Signal.trap('HUP') do
 	puts "[#{DateTime.now}] Process #{Process.pid} received HUP, stopping stream, processing #{activity_queue.length} queued activities..."
 	client.disconnect
 	stream_stopped = true
-
-	# Mark all current Gnip import operations as stopped
-	gnip_imports = ImportOperation.find_by_time_stopped(nil).select { |io| io.data_source.is_a? GnipDataSource }
-	gnip_imports.each do |io|
-		io.time_stopped = DateTime.now
-		io.stop_error_message = "Gnip index-powertrack import stopped"
-		io.save
-	end
-
-	consumer.join(10)
+	consumer.join()
 	puts "[#{DateTime.now}] Process #{Process.pid} shutting down."
 	exit
 end
