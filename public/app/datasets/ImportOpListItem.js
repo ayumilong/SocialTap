@@ -30,7 +30,8 @@ function(declare, BaseListItem) {
 				text += '<span class="status"><span style="color: green;">In Progress</span></span>';
 			}
 			else {
-				var stopMessage = 'Stopped ' + stopTime.toLocaleDateString() + ' ' + stopTime.toLocaleTimeString();
+				var stopMessage = (importOp['failed?']) ? 'Stopped ' : 'Completed ';
+				stopMessage += stopTime.toLocaleDateString() + ' ' + stopTime.toLocaleTimeString();
 				if (importOp['failed?']) {
 					stopMessage = '<span style="color: red;">' + stopMessage + ' (' + importOp.stop_error_message + ')</span>';
 				}
