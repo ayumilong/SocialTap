@@ -8,7 +8,7 @@ class FileDataSourceFile < ActiveRecord::Base
 	validate :validate_file_existence
 	def validate_file_existence
 		begin
-			f = File.open(path, "r")
+			f = File.open(File.join(APP_CONFIG['data_files']['import_directory'], path), "r")
 			f.close
 		rescue
 			errors[:file] << ("Unable to read " + path)

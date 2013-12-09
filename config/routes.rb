@@ -16,6 +16,7 @@ SocialTap::Application.routes.draw do
       resources :inquiries, except: [:new, :edit] do
         get 'search', on: :member
       end
+      get 'import_files/path', to: 'import_files#path'
     end
   end
 

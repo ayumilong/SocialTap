@@ -117,17 +117,27 @@ define(['dojo/_base/declare',
 			this.fileFormContainer.startup();
 
 			this.filePathField = new TextBox({
-				placeHolder: '/path/to/file',
+				placeHolder: 'path/to/file',
 				trim: true,
 			});
 			this.filePathField.placeAt(this.fileFormContainer.domNode);
 			this.filePathField.startup();
 
-			domConstruct.create('label', {
+			var pathLabel = domConstruct.create('label', {
 				'class': 'heading',
 				'for': this.filePathField.get('id'),
-				innerHTML: 'File Path'
+				innerHTML: 'File Path (relative to import directory)'
 			}, this.filePathField.domNode, 'before');
+
+			xhr.get('/api/v0/import_files/path', {
+				handleAs: 'json'
+			}).then(
+				function(response) {
+					pathLabel.innerHTML = 'File Path (relative to ' + response.path + ')';
+				},
+				function(err) {
+					console.error(err);
+				});
 
 			this.fileFormatSelect = new Select({
 				options: [

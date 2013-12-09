@@ -10,6 +10,8 @@ defaults: &defaults
         powertrack_rules_url: YOUR RULES URL
         username: YOUR GNIP USERNAME
         password: YOUR GNIP PASSWORD
+    data_files:
+        import_directory: PATH TO DIRECTORY CONTAINING DATA FILES TO IMPORT
 
 development:
     <<: *defaults
