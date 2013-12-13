@@ -54,3 +54,6 @@ pickle-email-*.html
 # Ignore any custom stuff in lib/
 /lib/custom/**/*
 /lib/test*
+
+sublime-project
+sublime-project.sublime-workspace

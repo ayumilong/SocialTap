@@ -23,10 +23,6 @@ define({
 			title: 'Datasets',
 			moduleId: 'app/datasets/Module'
 		},
-		datasources: {
-			title: 'Data Sources',
-			moduleId: 'app/datasources/Module'
-		},
 		vis: {
 			title: 'Visualizations',
 			moduleId: 'app/vis/Module'
