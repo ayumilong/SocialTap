@@ -8,7 +8,7 @@ class Dataset < ActiveRecord::Base
   validates :source, presence: true
 
   def es_index
-    self.id && "socialtap:dataset:self.id"
+    self.id && "socialtap:dataset:#{self.id}"
   end
 
   def es_mapping
