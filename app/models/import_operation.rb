@@ -2,11 +2,6 @@ class ImportOperation < ActiveRecord::Base
 
 	belongs_to :dataset
 
-	after_initialize :set_defaults
-	def set_defaults
-		self.items_imported ||= 0
-	end
-
 	# Do not save if there is already an import operation for this dataset in progress
 	before_save :prevent_duplicates
 	def prevent_duplicates

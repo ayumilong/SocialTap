@@ -49,7 +49,6 @@ ActiveRecord::Schema.define(version: 20131202154100) do
     t.datetime "time_stopped"
     t.string   "error_message"
     t.integer  "pid"
-    t.integer  "items_imported"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

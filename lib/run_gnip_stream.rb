@@ -42,8 +42,6 @@ consumer = Thread.new do
 					if !io.nil?
 						begin
 							es.store_item_in_dataset(activity, dataset)
-							io.items_imported += 1
-							io.save
 						rescue
 							$stderr.puts "[#{DateTime.now}] Failed to save activity #{activity[:id]} to Elasticsearch"
 						end

@@ -52,7 +52,6 @@ class FileDataset < Dataset
     mapping.process(File.join(APP_CONFIG['data_files']['import_directory'], import.dataset.path)) do |item|
       begin
         es.store_item_in_dataset(item, import.dataset)
-        import.items_imported += 1
       rescue
         import.error_message = "Unable to connect to Elasticsearch"
         import.time_stopped = Time.zone.now
