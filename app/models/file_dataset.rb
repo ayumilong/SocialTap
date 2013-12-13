@@ -1,6 +1,6 @@
 class FileDataset < Dataset
 
-  has_one :data_mapping
+  has_one :data_mapping, dependent: :destroy
 
   accepts_nested_attributes_for :data_mapping
 
