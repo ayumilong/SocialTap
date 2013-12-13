@@ -36,9 +36,4 @@ class ImportOperation < ActiveRecord::Base
 		self.save
 	end
 
-	def restart
-		copy = ImportOperation.new(dataset: self.dataset)
-		copy.save
-	end
-
 end

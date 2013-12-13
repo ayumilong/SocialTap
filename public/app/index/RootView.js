@@ -23,13 +23,6 @@ define(['dojo/_base/declare',
 				style: 'display: block; margin-top: 30px; text-align: center;',
 				title: 'View datasets'
 			}, this.domNode);
-
-			domConstruct.create('a', {
-				href: '#/datasources',
-				innerHTML: 'View Data Sources',
-				style: 'display: block; margin-top: 30px; text-align: center;',
-				title: 'View data sources'
-			}, this.domNode);
 		},
 
 		activate: function(/*e*/) {

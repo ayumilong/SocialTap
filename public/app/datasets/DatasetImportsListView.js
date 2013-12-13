@@ -45,25 +45,6 @@ define(['dojo/_base/declare',
 					marginTop: '15px'
 				}
 			}, this.domNode);
-
-			this.newImportSourceSelect = new Select();
-			this.newImportSourceSelect.placeAt(this.domNode);
-			this.newImportSourceSelect.startup();
-			this.loadDataSources();
-
-			domConstruct.create('label', {
-				'for': this.newImportSourceSelect.get('id'),
-				innerHTML: 'Source:'
-			}, this.newImportSourceSelect.domNode, 'before');
-
-			this.startImportButton = new Button({
-				'class': 'button',
-				duration: 0,
-				label: 'Start',
-				onClick: lang.hitch(this, this.startImport)
-			});
-			this.startImportButton.placeAt(this.domNode);
-			this.startImportButton.startup();
 		},
 
 		buildListItem: function(obj) {
@@ -71,123 +52,11 @@ define(['dojo/_base/declare',
 				importOp: obj
 			});
 
-			if (obj['in_progress?']) {
-				var stopButton = new Button({
-					'class': 'button',
-					duration: 0,
-					label: 'Stop',
-					onClick: lang.hitch(this, function() {
-						xhr.get('/api/v0/import_operations/' + obj.id + '/stop', {
-							handleAs: 'json'
-						}).then(
-							lang.hitch(this, function(success) {
-								if (success) {
-									this.refreshData();
-								}
-								else {
-									toaster.displayMessage({
-										text: 'Unable to stop import',
-										type: 'error',
-										time: -1
-									});
-								}
-							}),
-							lang.hitch(this, function(err) {
-								console.error(err);
-								toaster.displayMessage({
-									text: 'Unable to stop import',
-									type: 'error',
-									time: -1
-								});
-							}));
-					}),
-					style: {
-						textAlign: 'center'
-					}
-				});
-				li.set('rightTextNode', stopButton.domNode);
-			}
-			else {
-				var restartButton = new Button({
-					'class': 'button',
-					duration: 0,
-					label: 'Restart',
-					onClick: lang.hitch(this, function() {
-						xhr.get('/api/v0/import_operations/' + obj.id + '/restart', {
-							handleAs: 'json'
-						}).then(
-							lang.hitch(this, function(success) {
-								if (success) {
-									this.refreshData();
-								}
-								else {
-									toaster.displayMessage({
-										text: 'Unable to restart import',
-										type: 'error',
-										time: -1
-									});
-								}
-							}),
-							lang.hitch(this, function(err) {
-								console.error(err);
-								toaster.displayMessage({
-									text: 'Unable to restart import',
-									type: 'error',
-									time: -1
-								});
-							}));
-					}),
-					style: {
-						textAlign: 'center'
-					}
-				});
-				li.set('rightTextNode', restartButton.domNode);
-			}
-
 			return li;
 		},
 
 		dataUrlFromRoute: function(e) {
 			return '/api/v0/datasets/' + e.params[0] + '/imports';
-		},
-
-		loadDataSources: function() {
-			xhr.get('/api/v0/data_sources', {
-				handleAs: 'json'
-			}).then(
-				lang.hitch(this, function(data) {
-					var i, label, options = {}, type, typeOptions;
-					for (type in data) {
-						if (data.hasOwnProperty(type)) {
-							typeOptions = [];
-							for (i = 0; i < data[type].length; i++) {
-
-								label = '';
-								if (type === 'FileDataSource') {
-									label = data[type][i].file.path;
-								}
-								else if (type === 'GnipDataSource') {
-									label = data[type][i].rule.value;
-								}
-
-								typeOptions.push({
-									value: data[type][i].id,
-									label: label
-								});
-							}
-							options[type.replace(/DataSource$/, '')] = typeOptions;
-						}
-					}
-					this.newImportSourceSelect.set('options', options);
-				}),
-				lang.hitch(this, function(err) {
-					console.error(err);
-					toaster.displayMessage({
-						text: 'Unable to load data sources',
-						type: 'error',
-						time: -1
-					});
-				}));
 		},
 
 		_setDatasetAttr: function(/*Object*/ dataset) {
@@ -204,31 +73,6 @@ define(['dojo/_base/declare',
 				topic.publish('/dojo-mama/updateSubNav', {
 					back: this.module.getAbsoluteRoute('/')
 				});
-			}
-		},
-
-		startImport: function() {
-			// summary:
-			//     Attempt to start a new import from the selected data source into this dataset.
-			if (this.get('dataset')) {
-				xhr.post('/api/v0/import_operations', {
-					handleAs: 'json',
-					data: JSON.stringify({
-						import_operation: {
-							dataset_id: this.get('dataset').id,
-							data_source_id: this.newImportSourceSelect.get('value')
-						}
-					}),
-					headers: {
-						'Content-Type': 'application/json',
-					}
-				}).response.then(
-					lang.hitch(this, function(response) {
-						this.refreshData();
-					}),
-					lang.hitch(this, function(err) {
-						console.error(err);
-					}));
 			}
 		},
 

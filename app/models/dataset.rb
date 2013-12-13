@@ -7,6 +7,9 @@ class Dataset < ActiveRecord::Base
   validates :name, presence: true
   validates :source, presence: true
 
+  # Immediately start importing data after creation
+  after_create :start_import
+
   def es_index
     self.id && "socialtap:dataset:#{self.id}"
   end

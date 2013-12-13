@@ -4,14 +4,13 @@ SocialTap::Application.routes.draw do
     namespace :v0 do
       resources :users, except: [:new, :edit]
       resources :vizs, except: [:new, :edit]
-      resources :data_sources, except: [:new, :edit, :update]
-      resources :datasets, except: [:new, :edit] do
-        get 'imports', on: :member
-        post 'search', on: :member
-      end
-      resources :import_operations, except: [:new, :edit] do
-        get 'stop', on: :member
-        get 'restart', on: :member
+      resources :datasets, except: [:new, :edit, :update] do
+        member do
+          get 'imports'
+          get 'start_import'
+          get 'stop_import'
+          post 'search'
+        end
       end
       resources :inquiries, except: [:new, :edit] do
         get 'search', on: :member
