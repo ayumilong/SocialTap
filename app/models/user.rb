@@ -2,6 +2,10 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :datasets
   has_many :inquiries
   has_secure_password
+
+  # OmniAuth authentication methods
+  has_one :auth_identity
+  has_one :auth_twitter
   
   validates :password, length: { minimum: 6 }
   validates :name, presence: true, length: { maximum: 64 }

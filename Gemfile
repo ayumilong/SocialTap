@@ -24,6 +24,10 @@ gem 'gnip-rule'
 
 gem 'curb'
 
+# OmniAuth and its authentication strategies
+gem 'omniauth-twitter'
+gem 'omniauth-identity'
+
 # To use Jbuilder templates for JSON
 # gem 'jbuilder'
 

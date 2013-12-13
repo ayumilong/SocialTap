@@ -1,5 +1,8 @@
 SocialTap::Application.routes.draw do
 
+  get "sessions/create"
+  get "sessions/destroy"
+  get "sessions/failure"
   namespace :api do
     namespace :v0 do
       resources :users, except: [:new, :edit]
