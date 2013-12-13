@@ -38,13 +38,10 @@ consumer = Thread.new do
 			activity["gnip"]["matching_rules"].each do |rule|
 				if !rule["tag"].nil? && (match = rule["tag"].match(/^socialtap:dataset:(\d+)$/))
 					dataset = Dataset.find_by_id(match.captures[0])
-					io = dataset.import_operations.select { |io| io.in_progress? } .first
-					if !io.nil?
-						begin
-							es.store_item_in_dataset(activity, dataset)
-						rescue
-							$stderr.puts "[#{DateTime.now}] Failed to save activity #{activity[:id]} to Elasticsearch"
-						end
+					begin
+						es.store_item_in_dataset(activity, dataset)
+					rescue
+						$stderr.puts "[#{DateTime.now}] Failed to save activity #{activity[:id]} to Elasticsearch"
 					end
 				end
 			end
