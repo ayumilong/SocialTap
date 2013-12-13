@@ -2,6 +2,8 @@ class FileDataset < Dataset
 
   has_one :data_mapping, dependent: :destroy
 
+  validates :data_mapping, presence: true
+
   accepts_nested_attributes_for :data_mapping
 
   def path
@@ -46,14 +48,13 @@ class FileDataset < Dataset
     mapping = import.dataset.data_mapping
 
     mapping.on_error do |err|
-      $stderr.puts "[#{DateTime.now}] #{import_id}: err"
-      $stderr.puts "[#{DateTime.now}] #{import_id}: Failed after importing #{count} items"
+      $stderr.puts "[#{DateTime.now}] #{import_id}: #{err}"
       return false
     end
 
     es = ESStorage.new
 
-    mapping.process(File.join(APP_CONFIG['data_files']['import_directory'], import.dataset.path)) do |item|
+    mapping.process(import.dataset.path) do |item|
       begin
         es.store_item_in_dataset(item, import.dataset)
       rescue
