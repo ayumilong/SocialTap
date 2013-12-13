@@ -3,10 +3,8 @@ class CreateDatasets < ActiveRecord::Migration
     create_table :datasets do |t|
       t.string :name
       t.text :description
-
-      t.string :es_index
-      t.string :es_mapping
-
+      t.string :type
+      t.string :source
       t.timestamps
     end
   end

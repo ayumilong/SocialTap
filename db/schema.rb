@@ -14,14 +14,9 @@
 ActiveRecord::Schema.define(version: 20131202154100) do
 
   create_table "data_mappings", force: true do |t|
-    t.integer  "file_data_source_id"
+    t.integer  "file_dataset_id"
     t.string   "type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "data_sources", force: true do |t|
-    t.string   "type"
+    t.string   "options"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -29,8 +24,8 @@ ActiveRecord::Schema.define(version: 20131202154100) do
   create_table "datasets", force: true do |t|
     t.string   "name"
     t.text     "description"
-    t.string   "es_index"
-    t.string   "es_mapping"
+    t.string   "type"
+    t.string   "source"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -48,29 +43,13 @@ ActiveRecord::Schema.define(version: 20131202154100) do
     t.string  "name"
   end
 
-  create_table "file_data_source_files", force: true do |t|
-    t.integer  "file_data_source_id"
-    t.string   "path"
-    t.string   "format"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "gnip_data_source_rules", force: true do |t|
-    t.integer  "gnip_data_source_id"
-    t.string   "value"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "import_operations", force: true do |t|
     t.integer  "dataset_id"
-    t.integer  "data_source_id"
     t.datetime "time_started"
     t.datetime "time_stopped"
-    t.string   "stop_error_message"
+    t.string   "error_message"
     t.integer  "pid"
-    t.integer  "activities_imported"
+    t.integer  "items_imported"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

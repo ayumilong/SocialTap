@@ -26,7 +26,7 @@ consumer = Thread.new do
 			activities_log.puts activity_string
 
 			begin
-				activity = JSON.parse(activity_string, symbolize_names: true)
+				activity = JSON.parse(activity_string)
 			rescue
 				$stderr.puts "[#{DateTime.now}] Received invalid activity"
 				$stderr.puts activity_string
@@ -34,15 +34,15 @@ consumer = Thread.new do
 			end
 
 			# Determine which datasets the activity belongs to and store
-			# it in the appropriate location
-			activity[:gnip][:matching_rules].each do |rule|
-				if !rule[:tag].nil? && (match = rule[:tag].match(/^socialtap:data_source:(\d+)$/))
-					imports = DataSource.find_by_id(match.captures[0]).import_operations.select { |io| io.time_stopped.nil? }
-
-					imports.each do |io|
+			# it in Elasticsearch
+			activity["gnip"]["matching_rules"].each do |rule|
+				if !rule["tag"].nil? && (match = rule["tag"].match(/^socialtap:dataset:(\d+)$/))
+					dataset = Dataset.find_by_id(match.captures[0])
+					io = dataset.import_operations.select { |io| io.in_progress? } .first
+					if !io.nil?
 						begin
-							es.store_activity_in_dataset(activity, io.dataset)
-							io.activities_imported += 1
+							es.store_item_in_dataset(activity, dataset)
+							io.items_imported += 1
 							io.save
 						rescue
 							$stderr.puts "[#{DateTime.now}] Failed to save activity #{activity[:id]} to Elasticsearch"
@@ -59,10 +59,10 @@ consumer = Thread.new do
 	activities_log.close
 
 	# Mark all current Gnip import operations as stopped
-	gnip_imports = ImportOperation.find_all_by_time_stopped(nil).select { |io| io.data_source is_a? GnipDataSource }
+	gnip_imports = ImportOperation.find_all_by_time_stopped(nil).select { |io| io.dataset is_a? GnipDataset }
 	gnip_imports.each do |io|
 		io.time_stopped = Time.zone.now
-		io.stop_error_message = "Gnip index-powertrack import stopped"
+		io.error_message = "Gnip index-powertrack import stopped"
 		io.save
 	end
 
