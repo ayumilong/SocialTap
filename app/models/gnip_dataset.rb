@@ -26,7 +26,6 @@ class GnipDataset < Dataset
       APP_CONFIG["Gnip"]["password"])
   end
 
-  after_create :save_rule_to_gnip
   def save_rule_to_gnip
     begin
       connect_to_gnip
@@ -37,7 +36,6 @@ class GnipDataset < Dataset
     end
   end
 
-  before_destroy :remove_rule_from_gnip
   def remove_rule_from_gnip
     begin
       connect_to_gnip
@@ -54,11 +52,16 @@ class GnipDataset < Dataset
     begin
       io.pid = File.read(pid_filename).to_i
       Process.kill 0, io.pid
+      self.save_rule_to_gnip
     rescue
       io.time_stopped = Time.zone.now
       io.error_message = "Gnip index-powertrack import not running"
     end
     io.save
+  end
+
+  def end_import(io)
+    self.remove_rule_from_gnip
   end
 
 end

@@ -23,8 +23,7 @@ class ImportOperation < ActiveRecord::Base
 
 	def fail!(msg = "Unknown error")
 		self.error_message = msg
-		self.time_stopped = Time.zone.now
-		self.save
+		self.stop!
 	end
 
 	def failed?
@@ -32,6 +31,7 @@ class ImportOperation < ActiveRecord::Base
 	end
 
 	def stop!
+		self.dataset.end_import(self)
 		self.time_stopped = Time.zone.now
 		self.save
 	end

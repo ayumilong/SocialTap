@@ -27,6 +27,10 @@ class FileDataset < Dataset
     io.save
   end
 
+  def end_import(io)
+    Process.kill("INT", io.pid)
+  end
+
   def self.run_import(import_id)
     if import_id.nil?
       $stderr.puts "No import operation ID given"
