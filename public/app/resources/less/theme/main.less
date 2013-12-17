@@ -62,4 +62,73 @@ input, textarea, button, select {
 	top: 60px;
 }
 
+.dmView {
+	position: relative;
 
+	.dmViewTitle {
+		background-color: rgb(55,190,79);
+		color: white;
+		font-size: 18px;
+		height: 40px;
+		line-height: 40px;
+		padding: 0 10px;
+		position: absolute;
+		top: 0;
+		width: 100%;
+	}
+
+	.dmViewHeader {
+		border-bottom: 1px solid rgb(55,55,55);
+		height: 50px;
+		line-height: 50px;
+		padding: 0 10px;
+		position: absolute;
+		top: 0;
+		width: 100%;
+	}
+
+	.dmViewContent {
+		bottom: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
+	}
+
+	.dmViewFooter {
+		border-top: 1px solid rgb(55,55,55);
+		bottom: 0;
+		height: 50px;
+		line-height: 50px;
+		padding: 0 10px;
+		position: absolute;
+		width: 100%;
+	}
+}
+
+.dmView.hasTitle {
+	.dmViewHeader {
+		top: 40px;
+	}
+
+	.dmViewContent {
+		top: 40px;
+	}
+}
+
+.dmView.hasHeader {
+	.dmViewContent {
+		top: 51px;
+	}
+}
+
+.dmView.hasTitle.hasHeader {
+	.dmViewContent {
+		top: 91px;
+	}
+}
+
+.dmView.hasFooter {
+	.dmViewContent {
+		bottom: 51px;
+	}
+}
