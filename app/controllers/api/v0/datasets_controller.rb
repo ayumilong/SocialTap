@@ -18,6 +18,11 @@ class Api::V0::DatasetsController < ApplicationController
   # POST /api/v0/datasets
   # POST /api/v0/datasets.json
   def create
+
+    if params[:dataset][:type] == 'FileDataset'
+      params[:dataset][:source].gsub!(/\.\.\/?/, '')
+    end
+
     @dataset = Dataset.new(params[:dataset])
 
     if @dataset.save
