@@ -27,5 +27,11 @@ define({
 			title: 'Visualizations',
 			moduleId: 'app/vis/Module'
 		}
-	}
+	},
+	visualizations: [
+		'browse',
+		'hashtags',
+		'map',
+		'sentiment'
+	]
 });

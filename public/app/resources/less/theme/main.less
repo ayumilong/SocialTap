@@ -10,6 +10,8 @@
 @import "./toaster.less";
 @import "./slider.less";
 @import "./linkframe.less";
+@import "./query_selector.less";
+@import "./viz_selector.less";
 
 .font-mixin {
 	font-family: Helvetica, Arial, sans-serif;
@@ -57,36 +59,7 @@ input, textarea, button, select {
 .dmModuleContent {
 	background: white;
 	outline: none;
-	top: 100px;
+	top: 60px;
 }
 
-.dj_tablet .dmLayout {
-	bottom: 0;
-	height: auto;
-	position: absolute;
-	max-width: 1100px;
-	top: 0;
-	width: 100%;
 
-	@media (min-width: 1100px) {
-		bottom: 0;
-		left: 50%;
-		margin-left: -550px;
-		top: 0;
-	}
-
-	@media (min-width: 1100px) and (max-width: 1220px) {
-		bottom: 5px;
-		top: 5px;
-	}
-
-	@media (min-width: 1220px) {
-		bottom: 10px;
-		top: 10px;
-	}
-
-	@media (min-width: 1600px) {
-		bottom: 25px;
-		top: 25px;
-	}
-}

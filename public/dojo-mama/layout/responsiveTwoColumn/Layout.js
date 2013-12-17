@@ -12,9 +12,11 @@ define(['dojo/_base/declare',
 		'dojo-mama/ModuleManager',
 		'dojo-mama/util/Analytics',
 		'./MenuBar',
-		'./SubNav'
+		'./SubNav',
+		'./QuerySelector',
+		'./VisualizationSelector'
 ], function(declare, kernel, lang, win, Deferred, domAttr, domConstruct, topic,
-	WidgetBase, mobile, Pane, ModuleManager, Analytics, MenuBar, SubNav) {
+	WidgetBase, mobile, Pane, ModuleManager, Analytics, MenuBar, SubNav, QuerySelector, VisualizationSelector) {
 
 	// module:
 	//     dojo-mama/layout/responsiveTwoColumn/Layout
@@ -37,10 +39,6 @@ define(['dojo/_base/declare',
 		//     Resolved when the first module is focused
 		layoutReady: null,
 
-		// menuBar: [private] Object
-		//     The secondary navigation
-		menuBar: null,
-
 		// mode: [private] String
 		//    Either 'phone' or 'tablet'
 		mode: null,
@@ -53,22 +51,13 @@ define(['dojo/_base/declare',
 		//    Class that controls the launching and routing of modules
 		moduleManager: null,
 
+		querySelector: null,
+
 		// screenSizeReady: [private] Object
 		//    A deferred that is resolved when the screen size is detected
 		screenSizeReady: null,
 
-		// subNav: [private] Object
-		//    Horizontal bar containing the mobile back button,
-		//    secondary module selection, and view titles
-		subNav: null,
-
-		// titleBar: [private] Object
-		//    Horizontal bar containing the application's title
-		titleBar: null,
-
-		// titleHeading: [private] Object
-		//    The application's title
-		titleHeading: null,
+		vizSelector: null,
 
 		constructor: function(/*Object*/ args) {
 			// summary:
@@ -103,33 +92,24 @@ define(['dojo/_base/declare',
 			//     protected
 
 			this.inherited(arguments);
-			// the splitter consists of two panes
-			this.leftPane = new Pane({baseClass: 'dmLeftPane'});
+
 			// hide the layout initially to prevent flashing in mobile view of right pane
 			this.domNode.style.display = 'none';
 
-			this.titleBar = new Pane({baseClass: 'dmTitle'});
-			this.titleHeading = domConstruct.create('a', {
-				'class': 'dmTitleHeading',
-				innerHTML: this.config.title,
-				href: '#' + this.config.baseRoute
-			}, this.titleBar.domNode);
-			this.titleBar.placeAt(this.domNode);
+			this.querySelector = new QuerySelector();
+			this.querySelector.placeAt(this.domNode);
 
-			this.subNav = new SubNav();
-			this.subNav.placeAt(this.domNode);
+			this.vizSelector = new VisualizationSelector();
+			this.vizSelector.placeAt(this.domNode);
 
 			// and a container for module content
 			this.moduleContent = new Pane({baseClass: 'dmModuleContent'});
 			this.config.moduleContentNode = this.moduleContent.domNode;
 			this.moduleContent.placeAt(this.domNode);
 
-			// create the menu bar (attach it later)
-			this.menuBar = new MenuBar();
-			this.menuBar.placeAt(this.titleBar);
+
 
 			// ARIA
-			domAttr.set(this.titleHeading, 'aria-label', this.config.titleLabel);
 			domAttr.set(this.moduleContent.domNode, 'tabindex', 0);
 			domAttr.set(this.moduleContent.domNode, 'role', 'main');
 		},
@@ -143,8 +123,8 @@ define(['dojo/_base/declare',
 			this.inherited(arguments);
 			this.layoutReady = new Deferred();
 			this.screenSizeReady = new Deferred();
-			this.subNav.startup();
-			this.menuBar.startup();
+			this.querySelector.startup();
+			this.vizSelector.startup();
 			this.analytics.startup();
 
 			// place the layout into the dom
@@ -216,18 +196,6 @@ define(['dojo/_base/declare',
 			// summary:
 			//     Return the layouts current mode, 'phone' or 'tablet'
 			return this.mode;
-		},
-
-		showBothPanes: function() {
-			// summary:
-			//     Show both panes and update the layout accordingly
-			// tags:
-			//     private
-
-			this.leftPane.domNode.style.display = '';
-			this.rightPane.domNode.style.display = '';
-			this.menuBar.placeAt(this.metaNav.domNode);
-			domConstruct.place(this.titleHeading, this.titleBar.domNode, 'first');
 		},
 
 		focusModule: function(/*module*/) {
