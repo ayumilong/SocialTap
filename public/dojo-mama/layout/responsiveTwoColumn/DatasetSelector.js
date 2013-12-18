@@ -3,16 +3,16 @@ define(['dojo/_base/declare',
 		'dojo/dom-class',
 		'dojo/dom-construct',
 		'dojox/mobile/Button',
+		'dojox/mobile/EdgeToEdgeList',
 		'dojox/mobile/Pane',
 		'dojo-mama/util/BaseListItem',
-		'dojo-mama/util/DataListPane'],
-function(declare, lang, domClass, domConstruct, Button, Pane, BaseListItem, DataListPane) {
-	return declare([Pane], {
+		'dojo-mama/util/DataPane',
+		'dojo-mama/util/ScrollablePane'],
+function(declare, lang, domClass, domConstruct, Button, EdgeToEdgeList, Pane, BaseListItem, DataPane, ScrollablePane) {
+	return declare([DataPane], {
 		'class': 'stDatasetSelector',
 
 		datasetNameNode: null,
-
-		datasetListPane: null,
 
 		toggleListButton: null,
 
@@ -20,66 +20,83 @@ function(declare, lang, domClass, domConstruct, Button, Pane, BaseListItem, Data
 
 		datasets: null,
 
+		dataUrl: '/api/v0/datasets',
+
+		list: null,
+
+		listPane: null,
+
 		onChange: null,
 
 		buildRendering: function() {
 			this.inherited(arguments);
 
-			var datasetSelector = this;
-			this.datasetListPane = new DataListPane({
+			this.listPane = new ScrollablePane({
 				'class': 'stDatasetListPane hidden',
-				'dataUrl': '/api/v0/datasets',
-				buildListItem: function(dataset) {
-					console.log(this);
-					var li = new BaseListItem({
-						'text': dataset.name,
-						'onClick': function() {
-							datasetSelector.set('selectedDataset', dataset);
-							datasetSelector.closeDatasetList();
-						},
-						'style': {
-							cursor: 'pointer'
-						}
-					});
-					return li;
-				}
 			});
-			this.datasetListPane.placeAt(this.domNode);
-			this.datasetListPane.startup();
+			this.listPane.placeAt(this.contentNode);
+			this.listPane.startup();
+
+			this.list = new EdgeToEdgeList();
+			this.list.placeAt(this.listPane.domNode);
+			this.list.startup();
 
 			this.toggleListButton = new Button({
 				'class': 'stToggleListButton fa fa-folder-o',
 				'duration': 0,
 				'title': 'View Available Datasets'
 			});
-			this.toggleListButton.placeAt(this.domNode);
+			this.toggleListButton.placeAt(this.contentNode);
 			this.toggleListButton.startup();
 			this.toggleListButton.set('onClick', lang.hitch(this, this.openDatasetList));
 
 			this.datasetNameNode = domConstruct.create('span', {
 				'innerHTML': 'Select Dataset'
-			}, this.domNode);
+			}, this.contentNode);
 		},
 
-		startup: function() {
-			this.inherited(arguments);
+		beforeLoad: function() {
+			this.list.destroyDescendants();
+		},
+
+		handleData: function(datasets) {
+			var i, dataset, li;
+
+			console.warn(datasets);
+
+			this.datasets = datasets;
+
+			var createClickHandler = lang.hitch(this, function(li, index) {
+				li.set('onClick', lang.hitch(this, function() {
+					this.set('selectedDataset', this.datasets[index]);
+					this.closeDatasetList();
+				}));
+			});
+
+			for (i = 0; i < datasets.length; i++) {
+				li = new BaseListItem({
+					'text': datasets[i].name,
+					'style': {
+						cursor: 'pointer'
+					}
+				});
+				createClickHandler(li, i);
+				this.list.addChild(li);
+				li.startup();
+			}
 		},
 
 		openDatasetList: function() {
-			domClass.remove(this.datasetListPane.domNode, 'hidden');
-			this.datasetListPane.reloadData();
+			domClass.remove(this.listPane.domNode, 'hidden');
+			this.reloadData();
 			domClass.replace(this.toggleListButton.domNode, 'fa-folder-open-o', 'fa-folder-o');
 			this.toggleListButton.set('onClick', lang.hitch(this, this.closeDatasetList));
 		},
 
 		closeDatasetList: function() {
-			domClass.add(this.datasetListPane.domNode, 'hidden');
+			domClass.add(this.listPane.domNode, 'hidden');
 			domClass.replace(this.toggleListButton.domNode, 'fa-folder-o', 'fa-folder-open-o');
 			this.toggleListButton.set('onClick', lang.hitch(this, this.openDatasetList));
-		},
-
-		selectDatasetId: function(datasetId) {
-
 		},
 
 		_setSelectedDatasetAttr: function(selectedDataset) {
