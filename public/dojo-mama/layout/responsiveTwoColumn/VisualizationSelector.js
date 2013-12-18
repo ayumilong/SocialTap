@@ -2,6 +2,7 @@ define(['dojo/_base/declare',
 		'dojo/_base/fx',
 		'dojo/_base/kernel',
 		'dojo/_base/lang',
+		'dojo/dom-class',
 		'dojo/dom-construct',
 		'dojo/dom-geometry',
 		'dojo/dom-style',
@@ -11,11 +12,13 @@ define(['dojo/_base/declare',
 		'dojox/mobile/Pane',
 		'dojo-mama/util/BaseListItem',
 		'dojo-mama/util/LinkListItem'],
-function(declare, baseFx, kernel, lang, domConstruct, domGeometry, domStyle, fx, EdgeToEdgeList, Button, Pane, BaseListItem, LinkListItem) {
+function(declare, baseFx, kernel, lang, domClass, domConstruct, domGeometry, domStyle, fx, EdgeToEdgeList, Button, Pane, BaseListItem, LinkListItem) {
 	return declare([Pane], {
 		'class': 'stVisualizationSelector',
 
 		list: null,
+
+		datasetId: null,
 
 		scrollOffset: null,
 		scrollLeftButton: null,
@@ -71,18 +74,27 @@ function(declare, baseFx, kernel, lang, domConstruct, domGeometry, domStyle, fx,
 			}).play();
 		},
 
-		startup: function() {
-			this.inherited(arguments);
+		_setDatasetIdAttr: function(datasetId) {
+			this._set('datasetId', datasetId);
 
-			var i, viz, li;
-			for (i = 0; i < kernel.global.dmConfig.visualizations.length; i++) {
-				viz = kernel.global.dmConfig.visualizations[i];
+			this.list.destroyDescendants();
 
-				li = new BaseListItem({
-					text: viz.charAt(0).toUpperCase() + viz.slice(1)
-				});
-				li.placeAt(this.list);
-				li.startup();
+			if (datasetId) {
+				domClass.remove(this.domNode, 'hidden');
+				var i, navItem, li;
+				for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+					navItem = kernel.global.dmConfig.topNav[i];
+
+					li = new LinkListItem({
+						text: navItem.label,
+						href: '#/' + navItem.route.replace(':dataset_id', datasetId)
+					});
+					li.placeAt(this.list);
+					li.startup();
+				}
+			}
+			else {
+				domClass.add(this.domNode, 'hidden');
 			}
 		}
 	});
