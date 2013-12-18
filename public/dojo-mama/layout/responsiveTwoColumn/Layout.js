@@ -104,6 +104,21 @@ define(['dojo/_base/declare',
 
 			this.datasetSelector.set('onChange', lang.hitch(this, function(datasetId) {
 				this.vizSelector.set('datasetId', datasetId);
+
+				// Oh, the horror!
+				// This updates the current visualization when a different dataset is selected.
+				// So if you're viewing 'Browse' for dataset ID 3, and select dataset ID 4, this will
+				// route to 'Browse' for dataset ID 4.
+				kernel.global.dmConfig.topNav.forEach(lang.hitch(this, function(navItem) {
+					var matches = window.location.hash.match(new RegExp('#/' + navItem.route.replace(':dataset_id', '(\\d)')));
+					if (matches != null) {
+						window.location = '#/' + navItem.route.replace(':dataset_id', datasetId);
+					}
+				}));
+			}));
+
+			this.vizSelector.set('onChange', lang.hitch(this, function(navItem) {
+				this.datasetSelector.set('navRoute', navItem.route);
 			}));
 
 			// and a container for module content

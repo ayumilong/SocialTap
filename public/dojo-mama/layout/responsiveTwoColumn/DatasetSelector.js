@@ -1,14 +1,17 @@
 define(['dojo/_base/declare',
+		'dojo/_base/kernel',
 		'dojo/_base/lang',
 		'dojo/dom-class',
 		'dojo/dom-construct',
+		'dojo/topic',
 		'dojox/mobile/Button',
 		'dojox/mobile/EdgeToEdgeList',
 		'dojox/mobile/Pane',
 		'dojo-mama/util/BaseListItem',
 		'dojo-mama/util/DataPane',
+		'dojo-mama/util/LinkListItem',
 		'dojo-mama/util/ScrollablePane'],
-function(declare, lang, domClass, domConstruct, Button, EdgeToEdgeList, Pane, BaseListItem, DataPane, ScrollablePane) {
+function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdgeList, Pane, BaseListItem, DataPane, LinkListItem, ScrollablePane) {
 	return declare([DataPane], {
 		'class': 'stDatasetSelector',
 
@@ -25,6 +28,8 @@ function(declare, lang, domClass, domConstruct, Button, EdgeToEdgeList, Pane, Ba
 		list: null,
 
 		listPane: null,
+
+		navRoute: null,
 
 		onChange: null,
 
@@ -53,6 +58,27 @@ function(declare, lang, domClass, domConstruct, Button, EdgeToEdgeList, Pane, Ba
 			this.datasetNameNode = domConstruct.create('span', {
 				'innerHTML': 'Select Dataset'
 			}, this.contentNode);
+
+			topic.subscribe('/dojo-mama/routeEvent', lang.hitch(this, this.handleRoute));
+		},
+
+		handleRoute: function(e) {
+			var i, navItem, match, datasetId;
+			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+				navItem = kernel.global.dmConfig.topNav[i];
+				match = e.newPath.match(new RegExp('/' + navItem.route.replace(':dataset_id', '(\\d)')));
+				if (match != null) {
+					datasetId = parseInt(match[1], 10);
+					this.selectedDatasetId = datasetId;
+					if (this.datasets) {
+						this.datasets.forEach(lang.hitch(this, function(ds) {
+							if (ds.id == datasetId) {
+								this.set('selectedDataset', ds);
+							}
+						}));
+					}
+				}
+			}
 		},
 
 		beforeLoad: function() {
@@ -60,10 +86,6 @@ function(declare, lang, domClass, domConstruct, Button, EdgeToEdgeList, Pane, Ba
 		},
 
 		handleData: function(datasets) {
-			var i, dataset, li;
-
-			console.warn(datasets);
-
 			this.datasets = datasets;
 
 			var createClickHandler = lang.hitch(this, function(li, index) {
@@ -73,9 +95,11 @@ function(declare, lang, domClass, domConstruct, Button, EdgeToEdgeList, Pane, Ba
 				}));
 			});
 
+			var i, li;
 			for (i = 0; i < datasets.length; i++) {
-				li = new BaseListItem({
+				li = new LinkListItem({
 					'text': datasets[i].name,
+					'href': '#/datasets/' + datasets[i].id,
 					'style': {
 						cursor: 'pointer'
 					}
@@ -83,6 +107,10 @@ function(declare, lang, domClass, domConstruct, Button, EdgeToEdgeList, Pane, Ba
 				createClickHandler(li, i);
 				this.list.addChild(li);
 				li.startup();
+
+				if (this.selectedDatasetId == datasets[i].id) {
+					this.set('selectedDataset', datasets[i]);
+				}
 			}
 		},
 
@@ -106,6 +134,16 @@ function(declare, lang, domClass, domConstruct, Button, EdgeToEdgeList, Pane, Ba
 
 			if (this.onChange) {
 				this.onChange(selectedDataset.id);
+			}
+		},
+
+		_setNavRouteAttr: function(navRoute) {
+			this._set('navRoute', navRoute);
+
+			var lis = this.list.getChildren();
+			var i;
+			for (i = 0; i < lis.length; i++) {
+				lis[i].set('href', '#/' + navRoute.replace(':dataset_id', this.selectedDataset.id));
 			}
 		}
 	});
