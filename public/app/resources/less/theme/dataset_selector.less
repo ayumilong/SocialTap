@@ -1,0 +1,51 @@
+.stDatasetSelector {
+	background: rgb(55,55,55);
+	color: white;
+	height: 60px;
+	overflow: visible;
+	position: absolute;
+	width: 350px;
+	z-index: 99;
+
+	.stToggleListButton {
+		background: rgba(0,0,0,0);
+		border-width: 0;
+		color: white;
+		font-size: 22px;
+		left: 5px;
+		height: 40px;
+		position: absolute;
+		top: 10px;
+		width: 40px;
+	}
+
+	span {
+		color: white;
+		display: inline-block;
+		font-size: 18px;
+		left: 50px;
+		line-height: 60px;
+		margin-left: 8px;
+		max-width: 240px;
+		overflow: hidden;
+		position: absolute;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.stDatasetListPane {
+		background: rgba(55,55,55,0.95);
+		min-height: 250px;
+		max-height: 600px;
+		position: absolute;
+		top: 100%;
+		width: 400px;
+		z-index: 99;
+
+		.dmListItem {
+			.dmListItemText {
+				color: white;
+			}
+		}
+	}
+}

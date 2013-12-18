@@ -4,6 +4,8 @@ class GnipDataset < Dataset
 
   alias_attribute :rule_value, :source
 
+  validates :source, uniqueness: true
+
   # Ensure that the given value is valid for a Gnip rule
   # http://support.gnip.com/customer/portal/articles/600659-powertrack-generic#Rules
   validate :validate_rule
@@ -46,22 +48,40 @@ class GnipDataset < Dataset
     end
   end
 
-  def begin_import(io)
-    # Check status of index-powertrack process
+  def gnip_running?
     pid_filename = Rails.root.join("tmp", "pids", "index-powertrack.pid")
+    running = true
     begin
-      io.pid = File.read(pid_filename).to_i
-      Process.kill 0, io.pid
-      self.save_rule_to_gnip
+      pid = File.read(pid_filename).to_i
+      Process.kill 0, pid
     rescue
-      io.time_stopped = Time.zone.now
-      io.error_message = "Gnip index-powertrack import not running"
+      running = false
     end
-    io.save
+    running
   end
 
-  def end_import(io)
-    self.remove_rule_from_gnip
+  def start_import
+    if self.import_in_progress || !self.gnip_running?
+      false
+    elsif self.save_rule_to_gnip
+      io = ImportOperation.new(dataset: self)
+      io.time_started = Time.zone.now
+      io.pid = File.read(Rails.root.join("tmp", "pids", "index-powertrack.pid")).to_i
+      io.save
+      true
+    end
+  end
+
+  def stop_import(err_msg = nil)
+    io = self.current_import_operation
+    if io && self.remove_rule_from_gnip
+      io.time_stopped = Time.zone.now
+      io.error_message = err_msg
+      io.save
+      true
+    else
+      false
+    end
   end
 
 end

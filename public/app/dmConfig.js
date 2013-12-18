@@ -27,5 +27,28 @@ define({
 			title: 'Visualizations',
 			moduleId: 'app/vis/Module'
 		}
-	}
+	},
+
+	topNav: [
+		{
+			label: 'Info',
+			route: 'datasets/:dataset_id'
+		},
+		{
+			label: 'Browse',
+			route: 'vis/browse/:dataset_id'
+		},
+		{
+			label: 'Hashtags',
+			route: 'vis/hashtags/:dataset_id'
+		},
+		{
+			label: 'Map',
+			route: 'vis/map/:dataset_id'
+		},
+		{
+			label: 'Sentiment',
+			route: 'vis/sentiment/:dataset_id'
+		}
+	]
 });

@@ -9,12 +9,13 @@ define(['dojo/_base/declare',
 		'dojox/mobile/RadioButton',
 		'dojox/mobile/TextBox',
 		'dojo-mama/util/toaster',
-		'dojo-mama/views/ModuleScrollableView',
+		'dojo-mama/views/BaseView',
+		'app/datasets/DataMappingForm',
 		'app/util/Select'
 ], function(declare, lang, domAttr, domClass, domConstruct, xhr, Button, Pane, RadioButton, TextBox,
-	toaster, ModuleScrollableView, Select)
+	toaster, BaseView, DataMappingForm, Select)
 {
-	return declare([ModuleScrollableView], {
+	return declare([BaseView], {
 
 		'class': 'createDatasetView',
 
@@ -30,9 +31,9 @@ define(['dojo/_base/declare',
 
 		filePathField: null,
 
-		fileFormatSelect: null,
-
 		fileFormatNotesNode: null,
+
+		dataMappingForm: null,
 
 		parentView: '/',
 
@@ -42,7 +43,7 @@ define(['dojo/_base/declare',
 
 		submitButton: null,
 
-		title: 'New Dataset',
+		title: 'Create Dataset',
 
 		buildRendering: function() {
 			this.inherited(arguments);
@@ -51,7 +52,7 @@ define(['dojo/_base/declare',
 				name: 'name',
 				placeHolder: 'Name'
 			});
-			this.nameField.placeAt(this.domNode);
+			this.nameField.placeAt(this.contentNode);
 			this.nameField.startup();
 
 			domConstruct.create('label', {
@@ -64,7 +65,7 @@ define(['dojo/_base/declare',
 				name: 'description',
 				placeHolder: 'Description'
 			});
-			this.descriptionField.placeAt(this.domNode);
+			this.descriptionField.placeAt(this.contentNode);
 			this.descriptionField.startup();
 
 			domConstruct.create('label', {
@@ -76,7 +77,7 @@ define(['dojo/_base/declare',
 			domConstruct.create('label', {
 				'class': 'heading',
 				innerHTML: 'Type'
-			}, this.domNode);
+			}, this.contentNode);
 
 			var gnipButton = new RadioButton({
 				checked: true,
@@ -88,7 +89,7 @@ define(['dojo/_base/declare',
 				}),
 				value: 'gnip'
 			});
-			gnipButton.placeAt(this.domNode);
+			gnipButton.placeAt(this.contentNode);
 			gnipButton.startup();
 
 			domConstruct.create('label', {
@@ -105,7 +106,7 @@ define(['dojo/_base/declare',
 				}),
 				value: 'file'
 			});
-			fileButton.placeAt(this.domNode);
+			fileButton.placeAt(this.contentNode);
 			fileButton.startup();
 
 			domConstruct.create('label', {
@@ -115,7 +116,7 @@ define(['dojo/_base/declare',
 
 			/* Gnip rule inputs */
 			this.gnipFormContainer = new Pane();
-			this.gnipFormContainer.placeAt(this.domNode);
+			this.gnipFormContainer.placeAt(this.contentNode);
 			this.gnipFormContainer.startup();
 
 			this.gnipRuleField = new TextBox({
@@ -143,7 +144,7 @@ define(['dojo/_base/declare',
 
 			/* File upload inputs */
 			this.fileFormContainer = new Pane();
-			this.fileFormContainer.placeAt(this.domNode);
+			this.fileFormContainer.placeAt(this.contentNode);
 			this.fileFormContainer.startup();
 
 			this.filePathField = new TextBox({
@@ -169,24 +170,9 @@ define(['dojo/_base/declare',
 					console.error(err);
 				});
 
-			this.fileFormatSelect = new Select({
-				options: [
-					{value: "Json", label: "JSON"},
-					{value: "Csv", label: "CSV"}
-				]
-			});
-			this.fileFormatSelect.placeAt(this.fileFormContainer.domNode);
-			this.fileFormatSelect.startup();
-
-			domConstruct.create('label', {
-				'class': 'heading',
-				'for': this.fileFormatSelect.get('id'),
-				innerHTML: 'File Format'
-			}, this.fileFormatSelect.domNode, 'before');
-
-			this.fileFormatNotesNode = domConstruct.create('p', {}, this.fileFormContainer.domNode);
-			this.showNotesForFileFormat(this.fileFormatSelect.get('value'));
-			this.fileFormatSelect.set('onChange', lang.hitch(this, this.showNotesForFileFormat));
+			this.dataMappingForm = new DataMappingForm();
+			this.dataMappingForm.placeAt(this.fileFormContainer.domNode);
+			this.dataMappingForm.startup();
 
 			/* Submit button */
 			this.submitButton = new Button({
@@ -198,21 +184,8 @@ define(['dojo/_base/declare',
 				}),
 				style: {display: 'block'}
 			});
-			this.submitButton.placeAt(this.domNode);
+			this.submitButton.placeAt(this.contentNode);
 			this.submitButton.startup();
-		},
-
-		showNotesForFileFormat: function(format) {
-			var notes = null;
-			switch (format) {
-				case 'Json':
-					notes = 'One JSON encoded item per line.';
-					break;
-				case 'Csv':
-					notes = 'Select column delimiter below:';
-					break;
-			}
-			this.fileFormatNotesNode.innerHTML = notes;
 		},
 
 		_setSelectedDatasetTypeAttr: function(selectedDatasetType) {
@@ -244,20 +217,7 @@ define(['dojo/_base/declare',
 			else if (type === 'file') {
 				request.type = 'FileDataset';
 				request.source = this.filePathField.get('value');
-
-				var format = this.fileFormatSelect.get('value');
-				if (format == 'Json') {
-					request.data_mapping_attributes = {
-						type: 'JsonDataMapping',
-						options: {}
-					};
-				}
-				else if (format == 'Csv') {
-					request.data_mapping_attributes = {
-						type: 'CsvDataMapping',
-						options: {}
-					};
-				}
+				request.data_mapping_attributes = this.dataMappingForm.getValue();
 			}
 
 			console.warn('Sending request');
@@ -285,7 +245,7 @@ define(['dojo/_base/declare',
 					this.descriptionField.set('value', '');
 					this.gnipRuleField.set('value', '');
 					this.filePathField.set('value', '');
-					this.fileFormatSelect.set('value', 'Json');
+					this.dataMappingForm.reset();
 
 					domAttr.remove(this.submitButton.domNode, 'disabled');
 					toaster.clearMessages();

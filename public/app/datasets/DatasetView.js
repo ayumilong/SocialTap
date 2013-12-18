@@ -6,28 +6,22 @@ define(['dojo/_base/declare',
 		'dojox/mobile/Button',
 		'dojox/mobile/EdgeToEdgeList',
 		'dojox/mobile/Pane',
+		'dojo-mama/util/DataPane',
 		'dojo-mama/util/toaster',
-		'dojo-mama/views/ModuleScrollableView'
-], function(declare, lang, domAttr, domConstruct, xhr, Button, EdgeToEdgeList, Pane, toaster, ModuleScrollableView) {
-	return declare([ModuleScrollableView], {
+		'dojo-mama/views/BaseView',
+		'app/datasets/ImportOpListItem'
+], function(declare, lang, domAttr, domConstruct, xhr, Button, EdgeToEdgeList, Pane, DataPane, toaster, BaseView, ImportOpListItem) {
+	return declare([BaseView, DataPane], {
 
 		'class': 'datasetView',
-
-		browseLink: null,
 
 		// dataset: Object
 		//     The dataset to display.
 		dataset: null,
 
-		// datasetPromise: Object
-		//     Promise for loading dataset from API
-		datasetPromise: null,
-
-		importsLink: null,
-
 		infoPane: null,
 
-		visList: null,
+		importButtonPane: null,
 
 		parentView: '/',
 
@@ -37,18 +31,30 @@ define(['dojo/_base/declare',
 			this.inherited(arguments);
 
 			this.infoPane = new Pane();
-			this.infoPane.placeAt(this.domNode);
+			this.infoPane.placeAt(this.contentNode);
 			this.infoPane.startup();
 
-			this.browseLink = domConstruct.create('a', {
-				'class': 'button',
-				innerHTML: 'Browse Data'
-			}, this.domNode);
+			domConstruct.create('div', {
+				'class': 'dmListDivider',
+				innerHTML: 'Data Imports',
+				style: {
+					marginTop: '15px'
+				}
+			}, this.contentNode);
 
-			this.importsLink = domConstruct.create('a', {
-				'class': 'button',
-				innerHTML: 'View Data Imports'
-			}, this.domNode);
+			this.importButtonPane = domConstruct.create('div', {}, this.contentNode);
+
+			this.importsList = new EdgeToEdgeList();
+			this.importsList.placeAt(this.contentNode);
+			this.importsList.startup();
+
+			domConstruct.create('div', {
+				'class': 'dmListDivider',
+				innerHTML: 'Edit',
+				style: {
+					marginTop: '15px'
+				}
+			}, this.contentNode);
 
 			var deleteButton = new Button({
 				'class': 'button',
@@ -58,53 +64,58 @@ define(['dojo/_base/declare',
 					marginLeft: '10px'
 				}
 			});
-			deleteButton.placeAt(this.domNode);
+			deleteButton.placeAt(this.contentNode);
 			deleteButton.startup();
-
-			domConstruct.create('div', {
-				'class': 'dmListDivider',
-				innerHTML: 'Search',
-				style: {
-					marginTop: '15px'
-				}
-			}, this.domNode);
-
-			domConstruct.create('p', {
-				innerHTML: 'Search form here'
-			}, this.domNode);
-
-			domConstruct.create('div', {
-				'class': 'dmListDivider',
-				innerHTML: 'Visualize'
-			}, this.domNode);
-
-			this.visList = new EdgeToEdgeList();
-			this.visList.placeAt(this.domNode);
-			this.visList.startup();
-
-			domConstruct.create('p', {
-				innerHTML: 'List of available visualizations here'
-			}, this.domNode);
 
 		},
 
-		_setDatasetAttr: function(/*Object*/ dataset) {
-			this._set('dataset', dataset);
+		beforeLoad: function() {
+			domConstruct.empty(this.infoPane.domNode);
+			this.importsList.destroyDescendants();
+		},
+
+		handleData: function(dataset) {
+			console.warn(dataset);
+			this.set('dataset', dataset);
 
 			this.set('title', dataset ? dataset.name : 'View Dataset');
 
-			this.infoPane.domNode.innerHTML = dataset ? ('<p>' + dataset.description + '</p>') : '';
+			this.infoPane.domNode.innerHTML = dataset ? ('<p>' + (dataset.description || 'No description') + '</p>') : '';
 
-			if (dataset) {
-				domAttr.set(this.browseLink, 'href', '#/datasets/' + dataset.id + '/browse');
-				domAttr.set(this.importsLink, 'href', '#/datasets/' + dataset.id + '/imports');
+			domConstruct.empty(this.importButtonPane);
+			if (dataset.import_in_progress) {
+				var stopButton = new Button({
+					'class': 'button',
+					'duration': 0,
+					'label': (dataset.type === 'GnipDataset') ? 'Pause Importing' : 'Stop Importing',
+					'onClick': lang.hitch(this, function() {
+						this.stopImport(dataset.id);
+					})
+				});
+				stopButton.placeAt(this.importButtonPane);
+				stopButton.startup();
 			}
-			else {
-				domAttr.remove(this.browseLink, 'href');
-				domAttr.remove(this.importsLink, 'href');
+			else if (dataset.type === 'GnipDataset') {
+				var startButton = new Button({
+					'class': 'button',
+					'duration': 0,
+					'label': 'Resume Importing',
+					'onClick': lang.hitch(this, function() {
+						this.startImport(dataset.id);
+					})
+				});
+				startButton.placeAt(this.importButtonPane);
+				startButton.startup();
 			}
 
-			this.visList.destroyDescendants();
+			var i, li;
+			for (i = 0; i < dataset.import_operations.length; i++) {
+				li = new ImportOpListItem({
+					importOp: dataset.import_operations[i]
+				});
+				this.importsList.addChild(li);
+				li.startup();
+			}
 		},
 
 		onDeleteClicked: function() {
@@ -142,41 +153,58 @@ define(['dojo/_base/declare',
 
 		activate: function(e) {
 			this.inherited(arguments);
+			this.set('dataUrl', '/api/v0/datasets/' + e.params[0]);
+		},
 
-			console.warn(e);
-
-			if (this.datasetPromise !== null) {
-				this.datasetPromise.cancel();
-			}
-
-			toaster.clearMessages();
-			this.datasetPromise = xhr.get('/api/v0/datasets/' + e.params[0] + '.json', {
+		startImport: function(dataset_id) {
+			xhr.get('/api/v0/datasets/' + dataset_id + '/start_import', {
 				handleAs: 'json'
 			}).response.then(
 				lang.hitch(this, function(response) {
-					this.datasetPromise = null;
-					this.set('dataset', response.data);
-				}),
-				lang.hitch(this, function(err) {
-					this.datasetPromise = null;
-					console.error(err);
-
-					this.set('dataset', null);
-
-					if (err.response.status == 404) {
-						toaster.displayMessage({
-							text: 'Dataset not found',
-							type: 'warning',
-							time: -1
-						});
+					if (response.data == true) {
+						this.reloadData();
 					}
 					else {
 						toaster.displayMessage({
-							text: 'An unknown error occurred',
+							text: 'Failed to start data import',
 							type: 'error',
 							time: -1
 						});
 					}
+				}),
+				lang.hitch(this, function(err) {
+					console.error(err);
+					toaster.displayMessage({
+						text: 'Failed to start data import',
+						type: 'error',
+						time: -1
+					});
+				}));
+		},
+
+		stopImport: function(dataset_id) {
+			xhr.get('/api/v0/datasets/' + dataset_id + '/stop_import', {
+				handleAs: 'json'
+			}).response.then(
+				lang.hitch(this, function(response) {
+					if (response.data == true) {
+						this.reloadData();
+					}
+					else {
+						toaster.displayMessage({
+							text: 'Failed to start data import',
+							type: 'error',
+							time: -1
+						});
+					}
+				}),
+				lang.hitch(this, function(err) {
+					console.error(err);
+					toaster.displayMessage({
+						text: 'Failed to start data import',
+						type: 'error',
+						time: -1
+					});
 				}));
 		}
 	});

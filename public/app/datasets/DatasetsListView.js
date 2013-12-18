@@ -1,9 +1,12 @@
 define(['dojo/_base/declare',
+		'dojo/_base/lang',
 		'dojo/dom-construct',
+		'dojo-mama/util/DataListPane',
 		'dojo-mama/util/LinkListItem',
-		'app/util/XHRListView'
-], function(declare, domConstruct, LinkListItem, XHRListView) {
-	return declare([XHRListView], {
+		'dojo-mama/views/ModuleView',
+		'dojo-mama/views/DataListView'
+], function(declare, lang, domConstruct, DataListPane, LinkListItem, ModuleView, DataListView) {
+	return declare([DataListView], {
 
 		'class': 'datasetsListView',
 
@@ -13,14 +16,17 @@ define(['dojo/_base/declare',
 
 		route: '/',
 
+		showFooter: true,
+
+		title: 'Available Datasets',
+
 		buildRendering: function() {
 			this.inherited(arguments);
 
 			domConstruct.create('a', {
-				href: '#/datasets/create',
 				innerHTML: 'Create New Dataset',
-				style: {margin: '10px'}
-			}, this.domNode);
+				href: '#/datasets/create'
+			}, this.footerNode);
 		},
 
 		buildListItem: function(obj) {

@@ -10,6 +10,8 @@
 @import "./toaster.less";
 @import "./slider.less";
 @import "./linkframe.less";
+@import "./dataset_selector.less";
+@import "./viz_selector.less";
 
 .font-mixin {
 	font-family: Helvetica, Arial, sans-serif;
@@ -57,36 +59,76 @@ input, textarea, button, select {
 .dmModuleContent {
 	background: white;
 	outline: none;
-	top: 100px;
+	top: 60px;
 }
 
-.dj_tablet .dmLayout {
-	bottom: 0;
-	height: auto;
-	position: absolute;
-	max-width: 1100px;
-	top: 0;
-	width: 100%;
+.dmView {
+	position: relative;
 
-	@media (min-width: 1100px) {
-		bottom: 0;
-		left: 50%;
-		margin-left: -550px;
+	.dmViewTitle {
+		background-color: rgb(55,190,79);
+		color: white;
+		font-size: 18px;
+		height: 40px;
+		line-height: 40px;
+		padding: 0 10px;
+		position: absolute;
 		top: 0;
+		width: 100%;
 	}
 
-	@media (min-width: 1100px) and (max-width: 1220px) {
-		bottom: 5px;
-		top: 5px;
+	.dmViewHeader {
+		border-bottom: 1px solid rgb(55,55,55);
+		height: 50px;
+		line-height: 50px;
+		padding: 0 10px;
+		position: absolute;
+		top: 0;
+		width: 100%;
 	}
 
-	@media (min-width: 1220px) {
-		bottom: 10px;
-		top: 10px;
+	.dmViewContent {
+		bottom: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
 	}
 
-	@media (min-width: 1600px) {
-		bottom: 25px;
-		top: 25px;
+	.dmViewFooter {
+		border-top: 1px solid rgb(55,55,55);
+		bottom: 0;
+		height: 50px;
+		line-height: 50px;
+		padding: 0 10px;
+		position: absolute;
+		width: 100%;
+	}
+}
+
+.dmView.hasTitle {
+	.dmViewHeader {
+		top: 40px;
+	}
+
+	.dmViewContent {
+		top: 40px;
+	}
+}
+
+.dmView.hasHeader {
+	.dmViewContent {
+		top: 51px;
+	}
+}
+
+.dmView.hasTitle.hasHeader {
+	.dmViewContent {
+		top: 91px;
+	}
+}
+
+.dmView.hasFooter {
+	.dmViewContent {
+		bottom: 51px;
 	}
 }

@@ -1,9 +1,8 @@
 define(['dojo/_base/declare',
 		'dojo/dom-class',
 		'dojo/topic',
-		'dojox/mobile/Pane',
 		'dojo-mama/util/toaster'
-], function(declare, domClass, topic, Pane, toaster) {
+], function(declare, domClass, topic, toaster) {
 
 	// module:
 	//     dojo-mama/views/ModuleViewBase
@@ -21,11 +20,6 @@ define(['dojo/_base/declare',
 		// router: Object
 		//     A module-relative dojo/router provided by dojo-mama/Module upon view registration
 		router: null,
-		// title: String
-		//     A title shown in the sub nav. If undefined, dojo-mama/Module uses
-		//     the module's title when a view is shown. To explicitly avoid setting the title
-		//     when a view loads, set the view's title to `null`.
-		title: undefined,
 
 		buildRendering: function() {
 			this.inherited(arguments);
@@ -65,14 +59,6 @@ define(['dojo/_base/declare',
 			//     Called when a view is hidden, settings this.active to false
 			this.set('active', false);
 			toaster.clearMessages();
-		},
-
-		_setTitleAttr: function(/*String*/ title) {
-			this._set('title', title);
-
-			topic.publish('/dojo-mama/updateSubNav', {
-				title: title
-			});
 		}
 
 	});
