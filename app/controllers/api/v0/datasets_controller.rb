@@ -12,7 +12,7 @@ class Api::V0::DatasetsController < ApplicationController
   def show
     @dataset = Dataset.find(params[:id])
 
-    render json: @dataset
+    render json: @dataset.as_json(:methods => [:import_in_progress], :include => { :import_operations => { :methods => [:in_progress, :failed] } } )
   end
 
   # POST /api/v0/datasets
@@ -39,14 +39,6 @@ class Api::V0::DatasetsController < ApplicationController
     @dataset.destroy
 
     head :no_content
-  end
-
-  # GET /api/v0/datasets/1/imports
-  # GET /api/v0/datasets/1/imports.json
-  def imports
-    @dataset = Dataset.find(params[:id])
-    # Return imports in reverse chronological order
-    render json: @dataset.import_operations.sort_by(&:time_started).reverse.as_json(methods: [:data_source, :failed?, :in_progress?])
   end
 
   # GET /api/v0/datasets/1/start_import

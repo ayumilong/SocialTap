@@ -20,17 +20,29 @@ class FileDataset < Dataset
     end
   end
 
-  def begin_import(io)
-    io.pid = Process.spawn("rails", "runner", "FileDataset.run_import(#{io.id})", {
-      :out => [Rails.root.join("log", "file_import.log"), "a"],
-      :err => [Rails.root.join("log", "file_import.err"), "a"]
-    })
-    Process.detach(io.pid)
-    io.save
+  def start_import
+    if self.import_in_progress || !self.last_import_operation.failed
+      false
+    else
+      io = ImportOperation.new(dataset: self)
+      io.time_started = Time.zone.now
+      io.save
+      io.pid = Process.spawn("rails", "runner", "FileDataset.run_import(#{io.id})", {
+        :out => [Rails.root.join("log", "file_import.log"), "a"],
+        :err => [Rails.root.join("log", "file_import.err"), "a"]
+      })
+      Process.detach(io.pid)
+      io.save
+      true
+    end
   end
 
-  def end_import(io)
+  def stop_import
+    io = self.current_import_operation
+    io.time_stopped = Time.zone.now
     Process.kill("INT", io.pid)
+    io.pid = nil
+    io.save
   end
 
   def self.run_import(import_id)
@@ -49,7 +61,6 @@ class FileDataset < Dataset
 
     mapping.on_error do |err|
       $stderr.puts "[#{DateTime.now}] #{import_id}: #{err}"
-      return false
     end
 
     es = ESStorage.new
@@ -59,9 +70,7 @@ class FileDataset < Dataset
         es.store_item_in_dataset(item, import.dataset)
       rescue
         import.error_message = "Unable to connect to Elasticsearch"
-        import.time_stopped = Time.zone.now
-        import.save
-        return false
+        break
       end
     end
 
