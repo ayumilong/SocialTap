@@ -2,9 +2,8 @@ define(['dojo/_base/declare',
 		'dojo-mama/Module',
 		'app/datasets/CreateDatasetView',
 		'app/datasets/DatasetsListView',
-		'app/datasets/DatasetView',
-		'app/datasets/DatasetImportsListView'
-], function(declare, Module, CreateDatasetView, DatasetsListView, DatasetView, DatasetImportsListView) {
+		'app/datasets/DatasetView'
+], function(declare, Module, CreateDatasetView, DatasetsListView, DatasetView) {
 	return declare([Module],{
 		'class': 'datasetsModule',
 
@@ -20,9 +19,6 @@ define(['dojo/_base/declare',
 
 			var cdv = new CreateDatasetView();
 			this.registerView(cdv);
-
-			var dilv = new DatasetImportsListView();
-			this.registerView(dilv);
 		}
 	});
 });

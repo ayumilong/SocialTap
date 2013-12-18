@@ -109,6 +109,7 @@ define(['dojo/_base/declare',
 				if (!this.titleNode) {
 					this._buildTitle();
 				}
+				this.titleNode.innerHTML = title;
 			}
 			else if (this.titleNode) {
 				domClass.remove(this.domNode, 'hasTitle');

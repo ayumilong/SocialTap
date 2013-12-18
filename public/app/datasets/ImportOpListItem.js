@@ -16,13 +16,13 @@ function(declare, BaseListItem) {
 			var text = '';
 			text += '<span class="startTime">Started ' + startTime.toLocaleDateString() + ' ' + startTime.toLocaleTimeString() + '</span>';
 			text += '<br>';
-			if (importOp['in_progress?']) {
+			if (importOp.in_progress) {
 				text += '<span class="status"><span style="color: green;">In Progress</span></span>';
 			}
 			else {
-				var stopMessage = (importOp['failed?']) ? 'Stopped ' : 'Completed ';
+				var stopMessage = (importOp.failed) ? 'Stopped ' : 'Completed ';
 				stopMessage += stopTime.toLocaleDateString() + ' ' + stopTime.toLocaleTimeString();
-				if (importOp['failed?']) {
+				if (importOp.failed) {
 					stopMessage = '<span style="color: red;">' + stopMessage + ' (' + importOp.error_message + ')</span>';
 				}
 				text += '<span class="status">' + stopMessage + '</span>';

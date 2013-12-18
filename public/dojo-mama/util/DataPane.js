@@ -2,10 +2,10 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-construct',
 		'dojo/request/xhr',
-		'dojox/mobile/ProgressIndicator',
-		'dojo-mama/util/ScrollablePane'],
-function(declare, lang, domConstruct, xhr, ProgressIndicator, ScrollablePane) {
-	return declare([ScrollablePane], {
+		'dojox/mobile/Pane',
+		'dojox/mobile/ProgressIndicator'
+], function(declare, lang, domConstruct, xhr, Pane, ProgressIndicator) {
+	return declare([Pane], {
 
 		dataPromise: null,
 
@@ -23,14 +23,15 @@ function(declare, lang, domConstruct, xhr, ProgressIndicator, ScrollablePane) {
 			}
 		},
 
-		startup: function() {
-			this.inherited(arguments);
-			this.reloadData();
-		},
-
 		_setDataUrlAttr: function(dataUrl) {
 			this._set('dataUrl', dataUrl);
-			this.reloadData();
+			if (dataUrl) {
+				this.reloadData();
+			}
+		},
+
+		beforeLoad: function() {
+			domConstruct.empty(this.contentNode);
 		},
 
 		handleData: function(data) {
@@ -58,11 +59,11 @@ function(declare, lang, domConstruct, xhr, ProgressIndicator, ScrollablePane) {
 
 		reloadData: function() {
 
-			if (this.dataPromise && !this.dataPromise.isFulfilled()) {
+			if (this.dataPromise) {
 				this.dataPromise.cancel();
 			}
 
-			domConstruct.empty(this.contentNode);
+			this.beforeLoad();
 
 			var pi = new ProgressIndicator();
 			pi.placeAt(this.contentNode);
@@ -80,6 +81,8 @@ function(declare, lang, domConstruct, xhr, ProgressIndicator, ScrollablePane) {
 					else {
 						this.handleData(response.data);
 					}
+
+					this.dataPromise = null;
 				}),
 				lang.hitch(this, function(err) {
 					pi.stop();
@@ -87,6 +90,7 @@ function(declare, lang, domConstruct, xhr, ProgressIndicator, ScrollablePane) {
 						console.error(err);
 						this.handleError(err);
 					}
+					this.dataPromise = null;
 				}));
 		}
 
