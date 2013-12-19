@@ -1,22 +1,18 @@
 define(['dojo/_base/declare',
 		'dojo/_base/kernel',
 		'dojo/_base/lang',
-		'dojo/_base/window',
 		'dojo/Deferred',
 		'dojo/dom-attr',
-		'dojo/dom-construct',
 		'dojo/topic',
 		'dijit/_WidgetBase',
 		'dojox/mobile',
 		'dojox/mobile/Pane',
 		'dojo-mama/ModuleManager',
 		'dojo-mama/util/Analytics',
-		'./MenuBar',
-		'./SubNav',
 		'./DatasetSelector',
 		'./VisualizationSelector'
-], function(declare, kernel, lang, win, Deferred, domAttr, domConstruct, topic,
-	WidgetBase, mobile, Pane, ModuleManager, Analytics, MenuBar, SubNav, DatasetSelector, VisualizationSelector) {
+], function(declare, kernel, lang, Deferred, domAttr, topic,
+	WidgetBase, mobile, Pane, ModuleManager, Analytics, DatasetSelector, VisualizationSelector) {
 
 	// module:
 	//     dojo-mama/layout/responsiveTwoColumn/Layout
@@ -94,7 +90,6 @@ define(['dojo/_base/declare',
 			this.inherited(arguments);
 
 			// hide the layout initially to prevent flashing in mobile view of right pane
-			this.domNode.style.display = 'none';
 
 			this.datasetSelector = new DatasetSelector();
 			this.datasetSelector.placeAt(this.domNode);
@@ -124,9 +119,6 @@ define(['dojo/_base/declare',
 			this.datasetSelector.startup();
 			this.vizSelector.startup();
 			this.analytics.startup();
-
-			// place the layout into the dom
-			this.placeAt(win.body(), 'first');
 
 			// subscribe to screens size events and other topics
 			topic.subscribe('/dojox/mobile/screenSize/phone', lang.hitch(this, this.layoutPhone));
@@ -206,7 +198,6 @@ define(['dojo/_base/declare',
 
 			if (!this.layoutReady.isFulfilled()) {
 				this.layoutReady.resolve();
-				this.domNode.style.display = '';
 			}
 		}
 	});
