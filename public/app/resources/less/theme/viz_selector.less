@@ -14,6 +14,10 @@
 		position: absolute;
 		top: 10px;
 		width: 40px;
+
+		&:disabled {
+			color: rgb(70,70,70);
+		}
 	}
 
 	.scrollLeft {
@@ -54,6 +58,12 @@
 			color: white;
 			line-height: 40px;
 			text-align: center;
+		}
+
+		&.active {
+			.dmListItemText {
+				color: rgb(55,190,79);
+			}
 		}
 	}
 }

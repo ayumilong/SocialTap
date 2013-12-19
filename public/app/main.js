@@ -11,33 +11,26 @@ define(['require'], function (require) {
 		'dojo-mama/layout/responsiveTwoColumn/Layout',
 		'app/dmConfig',
 		'app/util/dom-utils',
+		'dojo/_base/window',
 		'dojo/dom-class',
 		'dojo/has',
 		'dojo/ready',
 		'app/util/ProgressIndicator'
-	], function (Layout, dmConfig, domUtils, domClass, has, ready, ProgressIndicator) {
+	], function (Layout, dmConfig, domUtils, win, domClass, has, ready, ProgressIndicator) {
 		ready(function() {
 
 			if (!has('touch')) {
 				domClass.add(document.getElementsByTagName('html')[0], 'no_touch');
 			}
 
-			var layout = new Layout({config: dmConfig}),
-				layoutReady = layout.startup(),
-				pi = new ProgressIndicator();
-
-			pi.placeAt(document.body);
-			pi.start();
+			var layout = new Layout({config: dmConfig});
+			layout.placeAt(win.body(), 'first');
+			var layoutReady = layout.startup();
 
 			layoutReady.then(function() {
-
 				// render cufon fonts for Winblows Mobile
 				domUtils.cufonify();
-
 				domUtils.injectNavSpinners(layout);
-
-				// stop the progress indicator
-				pi.stop();
 			});
 		});
 	});

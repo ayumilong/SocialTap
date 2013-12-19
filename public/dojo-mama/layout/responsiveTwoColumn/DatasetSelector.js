@@ -3,6 +3,8 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-class',
 		'dojo/dom-construct',
+		'dojo/on',
+		'dojo/router',
 		'dojo/topic',
 		'dojox/mobile/Button',
 		'dojox/mobile/EdgeToEdgeList',
@@ -11,7 +13,7 @@ define(['dojo/_base/declare',
 		'dojo-mama/util/DataPane',
 		'dojo-mama/util/LinkListItem',
 		'dojo-mama/util/ScrollablePane'],
-function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdgeList, Pane, BaseListItem, DataPane, LinkListItem, ScrollablePane) {
+function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Button, EdgeToEdgeList, Pane, BaseListItem, DataPane, LinkListItem, ScrollablePane) {
 	return declare([DataPane], {
 		'class': 'stDatasetSelector',
 
@@ -19,7 +21,7 @@ function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdg
 
 		toggleListButton: null,
 
-		selectedDataset: null,
+		selectedDatasetId: null,
 
 		datasets: null,
 
@@ -31,7 +33,7 @@ function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdg
 
 		navRoute: null,
 
-		onChange: null,
+		newDatasetOnClickHandle: null,
 
 		buildRendering: function() {
 			this.inherited(arguments);
@@ -46,6 +48,16 @@ function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdg
 			this.list.placeAt(this.listPane.domNode);
 			this.list.startup();
 
+			var newDatasetLink = domConstruct.create('a', {
+				'class': 'newDatasetLink',
+				'href': '#/datasets/create',
+				'innerHTML': 'Create New Dataset'
+			}, this.listPane.domNode);
+
+			this.newDatasetOnClickHandle = on(newDatasetLink, 'click', lang.hitch(this, function() {
+				this.closeDatasetList();
+			}));
+
 			this.toggleListButton = new Button({
 				'class': 'stToggleListButton fa fa-folder-o',
 				'duration': 0,
@@ -59,26 +71,16 @@ function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdg
 				'innerHTML': 'Select Dataset'
 			}, this.contentNode);
 
-			topic.subscribe('/dojo-mama/routeEvent', lang.hitch(this, this.handleRoute));
+			var i, navItem;
+			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+				navItem = kernel.global.dmConfig.topNav[i];
+				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
+			}
 		},
 
 		handleRoute: function(e) {
-			var i, navItem, match, datasetId;
-			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
-				navItem = kernel.global.dmConfig.topNav[i];
-				match = e.newPath.match(new RegExp('/' + navItem.route.replace(':dataset_id', '(\\d)')));
-				if (match != null) {
-					datasetId = parseInt(match[1], 10);
-					this.selectedDatasetId = datasetId;
-					if (this.datasets) {
-						this.datasets.forEach(lang.hitch(this, function(ds) {
-							if (ds.id == datasetId) {
-								this.set('selectedDataset', ds);
-							}
-						}));
-					}
-				}
-			}
+			this.closeDatasetList();
+			this.set('selectedDatasetId', parseInt(e.params[0], 10));
 		},
 
 		beforeLoad: function() {
@@ -88,9 +90,9 @@ function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdg
 		handleData: function(datasets) {
 			this.datasets = datasets;
 
-			var createClickHandler = lang.hitch(this, function(li, index) {
+			var createClickHandler = lang.hitch(this, function(li, datasetId) {
 				li.set('onClick', lang.hitch(this, function() {
-					this.set('selectedDataset', this.datasets[index]);
+					this.set('selectedDatasetId', datasetId);
 					this.closeDatasetList();
 				}));
 			});
@@ -104,14 +106,13 @@ function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdg
 						cursor: 'pointer'
 					}
 				});
-				createClickHandler(li, i);
+				createClickHandler(li, datasets[i].id);
 				this.list.addChild(li);
 				li.startup();
-
-				if (this.selectedDatasetId == datasets[i].id) {
-					this.set('selectedDataset', datasets[i]);
-				}
 			}
+
+			// Now that data has loaded
+			this.set('selectedDatasetId', this.selectedDatasetId);
 		},
 
 		openDatasetList: function() {
@@ -127,13 +128,24 @@ function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdg
 			this.toggleListButton.set('onClick', lang.hitch(this, this.openDatasetList));
 		},
 
-		_setSelectedDatasetAttr: function(selectedDataset) {
-			this._set('selectedDataset', selectedDataset);
+		destroy: function() {
+			if (this.newDatasetOnClickHandle) {
+				this.newDatasetOnClickHandle.remove();
+				this.newDatasetOnClickHandle = null;
+			}
+			this.inherited(arguments);
+		},
 
-			this.datasetNameNode.innerHTML = selectedDataset.name;
+		_setSelectedDatasetIdAttr: function(selectedDatasetId) {
+			this._set('selectedDatasetId', selectedDatasetId);
 
-			if (this.onChange) {
-				this.onChange(selectedDataset.id);
+			if (this.datasets) {
+				var i;
+				for (i = 0; i < this.datasets.length; i++) {
+					if (this.datasets[i].id == selectedDatasetId) {
+						this.datasetNameNode.innerHTML = this.datasets[i].name;
+					}
+				}
 			}
 		},
 
@@ -143,7 +155,7 @@ function(declare, kernel, lang, domClass, domConstruct, topic, Button, EdgeToEdg
 			var lis = this.list.getChildren();
 			var i;
 			for (i = 0; i < lis.length; i++) {
-				lis[i].set('href', '#/' + navRoute.replace(':dataset_id', this.selectedDataset.id));
+				lis[i].set('href', '#' + navRoute.replace(':dataset_id', this.selectedDatasetId));
 			}
 		}
 	});
