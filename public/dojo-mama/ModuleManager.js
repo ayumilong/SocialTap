@@ -197,6 +197,8 @@ define(['dojo/_base/declare',
 					this.activateModule(module, e);
 				}));
 			}
+
+			topic.publish('/dojo-mama/routeEvent', e);
 		},
 
 		show404: function() {
