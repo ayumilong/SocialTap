@@ -7,21 +7,22 @@ define(['dojo/_base/declare',
 		'dojo/dom-geometry',
 		'dojo/dom-style',
 		'dojo/fx',
+		'dojo/router',
 		'dojo/topic',
 		'dojox/mobile/EdgeToEdgeList',
 		'dojox/mobile/Button',
 		'dojox/mobile/Pane',
 		'dojo-mama/util/BaseListItem',
 		'dojo-mama/util/LinkListItem'],
-function(declare, baseFx, kernel, lang, domClass, domConstruct, domGeometry, domStyle, fx, topic, EdgeToEdgeList, Button, Pane, BaseListItem, LinkListItem) {
+function(declare, baseFx, kernel, lang, domClass, domConstruct, domGeometry, domStyle, fx, router,
+	topic, EdgeToEdgeList, Button, Pane, BaseListItem, LinkListItem)
+{
 	return declare([Pane], {
 		'class': 'stVisualizationSelector',
 
 		list: null,
 
 		datasetId: null,
-
-		onChange: null,
 
 		scrollOffset: null,
 		scrollLeftButton: null,
@@ -52,19 +53,15 @@ function(declare, baseFx, kernel, lang, domClass, domConstruct, domGeometry, dom
 			this.scrollRightButton.placeAt(this.domNode);
 			this.scrollRightButton.startup();
 
-			topic.subscribe('/dojo-mama/routeEvent', lang.hitch(this, this.handleRoute));
+			var i, navItem;
+			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+				navItem = kernel.global.dmConfig.topNav[i];
+				router.register(navItem.route, lang.hitch(this, this.handleRoute));
+			}
 		},
 
 		handleRoute: function(e) {
-			var i, navItem, match;
-			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
-				navItem = kernel.global.dmConfig.topNav[i];
-				match = e.newPath.match(new RegExp('/' + navItem.route.replace(':dataset_id', '(\\d)')));
-				if (match != null) {
-					this.datasetId = parseInt(match[1], 10);
-					this.reloadList();
-				}
-			}
+			this.set('datasetId', e.params.dataset_id);
 		},
 
 		scrollLeft: function() {
@@ -96,22 +93,13 @@ function(declare, baseFx, kernel, lang, domClass, domConstruct, domGeometry, dom
 
 			var i, navItem, li;
 
-			var createClickHandler = lang.hitch(this, function(li, navItem) {
-				li.set('onClick', lang.hitch(this, function() {
-					if (this.onChange) {
-						this.onChange(navItem);
-					}
-				}));
-			});
-
 			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
 				navItem = kernel.global.dmConfig.topNav[i];
 
 				li = new LinkListItem({
 					text: navItem.label,
-					href: '#/' + navItem.route.replace(':dataset_id', this.datasetId)
+					href: '#' + navItem.route.replace(':dataset_id', this.datasetId)
 				});
-				createClickHandler(li, navItem);
 				li.placeAt(this.list);
 				li.startup();
 			}
