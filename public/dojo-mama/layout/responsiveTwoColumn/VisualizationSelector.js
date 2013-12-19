@@ -50,10 +50,41 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 				navItem = kernel.global.dmConfig.topNav[i];
 				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
+
+			router.register('/*path', lang.hitch(this, this.clearActive));
 		},
 
 		handleRoute: function(e) {
 			this.set('datasetId', parseInt(e.params[0], 10));
+
+			this.list.getChildren().forEach(function(li) {
+				domClass.remove(li.domNode, 'active');
+			});
+
+			var i, navItem;
+			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+				navItem = kernel.global.dmConfig.topNav[i];
+				if (navItem.route.replace(':dataset_id', e.params[0]) == e.newPath) {
+					domClass.add(this.list.getChildren()[i].domNode, 'active');
+				}
+			}
+		},
+
+		clearActive: function(e) {
+			// If this route doesn't match any viz routes, clear the active class from all viz list items
+			var i, navItem, match = false;
+			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+				navItem = kernel.global.dmConfig.topNav[i];
+				if (e.newPath.match(new RegExp(navItem.route.replace(':dataset_id', '\\d+')))) {
+					match = true;
+					break;
+				}
+			}
+			if (!match) {
+				this.list.getChildren().forEach(function(li) {
+					domClass.remove(li.domNode, 'active');
+				});
+			}
 		},
 
 		scrollLeft: function() {
