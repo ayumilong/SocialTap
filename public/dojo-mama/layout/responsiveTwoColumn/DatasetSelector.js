@@ -3,6 +3,7 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-class',
 		'dojo/dom-construct',
+		'dojo/on',
 		'dojo/router',
 		'dojo/topic',
 		'dojox/mobile/Button',
@@ -12,7 +13,7 @@ define(['dojo/_base/declare',
 		'dojo-mama/util/DataPane',
 		'dojo-mama/util/LinkListItem',
 		'dojo-mama/util/ScrollablePane'],
-function(declare, kernel, lang, domClass, domConstruct, router, topic, Button, EdgeToEdgeList, Pane, BaseListItem, DataPane, LinkListItem, ScrollablePane) {
+function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Button, EdgeToEdgeList, Pane, BaseListItem, DataPane, LinkListItem, ScrollablePane) {
 	return declare([DataPane], {
 		'class': 'stDatasetSelector',
 
@@ -32,6 +33,8 @@ function(declare, kernel, lang, domClass, domConstruct, router, topic, Button, E
 
 		navRoute: null,
 
+		newDatasetOnClickHandle: null,
+
 		buildRendering: function() {
 			this.inherited(arguments);
 
@@ -44,6 +47,16 @@ function(declare, kernel, lang, domClass, domConstruct, router, topic, Button, E
 			this.list = new EdgeToEdgeList();
 			this.list.placeAt(this.listPane.domNode);
 			this.list.startup();
+
+			var newDatasetLink = domConstruct.create('a', {
+				'class': 'newDatasetLink',
+				'href': '#/datasets/create',
+				'innerHTML': 'Create New Dataset'
+			}, this.listPane.domNode);
+
+			this.newDatasetOnClickHandle = on(newDatasetLink, 'click', lang.hitch(this, function() {
+				this.closeDatasetList();
+			}));
 
 			this.toggleListButton = new Button({
 				'class': 'stToggleListButton fa fa-folder-o',
@@ -61,12 +74,13 @@ function(declare, kernel, lang, domClass, domConstruct, router, topic, Button, E
 			var i, navItem;
 			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
 				navItem = kernel.global.dmConfig.topNav[i];
-				router.register(navItem.route, lang.hitch(this, this.handleRoute));
+				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 		},
 
 		handleRoute: function(e) {
-			this.set('selectedDatasetId', e.params.dataset_id);
+			this.closeDatasetList();
+			this.set('selectedDatasetId', parseInt(e.params[0], 10));
 		},
 
 		beforeLoad: function() {
@@ -112,6 +126,14 @@ function(declare, kernel, lang, domClass, domConstruct, router, topic, Button, E
 			domClass.add(this.listPane.domNode, 'hidden');
 			domClass.replace(this.toggleListButton.domNode, 'fa-folder-o', 'fa-folder-open-o');
 			this.toggleListButton.set('onClick', lang.hitch(this, this.openDatasetList));
+		},
+
+		destroy: function() {
+			if (this.newDatasetOnClickHandle) {
+				this.newDatasetOnClickHandle.remove();
+				this.newDatasetOnClickHandle = null;
+			}
+			this.inherited(arguments);
 		},
 
 		_setSelectedDatasetIdAttr: function(selectedDatasetId) {

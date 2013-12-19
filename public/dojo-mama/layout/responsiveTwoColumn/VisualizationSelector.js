@@ -56,12 +56,12 @@ function(declare, baseFx, kernel, lang, domClass, domConstruct, domGeometry, dom
 			var i, navItem;
 			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
 				navItem = kernel.global.dmConfig.topNav[i];
-				router.register(navItem.route, lang.hitch(this, this.handleRoute));
+				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 		},
 
 		handleRoute: function(e) {
-			this.set('datasetId', e.params.dataset_id);
+			this.set('datasetId', parseInt(e.params[0], 10));
 		},
 
 		scrollLeft: function() {
