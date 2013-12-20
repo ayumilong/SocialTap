@@ -8,17 +8,17 @@
 
 puts "Seeding..."
 
-Dataset.create(
+GnipDataset.create(
   name: "The South",
-  description: "Geocoded tweets about American southerners and the south",
-  index: "south_tweets4"
+  description: "Geocoded tweets about southerners and the south",
+  source: "south southern southerner southerners"
 )
 
-User.create(
-  name: "Test User",
-  email: "guirl@clemson.edu",
-  password_digest: ""
-)
+# User.create(
+#   name: "Test User",
+#   email: "guirl@clemson.edu",
+#   password_digest: ""
+# )
 
 Inquiry.create(
   name: "Southern food, hospitality, and accents",

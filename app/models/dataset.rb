@@ -7,10 +7,10 @@ class Dataset < ActiveRecord::Base
   validates :name, presence: true
   validates :source, presence: true
 
-  after_create :create_elasticsearch_index
+  # after_create :create_elasticsearch_index
 
   # Immediately start importing data after creation
-  after_create :start_import
+  # after_create :start_import
 
   before_destroy :stop_import, :if => :import_in_progress
 
@@ -60,6 +60,11 @@ class Dataset < ActiveRecord::Base
   def delete_from_elasticsearch
     self.connect_to_es
     @es.indices.delete index: self.es_index
+  end
+
+  def search params
+    self.connect_to_es
+    @es.search index: self.es_index, type: self.es_mapping, body: params
   end
 
 end

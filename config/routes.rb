@@ -1,8 +1,8 @@
 SocialTap::Application.routes.draw do
+  get 'auth/:provider/callback', to: "api/v0/sessions#create"
+  get 'auth/failure', to: redirect('/')
+  get 'auth/signout', to: "api/v0/sessions#destroy"
 
-  get "sessions/create"
-  get "sessions/destroy"
-  get "sessions/failure"
   namespace :api do
     namespace :v0 do
       resources :users, except: [:new, :edit]
@@ -26,7 +26,7 @@ SocialTap::Application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  # root 'welcome#index'
+  root controller: 'static', action: '/'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

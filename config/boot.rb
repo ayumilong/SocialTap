@@ -3,6 +3,6 @@ ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../Gemfile', __FILE__)
 
 require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
 
-# Setup Dojo environment
+# TODO: Setup Dojo environment
 
-# compile Less to CSS
+# TODO: compile Less to CSS

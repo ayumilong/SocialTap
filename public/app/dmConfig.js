@@ -16,7 +16,9 @@ define({
 		index: {
 			moduleId: 'app/index/Module'
 		},
-
+		auth: {
+			moduleId: 'app/auth/Module'
+		},
 
 		/* Secondary */
 		datasets: {
