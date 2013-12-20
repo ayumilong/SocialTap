@@ -1,15 +1,15 @@
 /*global $,d3*/
 define(['dojo/_base/declare',
 		'dojo/dom-construct',
-		'dojo-mama/views/ModuleScrollableView',
+		'app/vis/VisBaseView.js',
 		'app/vis/jsPlugin!static/d3.js',
 		'app/vis/jsPlugin!static/jquery.js'
-], function(declare, domConstruct, ModuleScrollableView) {
-	return declare([ModuleScrollableView], {
+], function(declare, domConstruct, VisBaseView) {
+	return declare([VisBaseView], {
 
 		'class': 'SentView',
 		parentView: '/',
-		route: '/sentiment',
+		route: '/sentiment/:dataset',
 		title: 'Sentiment Graph',
 		map: [],
 		max: 0,
@@ -22,7 +22,8 @@ define(['dojo/_base/declare',
 				'id': "graph"
 			}, this.domNode);
 		},
-		activate: function() {
+		activate: function(e) {
+			this.dataset = e.params.dataset;
 			if (!this.activated) {
 				this.query();
 				this.activated = true;
@@ -32,28 +33,16 @@ define(['dojo/_base/declare',
 		query: function() {
 			var that = this;
 			var query = {
-				"size" : "10000",
-			    "query": {
-			        "match" : {"body": "chicken"}
-			    },
-				"sort":[ { "postedTime" : {"order" : "asc" } } ]
-			};
-
-			$.ajax(
-				{
-					url: 'http://funkytron.clemson.edu:9200/south_tweets4/tweet/_search/',
-					type: 'POST',
-					crossDomain: true,
-					dataType: 'json',
-					data: JSON.stringify(query),
-					success: function(data) {
-						that.buildMap(data);
+				"elasticsearch" : {
+					"size" : "10000",
+					"query": {
+						"match" : {"body": "chicken"}
 					},
-					error: function(data) {
-						console.error(data);
-					}
+					"sort":[ { "postedTime" : {"order" : "asc" } } ]
 				}
-			);
+			};
+			this.es(query, this.buildMap);
+
 		},
 
 		resize: function() {
@@ -87,6 +76,7 @@ define(['dojo/_base/declare',
 				}
 				else {
 					console.log("Soemthing went wrong. Sentiment was " + sample[i]._source.sentiment);
+					this.map[monthCounter].pos += 1;
 				}
 				this.map[monthCounter].total += 1;
 				if (this.map[monthCounter].total > this.max) {
@@ -100,10 +90,12 @@ define(['dojo/_base/declare',
 			var data = this.map;
 			var thisMax = this.max;
 			var margin = {top: 20, right: 35, bottom: 35, left: 35};
-			var tempWidth = d3.select("#dojox_mobile_Pane_1").style("width");
+			/*var tempWidth = d3.select("#dojox_mobile_Pane_1").style("width");
 			var tempHeight = d3.select("#dojox_mobile_Pane_5").style("height");
 			tempWidth = tempWidth.split("px")[0];
-			tempHeight = tempHeight.split("px")[0];
+			tempHeight = tempHeight.split("px")[0];*/
+			var tempWidth = 800;
+			var tempHeight = 600;
 			var width = tempWidth - margin.left - margin.right;
 			var height = 0;
 			var fontsize;
@@ -174,7 +166,7 @@ define(['dojo/_base/declare',
 
 			  sentiment.append("path")
 				  .attr("class", "area")
-				  .attr("d", function(d) { return area(d.values); })
+				  .attr("d", function(d) { console.log(d);return area(d.values); })
 				  .style("fill", function(d) { return color(d.name); });
 
 			  sentiment.append("text")

@@ -62,4 +62,13 @@ class Dataset < ActiveRecord::Base
     @es.indices.delete index: self.es_index
   end
 
+  def search(params)
+   self.connect_to_es
+   @es.search({
+     index: self.es_index,
+     type: self.es_mapping,
+     body: params
+   })
+ end
+
 end

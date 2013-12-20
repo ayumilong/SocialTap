@@ -3,16 +3,17 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-construct',
 		'dojo-mama/views/ModuleScrollableView',
+		'app/vis/VisBaseView.js',
 		'app/util/SearchBar',
 		'app/vis/jsPlugin!static/d3.js',
 		'app/vis/jsPlugin!static/jquery.js',
 		'app/vis/jsPlugin!static/d3.layout.cloud.js'
-], function(declare, lang, domConstruct, ModuleScrollableView, SearchBar) {
-	return declare([ModuleScrollableView], {
+], function(declare, lang, domConstruct, ModuleScrollableView, VisBaseView, SearchBar) {
+	return declare([VisBaseView], {
 
 		'class': 'hashtagMapView',
 		parentView: '/',
-		route: '/hashtags',
+		route: '/hashtags/:dataset',
 		title: 'Hashtag Map',
 
 		fill: d3.scale.category20(),
@@ -42,8 +43,9 @@ define(['dojo/_base/declare',
 			}, this.containerNode);
 
 		},
-		activate: function() {
+		activate: function(e) {
 			this.drawWordMap();
+			this.dataset = e.params.dataset;
 			/*if (e.params.query) {
 				domClass.add(this.instructionsNode, 'hidden');
 				this.searchBar.set('value', decodeURIComponent(e.params.query));
@@ -69,7 +71,8 @@ define(['dojo/_base/declare',
 					}
 			    }
 			};
-			$.ajax({
+			this.es(query, that.prepareToDrawMap);
+			/*$.ajax({
 		        url: "http://localhost:3000/api/v0/datasets/1/search.json",
 		        type: 'POST',
 		        crossDomain: true,
@@ -82,7 +85,7 @@ define(['dojo/_base/declare',
 		        error: function(data) {
 					console.log(data);
 				}
-		    });
+		    });*/
 		},
 		prepareToDrawMap: function(data) {
 			var that = this;

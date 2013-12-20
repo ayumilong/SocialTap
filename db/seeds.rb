@@ -11,7 +11,6 @@ puts "Seeding..."
 Dataset.create(
   name: "The South",
   description: "Geocoded tweets about American southerners and the south",
-  index: "south_tweets4"
 )
 
 User.create(

@@ -18,18 +18,28 @@ define(['dojo/_base/declare',
 
 			this.registerView(this.rootView);
 
+			console.log("root");
+			
 			var mapView = new MapView();
 			this.registerView(mapView);
 
+			console.log("map");
+			
 			var hashtagMapView = new HashtagMapView();
 			this.registerView(hashtagMapView);
 
+			console.log("hashtags");
+			
 			var sentView = new SentView();
 			this.registerView(sentView);
 
+			console.log("sentiment");
+			
 			var testListView = new TestListView();
 			this.registerView(testListView);
 
+			console.log("testlist");
+			
 		}
 
 	});
