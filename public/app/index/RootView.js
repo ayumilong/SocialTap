@@ -13,15 +13,7 @@ define(['dojo/_base/declare',
 			domConstruct.create('div', {
 				'class': 'footer',
 				innerHTML: '<div class="title">This is <strong>SocialTap</strong></div>' +
-					'<div class="subtitle">Social media turned up to 11</div>' +
-					'<div class="icon fa fa-volume-up"></div>'
-			}, this.domNode);
-
-			domConstruct.create('a', {
-				href: '#/datasets',
-				innerHTML: 'View Datasets',
-				style: 'display: block; margin-top: 30px; text-align: center;',
-				title: 'View datasets'
+					'<div class="subtitle">Social media turned up to 11</div>'
 			}, this.domNode);
 		},
 

@@ -1,4 +1,4 @@
-.stQuerySelector {
+.stDatasetSelector {
 	background: rgb(55,55,55);
 	color: white;
 	height: 60px;
@@ -7,28 +7,12 @@
 	width: 350px;
 	z-index: 99;
 
-	.datasetsLink {
-		color: white;
-		font-size: 22px;
-		height: 40px;
-		left: 5px;
-		line-height: 40px;
-		position: absolute;
-		text-align: center;
-		width: 40px;
-		top: 10px;
-
-		&:hover {
-			text-decoration: none;
-		}
-	}
-
 	.stToggleListButton {
 		background: rgba(0,0,0,0);
 		border-width: 0;
 		color: white;
 		font-size: 22px;
-		left: 50px;
+		left: 5px;
 		height: 40px;
 		position: absolute;
 		top: 10px;
@@ -39,7 +23,7 @@
 		color: white;
 		display: inline-block;
 		font-size: 18px;
-		left: 100px;
+		left: 50px;
 		line-height: 60px;
 		margin-left: 8px;
 		max-width: 240px;
@@ -49,18 +33,35 @@
 		white-space: nowrap;
 	}
 
-	.stQueryListPane {
+	.stDatasetListPane {
 		background: rgba(55,55,55,0.95);
 		min-height: 250px;
 		max-height: 600px;
 		position: absolute;
 		top: 100%;
-		width: 400px;
+		width: 350px;
 		z-index: 99;
+
+		.mblEdgeToEdgeList {
+			margin-bottom: 0;
+		}
 
 		.dmListItem {
 			.dmListItemText {
 				color: white;
+			}
+		}
+
+		.newDatasetLink {
+			border-top: 1px solid #e7e7de;
+			color: white;
+			display: block;
+			font-weight: bold;
+			margin: 0 15px;
+			padding: 15px 0;
+
+			&:hover {
+				text-decoration: none;
 			}
 		}
 	}

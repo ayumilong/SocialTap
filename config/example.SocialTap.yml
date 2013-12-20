@@ -12,6 +12,9 @@ defaults: &defaults
         password: YOUR GNIP PASSWORD
     data_files:
         import_directory: PATH TO DIRECTORY CONTAINING DATA FILES TO IMPORT
+    Twitter:
+        consumer_key: TWITTER CONSUMER KEY
+        consumer_secret: TWITTER CONSUMER SECRET
 
 development:
     <<: *defaults

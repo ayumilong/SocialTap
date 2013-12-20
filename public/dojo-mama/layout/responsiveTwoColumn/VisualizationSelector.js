@@ -2,32 +2,31 @@ define(['dojo/_base/declare',
 		'dojo/_base/fx',
 		'dojo/_base/kernel',
 		'dojo/_base/lang',
-		'dojo/dom-construct',
+		'dojo/dom-attr',
+		'dojo/dom-class',
 		'dojo/dom-geometry',
-		'dojo/dom-style',
-		'dojo/fx',
+		'dojo/router',
 		'dojox/mobile/EdgeToEdgeList',
 		'dojox/mobile/Button',
 		'dojox/mobile/Pane',
-		'dojo-mama/util/BaseListItem',
 		'dojo-mama/util/LinkListItem'],
-function(declare, baseFx, kernel, lang, domConstruct, domGeometry, domStyle, fx, EdgeToEdgeList, Button, Pane, BaseListItem, LinkListItem) {
+function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, EdgeToEdgeList, Button, Pane, LinkListItem) {
 	return declare([Pane], {
 		'class': 'stVisualizationSelector',
 
 		list: null,
 
-		scrollOffset: null,
+		datasetId: null,
+
+		scrollOffset: 0,
 		scrollLeftButton: null,
 		scrollRightButton: null,
 
 		buildRendering: function() {
 			this.inherited(arguments);
 
-			this.scrollOffset = 0;
-
 			this.scrollLeftButton = new Button({
-				'class': 'scrollLeft fa fa-chevron-left',
+				'class': 'scrollLeft fa fa-chevron-left hidden',
 				'duration': 0,
 				'onClick': lang.hitch(this, this.scrollLeft)
 			});
@@ -39,27 +38,101 @@ function(declare, baseFx, kernel, lang, domConstruct, domGeometry, domStyle, fx,
 			this.list.startup();
 
 			this.scrollRightButton = new Button({
-				'class': 'scrollRight fa fa-chevron-right',
+				'class': 'scrollRight fa fa-chevron-right hidden',
 				'duration': 0,
 				'onClick': lang.hitch(this, this.scrollRight)
 			});
 			this.scrollRightButton.placeAt(this.domNode);
 			this.scrollRightButton.startup();
+
+			var i, navItem;
+			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+				navItem = kernel.global.dmConfig.topNav[i];
+				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
+			}
+
+			router.register('/*path', lang.hitch(this, this.clearActive));
+		},
+
+		handleRoute: function(e) {
+			this.set('datasetId', parseInt(e.params[0], 10));
+
+			this.list.getChildren().forEach(function(li) {
+				domClass.remove(li.domNode, 'active');
+			});
+
+			var i, navItem;
+			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+				navItem = kernel.global.dmConfig.topNav[i];
+				if (navItem.route.replace(':dataset_id', e.params[0]) == e.newPath) {
+					domClass.add(this.list.getChildren()[i].domNode, 'active');
+				}
+			}
+		},
+
+		clearActive: function(e) {
+			// If this route doesn't match any viz routes, clear the active class from all viz list items
+			var i, navItem, match = false;
+			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+				navItem = kernel.global.dmConfig.topNav[i];
+				if (e.newPath.match(new RegExp(navItem.route.replace(':dataset_id', '\\d+')))) {
+					match = true;
+					break;
+				}
+			}
+			if (!match) {
+				this.list.getChildren().forEach(function(li) {
+					domClass.remove(li.domNode, 'active');
+				});
+			}
 		},
 
 		scrollLeft: function() {
-			this.set('scrollOffset', this.get('scrollOffset') - 1);
+			this.set('scrollOffset', this.get('scrollOffset') + 1);
 		},
 
 		scrollRight: function() {
-			this.set('scrollOffset', this.get('scrollOffset') + 1);
+			this.set('scrollOffset', this.get('scrollOffset') - 1);
+		},
+
+		minScrollOffset: function() {
+			var listWidth = 151 * this.list.getChildren().length;
+			var availableWidth = domGeometry.getMarginBox(this.list.domNode).w;
+			return Math.min(Math.floor((availableWidth - listWidth) / 151), 0);
+		},
+
+		resize: function() {
+			this.inherited(arguments);
+
+			var minOffset = this.minScrollOffset();
+
+			if (this.scrollOffset < minOffset) {
+				this.set('scrollOffset', minOffset);
+			}
+			this.setScrollButtonsEnabled();
+		},
+
+		setScrollButtonsEnabled: function() {
+			if (this.scrollOffset === this.minScrollOffset()) {
+				domAttr.set(this.scrollRightButton.domNode, 'disabled', 'disabled');
+			}
+			else {
+				domAttr.remove(this.scrollRightButton.domNode, 'disabled');
+			}
+
+			if (this.scrollOffset === 0) {
+				domAttr.set(this.scrollLeftButton.domNode, 'disabled', 'disabled');
+			}
+			else {
+				domAttr.remove(this.scrollLeftButton.domNode, 'disabled');
+			}
 		},
 
 		_setScrollOffsetAttr: function(scrollOffset) {
 
 			var vizItems = this.list.getChildren();
 
-			scrollOffset = Math.max(Math.min(scrollOffset, 0), -(vizItems.length - 1));
+			scrollOffset = Math.max(Math.min(scrollOffset, 0), this.minScrollOffset());
 			this._set('scrollOffset', scrollOffset);
 			var firstItem = vizItems[0];
 
@@ -69,20 +142,39 @@ function(declare, baseFx, kernel, lang, domConstruct, domGeometry, domStyle, fx,
 					'margin-left': scrollOffset * 151,
 				}
 			}).play();
+
+			console.warn('scroll offset = ' + scrollOffset);
+
+			this.setScrollButtonsEnabled();
 		},
 
-		startup: function() {
-			this.inherited(arguments);
+		_setDatasetIdAttr: function(datasetId) {
+			this._set('datasetId', datasetId);
 
-			var i, viz, li;
-			for (i = 0; i < kernel.global.dmConfig.visualizations.length; i++) {
-				viz = kernel.global.dmConfig.visualizations[i];
+			this.list.destroyDescendants();
 
-				li = new BaseListItem({
-					text: viz.charAt(0).toUpperCase() + viz.slice(1)
-				});
-				li.placeAt(this.list);
-				li.startup();
+			if (datasetId) {
+				domClass.remove(this.scrollLeftButton.domNode, 'hidden');
+				domClass.remove(this.scrollRightButton.domNode, 'hidden');
+
+				var i, navItem, li;
+
+				for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
+					navItem = kernel.global.dmConfig.topNav[i];
+
+					li = new LinkListItem({
+						text: navItem.label,
+						href: '#' + navItem.route.replace(':dataset_id', this.datasetId)
+					});
+					li.placeAt(this.list);
+					li.startup();
+				}
+
+				this.setScrollButtonsEnabled();
+			}
+			else {
+				domClass.add(this.scrollLeftButton.domNode, 'hidden');
+				domClass.add(this.scrollRightButton.domNode, 'hidden');
 			}
 		}
 	});

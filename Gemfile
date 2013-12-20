@@ -1,5 +1,10 @@
 source 'https://rubygems.org'
 
+# for development environment, use thin instead of default (webrick)
+group :development do
+  gem 'thin'
+end
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '>=4.0.0'
 
@@ -23,6 +28,10 @@ gem 'therubyracer'
 gem 'gnip-rule'
 
 gem 'curb'
+
+# OmniAuth and its authentication strategies
+gem 'omniauth-twitter'
+gem 'omniauth-identity'
 
 # To use Jbuilder templates for JSON
 # gem 'jbuilder'

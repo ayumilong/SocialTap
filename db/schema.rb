@@ -11,7 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131202154100) do
+ActiveRecord::Schema.define(version: 20131211080650) do
+
+  create_table "auth_identities", force: true do |t|
+    t.string   "email"
+    t.string   "name"
+    t.string   "password_digest"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "data_mappings", force: true do |t|
     t.integer  "file_dataset_id"
@@ -87,6 +95,8 @@ ActiveRecord::Schema.define(version: 20131202154100) do
     t.string   "name"
     t.string   "email"
     t.string   "password_digest"
+    t.string   "provider"
+    t.string   "uid"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

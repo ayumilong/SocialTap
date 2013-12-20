@@ -16,4 +16,4 @@
 # Using secret_token for rails3 compatibility. Change to secret_key_base
 # to avoid deprecation warning.
 # Can be safely removed in a rails3 api-only application.
-SocialTap::Application.config.secret_token = 'c6fdcf2483970b540821a9c253a0ba098184bffd11bf157e914b394bde9fa63acae048aa30519f772d497aeca5176912ad5f5b73cd587d6a3f9819cdf09d2b53'
+SocialTap::Application.config.secret_key_base = 'c6fdcf2483970b540821a9c253a0ba098184bffd11bf157e914b394bde9fa63acae048aa30519f772d497aeca5176912ad5f5b73cd587d6a3f9819cdf09d2b53'
