@@ -44,6 +44,9 @@ define(['dojo/_base/declare',
 			var buttonsBox = domConstruct.create("div",
 			                                 {class: "mblSimpleDialogText"},
 			                                 dlg.domNode);
+			var providersBox = domConstruct.create("div",
+			                                 {class: "mblSimpleDialogText"},
+			                                 dlg.domNode);
 
 			// var piBox = domConstruct.create("div",
 			//                                  {class: "mblSimpleDialogText"},
@@ -63,6 +66,13 @@ define(['dojo/_base/declare',
 			                 function(e){ dlg.hide(); });
 			loginBtn.connect(loginBtn.domNode, "click",
 			                 function(e){ alert("Log me in!"); });
+			var twitterLoginLink = domConstruct.create('a',
+				                                       {href: "/auth/twitter"},
+				                                       providersBox);
+			var twitterLoginImage = domConstruct.create('img',
+				                                        {src: "/app/resources/img/thirdparty/sign-in-with-twitter-gray.png",
+				                                        alt: "Log in with Twitter"},
+				                                        twitterLoginLink);
 			userInput.placeAt(credentialsBox);
 			passwordInput.placeAt(credentialsBox);
 			cancelBtn.placeAt(buttonsBox);
