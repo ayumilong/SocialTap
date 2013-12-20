@@ -25,8 +25,12 @@ define(['dojo/_base/declare',
 
 
 		es: function(query, callback) {
+			if (!this.datasetId) {
+				console.warn('No dataset ID for VisBaseView#es');
+				return;
+			}
 			var that = this;
-			this.datasetId = 1;
+			//this.datasetId = 1;
 			xhr.post('/api/v0/datasets/' + this.datasetId + '/search.json', {
 				handleAs: 'json',
 				data: JSON.stringify(query),

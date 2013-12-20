@@ -16,9 +16,8 @@ define(['dojo',
 		'dijit/registry',
 		'app/vis/VisBaseView.js',
 		'app/vis/DataAccordion',
-		'app/vis/DataListItem.js',
-		'app/vis/jsPlugin!static/jquery.js'
-], function(dojo, declare, lang, domStyle, domConstruct, topic, on, dom, domGeom, query, xhr, EdgeToEdgeList, ContentPane, BaseListItem, ModuleScrollableView, registry, VisBaseView, DataAccordion, DataListItem, blank) {
+		'app/vis/DataListItem.js'
+], function(dojo, declare, lang, domStyle, domConstruct, topic, on, dom, domGeom, query, xhr, EdgeToEdgeList, ContentPane, BaseListItem, ModuleScrollableView, registry, VisBaseView, DataAccordion, DataListItem) {
 
 	// module:
 	//     app/vis/DataView
@@ -65,21 +64,25 @@ define(['dojo',
 		},
 
 		activate: function(e) {
-			this.dataset = e.params.dataset;
-			if (!this.activated) {
-				this.inherited(arguments);
-	
+			this.inherited(arguments);
+			this.set('datasetId', e.params.dataset);
+			//if (!this.activated) {
+
+				if (this.accordion) {
+					this.accordion.destroy();
+				}
+
 				topic.publish('/dojo-mama/updateSubNav', {
 					back: '/vis'
 				});
 				this.accordion = new DataAccordion();
 				this.accordion.startup();
 				this.accordion.placeAt(this.domNode);
-				this.activated = true;
+				//this.activated = true;
 				this.loading = true;
 				this.getData(50);
 				this.setupEvents();
-			}
+			//}
 		},
 
 		getData: function(amount, reset) {
@@ -87,21 +90,21 @@ define(['dojo',
 				this.count = 0;
 			}
 			var that = this;
-			var query = { 
+			var query = {
 				"elasticsearch" : {
 					"size" : amount,
 					"from" : this.count,
 					"sort" : [{}],
 					"query": {
-						"match": {"body": "south"}
+						"match_all": {}
 					}
 				}
 			};
 
 			query.elasticsearch.sort[0][this.sortBy] = {"order" : this.order};
 			query.elasticsearch.sort[0][this.sortBy].mode = "min";
-		
-			this.es(query, this.draw);	
+
+			this.es(query, this.draw);
 
 
 		},
@@ -153,14 +156,14 @@ define(['dojo',
 			return label;
 
 		},
-		
+
 		dataPoints: function() {
 			var pos = domGeom.position(this.accordion.domNode, true);
 			if (Math.abs(pos.y) > Math.abs(pos.h) - 1500) {
 				this.getNextGroup();
 			}
 		},
-		
+
 		getNextGroup: function() {
 			if (!this.loading) {
 				this.loading = true;
@@ -174,7 +177,7 @@ define(['dojo',
 			on(this.domNode, "resize", this.resize);
 			var buttons = query(".mblAccordionLabel");
 			on(buttons, "click", function(e) {
-				that.sortEntries(e.target.id);	
+				that.sortEntries(e.target.id);
 			});
 		},
 

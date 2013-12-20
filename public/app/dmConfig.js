@@ -38,7 +38,7 @@ define({
 		},
 		{
 			label: 'Browse',
-			route: '/vis/browse/:dataset_id'
+			route: '/vis/test/:dataset_id'
 		},
 		{
 			label: 'Hashtags',

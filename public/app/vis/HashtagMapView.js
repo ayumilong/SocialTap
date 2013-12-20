@@ -6,7 +6,6 @@ define(['dojo/_base/declare',
 		'app/vis/VisBaseView.js',
 		'app/util/SearchBar',
 		'app/vis/jsPlugin!static/d3.js',
-		'app/vis/jsPlugin!static/jquery.js',
 		'app/vis/jsPlugin!static/d3.layout.cloud.js'
 ], function(declare, lang, domConstruct, ModuleScrollableView, VisBaseView, SearchBar) {
 	return declare([VisBaseView], {
@@ -19,6 +18,8 @@ define(['dojo/_base/declare',
 		fill: d3.scale.category20(),
 		levels: 10,
 		numEntries: 100,
+
+		wordMapNode: null,
 
 		buildRendering: function() {
 			this.inherited(arguments);
@@ -33,19 +34,19 @@ define(['dojo/_base/declare',
 			this.searchBar.placeAt(this.domNode);
 			this.searchBar.startup();
 
-			domConstruct.create('div', {
+			this.wordMapNode = domConstruct.create('div', {
 				'id': "wordMap"
 			}, this.domNode);
 
-			domConstruct.create('p', {
-				'class': "description",
-				innerHTML: 'This is the description'
-			}, this.containerNode);
-
 		},
+
 		activate: function(e) {
+			this.inherited(arguments);
+			this.set('datasetId', e.params.dataset);
+
+			domConstruct.empty(this.wordMapNode);
+
 			this.drawWordMap();
-			this.dataset = e.params.dataset;
 			/*if (e.params.query) {
 				domClass.add(this.instructionsNode, 'hidden');
 				this.searchBar.set('value', decodeURIComponent(e.params.query));
