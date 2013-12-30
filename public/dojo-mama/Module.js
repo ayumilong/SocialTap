@@ -41,9 +41,6 @@ define(['dojo/_base/declare',
 		// prevTransit: [private] Object
 		//     The previous view transition promise
 		prevTransit: null,
-		// rootView: Object
-		//     The primary view of this module
-		rootView: null,
 		// router: Object
 		//     A monkey-patched dojo/router/RouterBase to handle
 		//     module-relative routes
@@ -91,10 +88,6 @@ define(['dojo/_base/declare',
 			console.log('activating', this.name);
 			this.set('active', true);
 			this.domNode.style.display = '';
-			if (!this.rootView) {
-				console.error('Module rootView is undefined');
-				return;
-			}
 
 			if (!this.routerBase._started) {
 				this.routerBase.startup();
@@ -226,7 +219,7 @@ define(['dojo/_base/declare',
 				showTransition,
 				oldView = this.currentView,
 				postTransition;
-			
+
 			// show transition?
 			if (e.oldPath  // if we're not deep linking
 				&& e.newPath !== this.config.baseRoute  // we're not at the index

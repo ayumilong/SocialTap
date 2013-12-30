@@ -6,6 +6,9 @@ define(['dojo/_base/declare',
 ], function(declare, lang, domConstruct, Module, ModuleView) {
 	return declare([Module], {
 		'class': 'Four04Module',
+
+		rootView: null,
+
 		postCreate: function() {
 			// summary:
 			//     Create the module views
