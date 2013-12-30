@@ -66,6 +66,7 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 				navItem = kernel.global.dmConfig.topNav[i];
 				if (navItem.route.replace(':dataset_id', e.params[0]) == e.newPath) {
 					domClass.add(this.list.getChildren()[i].domNode, 'active');
+					break;
 				}
 			}
 		},

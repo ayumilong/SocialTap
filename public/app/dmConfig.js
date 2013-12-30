@@ -50,7 +50,15 @@ define({
 		},
 		{
 			label: 'Sentiment',
-			route: '/vis/sentiment/:dataset_id'
+			route: '/datasets/:dataset_id'
+		},
+		{
+			label: 'Time',
+			route: '/datasets/:dataset_id',
+		},
+		{
+			label: 'Retweets',
+			route: '/datasets/:dataset_id',
 		}
 	]
 });

@@ -81,6 +81,10 @@ function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Butto
 		handleRoute: function(e) {
 			this.closeDatasetList();
 			this.set('selectedDatasetId', parseInt(e.params[0], 10));
+
+			this.set('navRoute', e.newPath.replace('/' + e.params[0], '/:dataset_id'));
+
+			console.warn(e);
 		},
 
 		beforeLoad: function() {
@@ -101,7 +105,7 @@ function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Butto
 			for (i = 0; i < datasets.length; i++) {
 				li = new LinkListItem({
 					'text': datasets[i].name,
-					'href': '#/datasets/' + datasets[i].id,
+					'href': '#' + (this.navRoute ? this.navRoute.replace(':dataset_id', datasets[i].id) : '/datasets/' + datasets[i].id),
 					'style': {
 						cursor: 'pointer'
 					}
