@@ -8,7 +8,7 @@
  */
 define(['require'], function (require) {
 	require([
-		'dojo-mama/layout/responsiveTwoColumn/Layout',
+		'app/layout/Layout',
 		'app/dmConfig',
 		'app/util/dom-utils',
 		'dojo/_base/window',

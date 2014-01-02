@@ -63,9 +63,9 @@ define(['dojo/_base/declare',
 
 			var config = args.config;
 			// mixin some default configuration
-			config.index = config.index || {moduleId: 'dojo-mama/layout/responsiveTwoColumn/index/Module'};
+			config.index = config.index || {moduleId: 'app/layout/index/Module'};
 			config.networkTimeout = config.networkTimeout || 15000;
-			config.modules['404'] = config.modules['404'] || {moduleId: 'dojo-mama/layout/responsiveTwoColumn/404/Module'};
+			config.modules['404'] = config.modules['404'] || {moduleId: 'app/layout/404/Module'};
 			config.transitionDuration = config.transitionDuration || 250;
 			config.baseRoute = '/';
 			// expose the config globally
