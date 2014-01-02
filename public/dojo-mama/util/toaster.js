@@ -37,10 +37,10 @@ define(['dojo/dom-construct',
 		var id = idCounter++;
 
 		var newContainer = {
-			view: view, 
-			messages: {}, 
-			numberMessages: 0, 
-			node: node, 
+			view: view,
+			messages: {},
+			numberMessages: 0,
+			node: node,
 			id: id
 		};
 
@@ -66,7 +66,7 @@ define(['dojo/dom-construct',
 	}
 
 	function buildMessage(message, container) {
-		// summary: 
+		// summary:
 		//     builds a message and places it in the container
 
 		// gets a unique id
@@ -83,16 +83,16 @@ define(['dojo/dom-construct',
 		}
 		var type = message.type || 'none';
 		switch (type) {
-			case 'information': 
+			case 'information':
 				cls += ' toasterInformation';
 				break;
-			case 'success': 
+			case 'success':
 				cls += ' toasterSuccess';
 				break;
-			case 'warning': 
+			case 'warning':
 				cls += ' toasterWarning';
 				break;
-			case 'error': 
+			case 'error':
 				cls += ' toasterError';
 				break;
 		}
@@ -138,7 +138,7 @@ define(['dojo/dom-construct',
 		var msgs = container.messages;
 		var id;
 		for (id in msgs) {
-			if (msgs.hasOwnProperty(id) && 
+			if (msgs.hasOwnProperty(id) &&
 					msgs[id].text === message.text &&
 					msgs[id].type == message.type &&
 					msgs[id].time == message.time
@@ -152,13 +152,13 @@ define(['dojo/dom-construct',
 	function getActiveView() {
 		// summary:
 		//     Returns the active view.
-		var am = kernel.global.dmConfig.activeModule;
+		var am = kernel.global.activeModule;
 		if (am && am.currentView) {
 			return am.currentView;
 		}
 		return 'index';
 	}
-	
+
 
 	return {
 		// description:

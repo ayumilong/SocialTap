@@ -1,40 +1,27 @@
 define(['dojo/_base/declare',
 		'dojo-mama/Module',
 		'./VisBaseView',
-		'app/vis/sentView'
-], function(declare, Module, VisBaseView, SentView) {
+		'../visConfig'
+], function(declare, Module, VisBaseView, visConfig) {
 	return declare([Module], {
 		'class': 'visModule',
 
 		postCreate: function() {
 			this.inherited(arguments);
 
-			var browseView = new VisBaseView({
-				parentView: '/',
-				route: '/browse/:dataset_id',
-				title: 'Browse',
-				visModuleId: 'app/vis/Browse'
-			});
-			this.registerView(browseView);
-
-			var mapView = new VisBaseView({
-				parentView: '/',
-				route: '/map/:dataset_id',
-				title: 'World Map',
-				visModuleId: 'app/vis/Map'
-			});
-			this.registerView(mapView);
-
-			var hashtagMapView = new VisBaseView({
-				parentView: '/',
-				route: '/hashtags/:dataset_id',
-				title: 'Hashtag Cloud',
-				visModuleId: 'app/vis/WordCloud'
-			});
-			this.registerView(hashtagMapView);
-
-			var sentView = new SentView();
-			this.registerView(sentView);
+			var i, vis, view;
+			for (i = 0; i < visConfig.visualizations.length; i++) {
+				vis = visConfig.visualizations[i];
+				console.warn(vis);
+				view = new VisBaseView({
+					parentView: '/',
+					route: vis.route.replace(/^\/vis/, ''),
+					title: vis.title,
+					visModuleId: vis.id,
+					visOptions: vis.options
+				});
+				this.registerView(view);
+			}
 
 		}
 
