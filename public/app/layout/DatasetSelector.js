@@ -108,7 +108,8 @@ function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Butto
 			for (i = 0; i < datasets.length; i++) {
 				li = new LinkListItem({
 					'text': datasets[i].name,
-					'href': '#' + (this.navRoute ? this.navRoute.replace(':dataset_id', datasets[i].id) : '/datasets/' + datasets[i].id),
+					//'href': '#' + (this.navRoute ? this.navRoute.replace(':dataset_id', datasets[i].id) : '/datasets/' + datasets[i].id),
+					'href': '#' + (this.navRoute ? this.navRoute.replace(':dataset_id', datasets[i].id) : '/vis/browse/' + datasets[i].id),
 					'style': {
 						cursor: 'pointer'
 					}
