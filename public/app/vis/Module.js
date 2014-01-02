@@ -1,45 +1,41 @@
 define(['dojo/_base/declare',
 		'dojo-mama/Module',
-		'app/vis/HashtagMapView',
-		'app/vis/MainView',
-		'app/vis/MapView',
-		'app/vis/sentView',
-		'app/vis/TestListView'
-], function(declare, Module, HashtagMapView, MainView, MapView, SentView, TestListView) {
+		'./VisBaseView',
+		'app/vis/sentView'
+], function(declare, Module, VisBaseView, SentView) {
 	return declare([Module], {
 		'class': 'visModule',
 
 		postCreate: function() {
 			this.inherited(arguments);
 
-			this.rootView = new MainView({
-				module: this
+			var browseView = new VisBaseView({
+				parentView: '/',
+				route: '/browse/:dataset_id',
+				title: 'Browse',
+				visModuleId: 'app/vis/Browse'
 			});
+			this.registerView(browseView);
 
-			this.registerView(this.rootView);
-
-			console.log("root");
-			
-			var mapView = new MapView();
+			var mapView = new VisBaseView({
+				parentView: '/',
+				route: '/map/:dataset_id',
+				title: 'World Map',
+				visModuleId: 'app/vis/Map'
+			});
 			this.registerView(mapView);
 
-			console.log("map");
-			
-			var hashtagMapView = new HashtagMapView();
+			var hashtagMapView = new VisBaseView({
+				parentView: '/',
+				route: '/hashtags/:dataset_id',
+				title: 'Hashtag Cloud',
+				visModuleId: 'app/vis/WordCloud'
+			});
 			this.registerView(hashtagMapView);
 
-			console.log("hashtags");
-			
 			var sentView = new SentView();
 			this.registerView(sentView);
 
-			console.log("sentiment");
-			
-			var testListView = new TestListView();
-			this.registerView(testListView);
-
-			console.log("testlist");
-			
 		}
 
 	});

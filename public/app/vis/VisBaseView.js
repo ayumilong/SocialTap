@@ -1,45 +1,63 @@
-/*global $,d3*/
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
-		'dojo/request/xhr',
-		'dojo/dom-construct',
-		'dojo-mama/views/ModuleScrollableView'
-], function(declare, lang, xhr, domConstruct, ModuleScrollableView) {
+		'dojo-mama/views/ModuleView'
+], function(declare, lang, ModuleView) {
+	return declare([ModuleView], {
 
-	return declare([ModuleScrollableView], {
-		buildRendering: function() {
-			this.inherited(arguments);
-			console.log("it's me Mario!");
+		datasetId: null,
 
-			domConstruct.create('div', {
-				'id': "test"
-			}, this.domNode);
+		inquiryPane: null,
 
-		},
+		// vis: Object
+		//     The visualization for this view.
+		vis: null,
+
+		// visModuleId: String
+		//     The AMD module ID for the visualization to load for this view.
+		visModuleId: null,
 
 		activate: function(e) {
-			if (!this.activated) {
-				this.activated = true;
+			this.inherited(arguments);
+			this.set('datasetId', e.params.dataset_id);
+		},
+
+		startup: function() {
+			this.inherited(arguments);
+			// TODO:
+			//   Startup inquiry pane
+			//   Handle inquiry pane change event by setting inquiry property of this.vis
+		},
+
+		_setDatasetIdAttr: function(/*Integer*/datasetId) {
+			this._set('datasetId', datasetId);
+			if (this.vis) {
+				this.vis.set('datasetId', datasetId);
+				if (datasetId) {
+					this.vis.reload();
+				}
 			}
 		},
 
+		_setVisModuleIdAttr: function(/*String*/visModuleId) {
+			this._set('visModuleId', visModuleId);
 
-		es: function(query, callback) {
-			if (!this.datasetId) {
-				console.warn('No dataset ID for VisBaseView#es');
-				return;
+			// Remove the old visualization if there is one.
+			if (this.vis) {
+				this.vis.destroy();
+				this.vis = null;
 			}
-			var that = this;
-			//this.datasetId = 1;
-			xhr.post('/api/v0/datasets/' + this.datasetId + '/search.json', {
-				handleAs: 'json',
-				data: JSON.stringify(query),
-				headers: {
-					'Content-Type': 'application/json'
-				}}).then(
-					lang.hitch(this, callback), // Success handler
-					lang.hitch(this, function(err) { console.error(err); }) // Error handler
-				);
+
+			// Load the requested module,
+			require([visModuleId], lang.hitch(this, function(VisModule) {
+				this.vis = new VisModule({
+					datasetId: this.datasetId
+				});
+				// TODO: Pass the inquiry from this.inquiryPane to new vis
+				this.vis.placeAt(this.domNode, 'last');
+				if (this.datasetId) {
+					this.vis.reload();
+				}
+			}));
 		}
 	});
 });
