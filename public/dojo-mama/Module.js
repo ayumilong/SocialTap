@@ -141,6 +141,7 @@ define(['dojo/_base/declare',
 			var view = e.params.view;
 			var match = false;
 			console.log("Module handling route");
+			console.log(e);
 
 			// Check to see if any of this module's views are registered for the route
 			var i;

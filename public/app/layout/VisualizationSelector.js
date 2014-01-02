@@ -10,9 +10,9 @@ define(['dojo/_base/declare',
 		'dojox/mobile/Button',
 		'dojox/mobile/Pane',
 		'dojo-mama/util/LinkListItem',
-		'app/dmConfig'],
+		'app/visConfig'],
 function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, EdgeToEdgeList,
-	Button, Pane, LinkListItem, dmConfig)
+	Button, Pane, LinkListItem, visConfig)
 {
 	return declare([Pane], {
 		'class': 'stVisualizationSelector',
@@ -49,8 +49,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 			this.scrollRightButton.startup();
 
 			var i, navItem;
-			for (i = 0; i < dmConfig.topNav.length; i++) {
-				navItem = dmConfig.topNav[i];
+			for (i = 0; i < visConfig.visualizations.length; i++) {
+				navItem = visConfig.visualizations[i];
 				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 
@@ -65,8 +65,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 			});
 
 			var i, navItem;
-			for (i = 0; i < dmConfig.topNav.length; i++) {
-				navItem = dmConfig.topNav[i];
+			for (i = 0; i < visConfig.visualizations.length; i++) {
+				navItem = visConfig.visualizations[i];
 				if (navItem.route.replace(':dataset_id', e.params[0]) == e.newPath) {
 					domClass.add(this.list.getChildren()[i].domNode, 'active');
 					break;
@@ -77,8 +77,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 		clearActive: function(e) {
 			// If this route doesn't match any viz routes, clear the active class from all viz list items
 			var i, navItem, match = false;
-			for (i = 0; i < dmConfig.topNav.length; i++) {
-				navItem = dmConfig.topNav[i];
+			for (i = 0; i < visConfig.visualizations.length; i++) {
+				navItem = visConfig.visualizations[i];
 				if (e.newPath.match(new RegExp(navItem.route.replace(':dataset_id', '\\d+')))) {
 					match = true;
 					break;
@@ -163,11 +163,11 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 
 				var i, navItem, li;
 
-				for (i = 0; i < dmConfig.topNav.length; i++) {
-					navItem = dmConfig.topNav[i];
+				for (i = 0; i < visConfig.visualizations.length; i++) {
+					navItem = visConfig.visualizations[i];
 
 					li = new LinkListItem({
-						text: navItem.label,
+						text: navItem.title,
 						href: '#' + navItem.route.replace(':dataset_id', this.datasetId)
 					});
 					li.placeAt(this.list);
