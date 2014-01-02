@@ -1,12 +1,11 @@
 define(['dojo/_base/declare',
-		'dojo/_base/kernel',
 		'dojo/_base/lang',
 		'dojo/dom-construct',
 		'dojo/router/RouterBase',
 		'dojo/topic',
 		'dijit/_WidgetBase',
 		'dojox/css3/transit'
-], function(declare, kernel, lang, domConstruct, RouterBase, topic, WidgetBase, transit) {
+], function(declare, lang, domConstruct, RouterBase, topic, WidgetBase, transit) {
 
 	// module:
 	//     dojo-mama/views/Module
@@ -50,7 +49,6 @@ define(['dojo/_base/declare',
 		routerBase: null,
 
 		constructor: function() {
-			this.config = kernel.global.dmConfig;
 			this.routerBase = new RouterBase();
 			// monkey-patch the router base
 			var go = lang.hitch(this, function(route) {
@@ -221,16 +219,16 @@ define(['dojo/_base/declare',
 				postTransition;
 
 			// show transition?
-			if (e.oldPath  // if we're not deep linking
+			/*if (e.oldPath  // if we're not deep linking
 				&& e.newPath !== this.config.baseRoute  // we're not at the index
 				&& oldView  // a previous view exists
 				&& oldView !== view  // the old view isn't the one we're showing
 				&& this.getMode() === 'phone'  // and we're in mobile mode
 			) {
 				showTransition = true;
-			} else {
+			} else {*/
 				showTransition = false;
-			}
+			//}
 
 			postTransition = function() {
 				if (oldView) {

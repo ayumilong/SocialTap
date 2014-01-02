@@ -3,15 +3,16 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/_base/window',
 		'dojo/dom-class',
+		'dojo/Evented',
 		'dojo/router',
 		'dojo/topic',
 		'dojo-mama/util/toaster'
-], function(declare, kernel, lang, win, domClass, router, topic, toaster) {
+], function(declare, kernel, lang, win, domClass, Evented, router, topic, toaster) {
 
 	// module:
 	//     dojo-mama/ModuleManager
 
-	return declare([], {
+	return declare([Evented], {
 		// summary:
 		//     Manages the launching and routing of modules.
 
@@ -21,10 +22,6 @@ define(['dojo/_base/declare',
 		// config: [private] Object
 		//     The dmConfig config object
 		config: null,
-		// getMode: Function
-		//     Set by dojo-mama/Layout, returns
-		//     the current mode, 'phone' or 'tablet'
-		getMode: null,
 		// lastRoute: [private] String
 		//     The last route matched by the router
 		lastRoute: null,
@@ -39,7 +36,15 @@ define(['dojo/_base/declare',
 
 		constructor: function(args) {
 			lang.mixin(this, args);
-			this.config = kernel.global.dmConfig;
+
+			// mixin some default configuration
+			this.config.index = this.config.index || { moduleId: './index/Module' };
+			this.config.networkTimeout = this.config.networkTimeout || 15000;
+			this.config.modules['404'] = this.config.modules['404'] || { moduleId: './404/Module' };
+			this.config.transitionDuration = this.config.transitionDuration || 250;
+			this.config.baseRoute = '/';
+			// expose the config globally
+			//kernel.global.dmConfig = this.config = config;
 		},
 
 		startup: function() {
@@ -112,8 +117,7 @@ define(['dojo/_base/declare',
 			// e:
 			//     The router event
 
-			var activeModule = this.activeModule,
-				setActiveModule;
+			var activeModule = this.activeModule;
 
 			// don't reactivate the same module
 			if (activeModule === module) {
@@ -131,10 +135,10 @@ define(['dojo/_base/declare',
 			}
 			// activate the new module
 			this.activeModule = module;
-			this.config.activeModule = module;
+			kernel.global.activeModule = module;
 			domClass.add(win.body(), 'dmActiveModule_' + module.name);
 			topic.publish('/dojo-mama/activateModule', module);
-			this.focusModule(module);
+			this.emit('focusModule', module);
 			module.activate(e);
 		},
 
@@ -183,9 +187,9 @@ define(['dojo/_base/declare',
 				topic.publish('/dojo-mama/startLoadingModule', moduleName);
 				require([moduleId], lang.hitch(this, function(Module) {
 					// extend dmConfig module settings with containerNode and name
+					moduleConfig.config = this.config;
 					moduleConfig.containerNode = this.config.moduleContentNode;
 					moduleConfig.name = moduleName;
-					moduleConfig.getMode = this.getMode;
 					// create a module instance
 					module = new Module(moduleConfig);
 					// remember this instance by its moduleId
@@ -216,7 +220,6 @@ define(['dojo/_base/declare',
 				require([moduleId], lang.hitch(this, function(Module) {
 					module = new Module({
 						containerNode: this.config.moduleContentNode,
-						getMode: this.getMode,
 						name: '404'
 					});
 					this.modules['404'] = module;

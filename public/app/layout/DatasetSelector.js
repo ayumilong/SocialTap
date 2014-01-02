@@ -12,8 +12,11 @@ define(['dojo/_base/declare',
 		'dojo-mama/util/BaseListItem',
 		'dojo-mama/util/DataPane',
 		'dojo-mama/util/LinkListItem',
-		'dojo-mama/util/ScrollablePane'],
-function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Button, EdgeToEdgeList, Pane, BaseListItem, DataPane, LinkListItem, ScrollablePane) {
+		'dojo-mama/util/ScrollablePane',
+		'app/dmConfig'],
+function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Button, EdgeToEdgeList,
+	Pane, BaseListItem, DataPane, LinkListItem, ScrollablePane, dmConfig)
+{
 	return declare([DataPane], {
 		'class': 'stDatasetSelector',
 
@@ -72,8 +75,8 @@ function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Butto
 			}, this.contentNode);
 
 			var i, navItem;
-			for (i = 0; i < kernel.global.dmConfig.topNav.length; i++) {
-				navItem = kernel.global.dmConfig.topNav[i];
+			for (i = 0; i < dmConfig.topNav.length; i++) {
+				navItem = dmConfig.topNav[i];
 				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 		},
