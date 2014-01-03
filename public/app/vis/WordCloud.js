@@ -1,10 +1,11 @@
 /*global d3*/
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
+		'dojo/dom-geometry',
 		'./Base',
 		'../util/staticjs!static/d3.js',
 		'../util/staticjs!static/d3.layout.cloud.js'
-], function(declare, lang, BaseVis) {
+], function(declare, lang, domGeom, BaseVis) {
 	return declare([BaseVis], {
 
 		numLevels: 10,
@@ -33,6 +34,7 @@ define(['dojo/_base/declare',
 		},
 
 		draw: function(data) {
+			var size = domGeom.getContentBox(this.domNode);
 			var wordSize;
 			var i = 0;
 			var maxHeight = 60;
@@ -41,7 +43,7 @@ define(['dojo/_base/declare',
 			var numEntries = this.numEntries;
 			var numLevels = this.numLevels;
 			var level = numLevels;
-			d3.layout.cloud().size([1000, 1000])
+			d3.layout.cloud().size([size.w, size.h])
 				.words(data.facets.words.terms.map(function(d) {
 					if (i >= numEntries / numLevels) {
 						i = 0;

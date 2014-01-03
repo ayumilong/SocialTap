@@ -6,7 +6,7 @@ define(['dojo/_base/declare',
 ], function(declare, lang, domConstruct, xhr, WidgetBase) {
 	return declare([WidgetBase], {
 
-		'class': 'viz',
+		'class': 'vis',
 
 		// dataPromise: Object
 		//     Promise for data being loaded from API. Used to cancel request if loadData is

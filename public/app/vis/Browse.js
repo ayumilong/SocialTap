@@ -12,7 +12,7 @@ define(['dojo/_base/declare',
 {
 	return declare([WidgetBase, InfiniteScroll], {
 
-		'class': 'viz',
+		'class': 'vis',
 
 		// datasetId: Integer
 		//     ID of dataset to run inquiry against.
