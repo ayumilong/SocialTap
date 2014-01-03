@@ -1,21 +1,16 @@
 define(['dojo/_base/declare',
-		'dojo/_base/kernel',
 		'dojo/_base/lang',
 		'dojo/dom-class',
 		'dojo/dom-construct',
 		'dojo/on',
 		'dojo/router',
-		'dojo/topic',
 		'dojox/mobile/Button',
 		'dojox/mobile/EdgeToEdgeList',
-		'dojox/mobile/Pane',
-		'dojo-mama/util/BaseListItem',
 		'dojo-mama/util/DataPane',
 		'dojo-mama/util/LinkListItem',
-		'dojo-mama/util/ScrollablePane',
-		'app/visConfig'],
-function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Button, EdgeToEdgeList,
-	Pane, BaseListItem, DataPane, LinkListItem, ScrollablePane, visConfig)
+		'dojo-mama/util/ScrollablePane'],
+function(declare, lang, domClass, domConstruct, on, router, Button, EdgeToEdgeList,
+	DataPane, LinkListItem, ScrollablePane)
 {
 	return declare([DataPane], {
 		'class': 'stDatasetSelector',
@@ -37,6 +32,8 @@ function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Butto
 		navRoute: null,
 
 		newDatasetOnClickHandle: null,
+
+		visRoutes: null,
 
 		buildRendering: function() {
 			this.inherited(arguments);
@@ -75,8 +72,8 @@ function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Butto
 			}, this.contentNode);
 
 			var i, navItem;
-			for (i = 0; i < visConfig.visualizations.length; i++) {
-				navItem = visConfig.visualizations[i];
+			for (i = 0; i < this.visRoutes.length; i++) {
+				navItem = this.visRoutes[i];
 				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 		},
@@ -108,8 +105,7 @@ function(declare, kernel, lang, domClass, domConstruct, on, router, topic, Butto
 			for (i = 0; i < datasets.length; i++) {
 				li = new LinkListItem({
 					'text': datasets[i].name,
-					//'href': '#' + (this.navRoute ? this.navRoute.replace(':dataset_id', datasets[i].id) : '/datasets/' + datasets[i].id),
-					'href': '#' + (this.navRoute ? this.navRoute.replace(':dataset_id', datasets[i].id) : '/vis/browse/' + datasets[i].id),
+					'href': '#' + (this.navRoute ? this.navRoute.replace(':dataset_id', datasets[i].id) : '/datasets/' + datasets[i].id),
 					'style': {
 						cursor: 'pointer'
 					}

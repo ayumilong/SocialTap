@@ -1,6 +1,5 @@
 define(['dojo/_base/declare',
 		'dojo/_base/fx',
-		'dojo/_base/kernel',
 		'dojo/_base/lang',
 		'dojo/dom-attr',
 		'dojo/dom-class',
@@ -9,10 +8,9 @@ define(['dojo/_base/declare',
 		'dojox/mobile/EdgeToEdgeList',
 		'dojox/mobile/Button',
 		'dojox/mobile/Pane',
-		'dojo-mama/util/LinkListItem',
-		'app/visConfig'],
-function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, EdgeToEdgeList,
-	Button, Pane, LinkListItem, visConfig)
+		'dojo-mama/util/LinkListItem'],
+function(declare, baseFx, lang, domAttr, domClass, domGeometry, router, EdgeToEdgeList,
+	Button, Pane, LinkListItem)
 {
 	return declare([Pane], {
 		'class': 'stVisualizationSelector',
@@ -24,6 +22,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 		scrollOffset: 0,
 		scrollLeftButton: null,
 		scrollRightButton: null,
+
+		visRoutes: null,
 
 		buildRendering: function() {
 			this.inherited(arguments);
@@ -49,8 +49,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 			this.scrollRightButton.startup();
 
 			var i, navItem;
-			for (i = 0; i < visConfig.visualizations.length; i++) {
-				navItem = visConfig.visualizations[i];
+			for (i = 0; i < this.visRoutes.length; i++) {
+				navItem = this.visRoutes[i];
 				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 
@@ -65,8 +65,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 			});
 
 			var i, navItem;
-			for (i = 0; i < visConfig.visualizations.length; i++) {
-				navItem = visConfig.visualizations[i];
+			for (i = 0; i < this.visRoutes.length; i++) {
+				navItem = this.visRoutes[i];
 				if (navItem.route.replace(':dataset_id', e.params[0]) == e.newPath) {
 					domClass.add(this.list.getChildren()[i].domNode, 'active');
 					break;
@@ -77,8 +77,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 		clearActive: function(e) {
 			// If this route doesn't match any viz routes, clear the active class from all viz list items
 			var i, navItem, match = false;
-			for (i = 0; i < visConfig.visualizations.length; i++) {
-				navItem = visConfig.visualizations[i];
+			for (i = 0; i < this.visRoutes.length; i++) {
+				navItem = this.visRoutes[i];
 				if (e.newPath.match(new RegExp(navItem.route.replace(':dataset_id', '\\d+')))) {
 					match = true;
 					break;
@@ -163,8 +163,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 
 				var i, navItem, li;
 
-				for (i = 0; i < visConfig.visualizations.length; i++) {
-					navItem = visConfig.visualizations[i];
+				for (i = 0; i < this.visRoutes.length; i++) {
+					navItem = this.visRoutes[i];
 
 					li = new LinkListItem({
 						text: navItem.title,

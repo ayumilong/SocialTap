@@ -6,11 +6,12 @@ define(['dojo/_base/declare',
 		'dojox/mobile',
 		'dojox/mobile/Pane',
 		'./DatasetSelector',
-		'./VisualizationSelector'
-], function(declare, lang, domAttr, topic, WidgetBase, mobile, Pane, DatasetSelector, VisualizationSelector) {
+		'./VisualizationSelector',
+		'../visConfig'
+], function(declare, lang, domAttr, topic, WidgetBase, mobile, Pane, DatasetSelector, VisualizationSelector, visConfig) {
 
 	// module:
-	//     dojo-mama/layout/responsiveTwoColumn/Layout
+	//     app/layout/Layout
 
 	return declare([WidgetBase], {
 
@@ -32,10 +33,21 @@ define(['dojo/_base/declare',
 
 			this.inherited(arguments);
 
-			var datasetSelector = new DatasetSelector();
+			// Copy array so we're not modifying the original.
+			var visRoutes = visConfig.visualizations.slice(0);
+			visRoutes.unshift({
+				title: 'Info',
+				route: '/datasets/:dataset_id'
+			});
+
+			var datasetSelector = new DatasetSelector({
+				visRoutes: visRoutes
+			});
 			datasetSelector.placeAt(this.domNode);
 
-			var vizSelector = new VisualizationSelector();
+			var vizSelector = new VisualizationSelector({
+				visRoutes: visRoutes
+			});
 			vizSelector.placeAt(this.domNode);
 
 			// and a container for module content
