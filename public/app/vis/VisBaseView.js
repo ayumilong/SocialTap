@@ -19,6 +19,16 @@ define(['dojo/_base/declare',
 		activate: function(e) {
 			this.inherited(arguments);
 			this.set('datasetId', e.params.dataset_id);
+			if (this.vis) {
+				this.vis.set('active', true);
+			}
+		},
+
+		deactivate: function() {
+			this.inherited(arguments);
+			if (this.vis) {
+				this.vis.set('active', false);
+			}
 		},
 
 		startup: function() {
@@ -50,8 +60,10 @@ define(['dojo/_base/declare',
 			// Load the requested module,
 			require([visModuleId], lang.hitch(this, function(VisModule) {
 				this.vis = new VisModule({
+					active: this.active,
 					datasetId: this.datasetId
 				});
+
 				// TODO: Pass the inquiry from this.inquiryPane to new vis
 				this.vis.placeAt(this.domNode, 'last');
 				if (this.datasetId) {

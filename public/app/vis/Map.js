@@ -12,9 +12,6 @@ define(['dojo/_base/declare',
 		countries: null,
 		path: null,
 
-		// Adjust map scale instead of completely redrawing.
-		redrawOnResize: false,
-
 		startup: function() {
 			// TODO:
 			//     Inquiry should not be hard coded.
@@ -73,7 +70,7 @@ define(['dojo/_base/declare',
 			var countries_data = this.country_data();
 
 			/* World Map */
-			var svg = d3.select(this.domNode).append('svg');
+			var svg = d3.select(this.domNode).append('svg').attr('width', '100%').attr('height', '100%');
 			this.countries = svg.selectAll('path')
 				.data(countries_data.features) // get the data here: https://gist.github.com/2969317
 				.enter()
@@ -86,30 +83,6 @@ define(['dojo/_base/declare',
 				.on("mouseout", this.countryMouseOff)
 		        .on("mouseover", this.countryMouseOn)
 				.on("click", this.countryClicked);
-		},
-
-		rescale: function() {
-			if (this.xy && this.path && this.countries) {
-				var width = d3.select(this.domNode).style("width");
-				width = width.replace(/\D/g,"");
-				var height = d3.select(this.domNode).style("height");
-				height = height.replace(/\D/g,"");
-				var scale = width / 6.483;
-
-				this.xy.scale(scale);
-				this.xy.translate([scale * 3.18, scale * 1.55]);
-				this.path.projection(this.xy);
-				this.countries.attr('d', this.path);
-			}
-		},
-
-		resize: function() {
-			this.inherited(arguments);
-
-			if (this.rescaleTimer) {
-				clearTimeout(this.rescaleTimer);
-			}
-			this.rescaleTimer = setTimeout(lang.hitch(this, this.rescale), 200);
 		},
 
 		countryMouseOn: function() {

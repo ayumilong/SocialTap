@@ -6,6 +6,10 @@ define(['dojo/_base/declare',
 ], function(declare, lang, domConstruct, xhr, WidgetBase) {
 	return declare([WidgetBase], {
 
+		// active: Boolean
+		//     Whether or not this visualization is currently visible.
+		active: null,
+
 		'class': 'vis',
 
 		// dataPromise: Object
@@ -47,6 +51,9 @@ define(['dojo/_base/declare',
 		},
 
 		redraw: function() {
+			if (!this.active) {
+				return;
+			}
 			domConstruct.empty(this.domNode);
 			this.draw(this.data);
 		},
@@ -81,12 +88,14 @@ define(['dojo/_base/declare',
 			if (this.redrawOnResize && this.data) {
 
 				// When resizing the window, this event will be fired many times in a row. To
-				// improve performance, only redraw after this widget's size has remained the
-				// same for 100ms.
-				if (this.resizeTimer) {
-					clearTimeout(this.resizeTimer);
+				// improve performance, only redraw on an animation frame.
+				if (this.redrawScheduled !== true) {
+					requestAnimationFrame(lang.hitch(this, function() {
+						this.redraw();
+						this.redrawScheduled = false;
+					}));
+					this.redrawScheduled = true;
 				}
-				this.resizeTimer = setTimeout(lang.hitch(this, this.redraw), 100);
 			}
 		},
 
