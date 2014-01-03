@@ -79,7 +79,14 @@ define(['dojo/_base/declare',
 		resize: function() {
 			this.inherited(arguments);
 			if (this.redrawOnResize && this.data) {
-				this.redraw();
+
+				// When resizing the window, this event will be fired many times in a row. To
+				// improve performance, only redraw after this widget's size has remained the
+				// same for 100ms.
+				if (this.resizeTimer) {
+					clearTimeout(this.resizeTimer);
+				}
+				this.resizeTimer = setTimeout(lang.hitch(this, this.redraw), 100);
 			}
 		},
 
