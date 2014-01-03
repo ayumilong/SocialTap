@@ -88,9 +88,7 @@ define(['dojo/_base/declare',
 				.on("click", this.countryClicked);
 		},
 
-		resize: function() {
-			this.inherited(arguments);
-
+		rescale: function() {
 			if (this.xy && this.path && this.countries) {
 				var width = d3.select(this.domNode).style("width");
 				width = width.replace(/\D/g,"");
@@ -103,6 +101,15 @@ define(['dojo/_base/declare',
 				this.path.projection(this.xy);
 				this.countries.attr('d', this.path);
 			}
+		},
+
+		resize: function() {
+			this.inherited(arguments);
+
+			if (this.rescaleTimer) {
+				clearTimeout(this.rescaleTimer);
+			}
+			this.rescaleTimer = setTimeout(lang.hitch(this, this.rescale), 200);
 		},
 
 		countryMouseOn: function() {
