@@ -1,12 +1,13 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
-		'dojo-mama/views/ModuleView'
-], function(declare, lang, ModuleView) {
+		'dojo-mama/views/ModuleView',
+		'./inquiry/InquiryForm'
+], function(declare, lang, ModuleView, InquiryForm) {
 	return declare([ModuleView], {
 
 		datasetId: null,
 
-		inquiryPane: null,
+		inquiryForm: null,
 
 		// vis: Object
 		//     The visualization for this view.
@@ -22,6 +23,13 @@ define(['dojo/_base/declare',
 			if (this.vis) {
 				this.vis.set('active', true);
 			}
+		},
+
+		buildRendering: function() {
+			this.inherited(arguments);
+
+			this.inquiryForm = new InquiryForm();
+			this.inquiryForm.placeAt(this.domNode);
 		},
 
 		deactivate: function() {
