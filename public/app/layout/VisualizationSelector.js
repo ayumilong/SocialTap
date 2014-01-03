@@ -54,7 +54,7 @@ function(declare, baseFx, lang, domAttr, domClass, domGeometry, router, EdgeToEd
 				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 
-			router.register('/*path', lang.hitch(this, this.clearActive));
+			router.register('*path', lang.hitch(this, this.clearActive));
 		},
 
 		handleRoute: function(e) {
