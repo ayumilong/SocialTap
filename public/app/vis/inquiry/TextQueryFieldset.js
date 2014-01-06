@@ -71,6 +71,11 @@ define(['dojo/_base/declare',
 			};
 		},
 
+		reset: function() {
+			this.queryField.set('value', '');
+			this.includeExtraFields.set('checked', false);
+		},
+
 		_setIncludeExtraFieldsAttr: function(includeExtraFields) {
 			this._set('includeExtraFields', includeExtraFields);
 

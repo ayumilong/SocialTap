@@ -96,6 +96,17 @@ define(['dojo/_base/declare',
 					return this.dayCheckBoxes[index].get('checked');
 				}))
 			};
+		},
+
+		reset: function() {
+			this.startField.set('value', '');
+			this.endField.set('value', '');
+			var d;
+			for (d in this.dayCheckBoxes) {
+				if (this.dayCheckBoxes.hasOwnProperty(d)) {
+					this.dayCheckBoxes[d].set('checked', false);
+				}
+			}
 		}
 
 	});

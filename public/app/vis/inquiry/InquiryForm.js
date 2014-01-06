@@ -5,9 +5,11 @@ define(['dojo/_base/declare',
 		'dojox/mobile/Pane',
 		'dojox/mobile/TextBox',
 		'./DateQueryFieldset',
+		'./GeoQueryFieldset',
+		'./SentimentQueryFieldset',
 		'./TextQueryFieldset'
 ], function(declare, lang, domConstruct, Button, Pane, TextBox, DateQueryFieldset,
-	TextQueryFieldset)
+	GeoQueryFieldset, SentimentQueryFieldset, TextQueryFieldset)
 {
 	return declare([Pane], {
 
@@ -25,6 +27,16 @@ define(['dojo/_base/declare',
 				label: 'Filter by post date'
 			});
 			dqf.placeAt(this.domNode);
+
+			var sqf = new SentimentQueryFieldset({
+				label: 'Filter by sentiment'
+			});
+			sqf.placeAt(this.domNode);
+
+			var gqf = new GeoQueryFieldset({
+				label: 'Filter by location'
+			});
+			gqf.placeAt(this.domNode);
 		}
 
 	});
