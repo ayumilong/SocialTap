@@ -2,12 +2,11 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-attr',
 		'dojo/dom-construct',
-		'dojo/Evented',
 		'dojox/mobile/CheckBox',
 		'dojox/mobile/Pane',
 		'dojox/mobile/TextBox'
-], function(declare, lang, domAttr, domConstruct, Evented, CheckBox, Pane, TextBox) {
-	return declare([Pane, Evented], {
+], function(declare, lang, domAttr, domConstruct, CheckBox, Pane, TextBox) {
+	return declare([Pane], {
 
 		'class': 'dateQueryFieldset',
 
@@ -40,13 +39,8 @@ define(['dojo/_base/declare',
 
 			var fieldsetNode = domConstruct.create('fieldset', {}, this.domNode);
 
-			var changeHandler = lang.hitch(this, function() {
-				this.emit('change', this.buildInquiryPart());
-			});
-
 			this.startField = new TextBox({
 				'class': 'start',
-				onChange: changeHandler,
 				placeHolder: 'Start',
 				trim: true
 			});
@@ -59,7 +53,6 @@ define(['dojo/_base/declare',
 
 			this.endField = new TextBox({
 				'class': 'end',
-				onChange: changeHandler,
 				placeHolder: 'End',
 				trim: true
 			});
@@ -70,10 +63,7 @@ define(['dojo/_base/declare',
 			this.dayCheckBoxes = [];
 			var i, cb;
 			for (i = 0; i < this.days.length; i++) {
-				cb = new CheckBox({
-					name: this.days[i],
-					onChange: changeHandler,
-				});
+				cb = new CheckBox();
 				cb.placeAt(fieldsetNode);
 				this.dayCheckBoxes.push(cb);
 

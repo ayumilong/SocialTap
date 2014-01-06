@@ -2,12 +2,11 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-class',
 		'dojo/dom-construct',
-		'dojo/Evented',
 		'dojox/mobile/CheckBox',
 		'dojox/mobile/Pane',
 		'dojox/mobile/TextBox'
-], function(declare, lang, domClass, domConstruct, Evented, CheckBox, Pane, TextBox) {
-	return declare([Pane, Evented], {
+], function(declare, lang, domClass, domConstruct, CheckBox, Pane, TextBox) {
+	return declare([Pane], {
 
 		'class': 'textQueryFieldset',
 
@@ -35,12 +34,7 @@ define(['dojo/_base/declare',
 
 			var fieldsetNode = domConstruct.create('fieldset', {}, this.domNode);
 
-			var changeHandler = lang.hitch(this, function() {
-				this.emit('change', this.buildInquiryPart());
-			});
-
 			this.queryField = new TextBox({
-				onChange: changeHandler,
 				placeHolder: 'Query',
 				trim: true
 			});
@@ -66,8 +60,8 @@ define(['dojo/_base/declare',
 		buildInquiryPart: function() {
 			return {
 				type: 'textQuery',
-				query: this.queryField.get('value'),
-				fields: ['postBody']
+				value: this.queryField.get('value'),
+				fields: ['body']
 			};
 		},
 

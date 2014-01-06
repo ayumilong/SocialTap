@@ -1,12 +1,10 @@
 define(['dojo/_base/declare',
-		'dojo/_base/lang',
 		'dojo/dom-attr',
 		'dojo/dom-construct',
-		'dojo/Evented',
 		'dojox/mobile/CheckBox',
 		'dojox/mobile/Pane'
-], function(declare, lang, domAttr, domConstruct, Evented, CheckBox, Pane) {
-	return declare([Pane, Evented], {
+], function(declare, domAttr, domConstruct, CheckBox, Pane) {
+	return declare([Pane], {
 		'class': 'sentimentQueryFieldset',
 
 		checkboxes: null,
@@ -20,10 +18,6 @@ define(['dojo/_base/declare',
 
 			var fieldsetNode = domConstruct.create('fieldset', {}, this.domNode);
 
-			var changeHandler = lang.hitch(this, function() {
-				this.emit('change', this.buildInquiryPart());
-			});
-
 			this.checkboxes = {};
 			var sentiments = ['Positive', 'Neutral', 'Negative'];
 			var i, label, cb;
@@ -32,9 +26,7 @@ define(['dojo/_base/declare',
 					innerHTML: sentiments[i]
 				}, fieldsetNode);
 
-				cb = new CheckBox({
-					onChange: changeHandler
-				});
+				cb = new CheckBox();
 				cb.placeAt(label);
 
 				domAttr.set(label, 'for', cb.get('id'));

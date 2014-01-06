@@ -1,14 +1,10 @@
 define(['dojo/_base/declare',
-		'dojo/_base/lang',
-		'dojo/dom-class',
 		'dojo/dom-construct',
-		'dojo/Evented',
-		'dojox/mobile/CheckBox',
 		'dojox/mobile/Pane',
 		'dojox/mobile/TextBox',
 		'../../util/Select'
-], function(declare, lang, domClass, domConstruct, Evented, CheckBox, Pane, TextBox, Select) {
-	return declare([Pane, Evented], {
+], function(declare, domConstruct, Pane, TextBox, Select) {
+	return declare([Pane], {
 
 		'class': 'geoQueryFieldset',
 
@@ -29,13 +25,8 @@ define(['dojo/_base/declare',
 
 			var fieldsetNode = domConstruct.create('fieldset', {}, this.domNode);
 
-			var changeHandler = lang.hitch(this, function() {
-				this.emit('change', this.buildInquiryPart());
-			});
-
 			this.latField = new TextBox({
 				'class': 'latField',
-				onChange: changeHandler,
 				placeHolder: 'Lat',
 				trim: true
 			});
@@ -48,7 +39,6 @@ define(['dojo/_base/declare',
 
 			this.lngField = new TextBox({
 				'class': 'lngField',
-				onChange: changeHandler,
 				placeHolder: 'Lng',
 				trim: true
 			});
@@ -57,7 +47,6 @@ define(['dojo/_base/declare',
 			var div = domConstruct.create('div', {}, fieldsetNode);
 
 			this.distanceField = new TextBox({
-				onChange: changeHandler,
 				placeHolder: 'Distance',
 				trim: true
 			});
@@ -70,7 +59,6 @@ define(['dojo/_base/declare',
 
 			this.unitsSelect = new Select({
 				'class': 'distanceField',
-				onChange: changeHandler,
 				options: [{value: 'miles', label: 'miles'}, {value: 'kilometers', label: 'kilometers'}]
 			});
 			this.unitsSelect.placeAt(div);
