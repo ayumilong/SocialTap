@@ -65,8 +65,17 @@ define(['dojo/_base/declare',
 		},
 
 		buildInquiryPart: function() {
+
+			var lat = this.latField.get('value');
+			var lng = this.lngField.get('value');
+			var distance = this.distanceField.get('value');
+
+			if (!distance || !lat || !lng) {
+				return null;
+			}
+
 			return {
-				type: 'geoQuery',
+				type: 'geo',
 				field: 'geo.coordinates',
 				near: {
 					lat: this.latField.get('value'),

@@ -16,14 +16,26 @@ define(['dojo/_base/declare',
 
 		'class': 'inquiryForm',
 
+		// advancedMode: Boolean
+		//     Whether or not the advanced fieldsets are shown and used
+		//     in the generated Elasticsearch query.
 		advancedMode: false,
 
+		// advancedButton: Object
+		//     Button to toggle between Advanced/Basic search.
 		advancedButton: null,
 
+		// advancedOptionsNode: DomNode
+		//     Node containing advanced fieldsets.
 		advancedOptionsNode: null,
 
+		// baseFieldset: Object
+		//     Only fieldset used to generate query if in basic mode.
 		baseFieldset: null,
 
+		// advancedFieldsets: Array
+		//     Additional fieldsets used to generate query if in
+		//     advanced mode.
 		advancedFieldsets: null,
 
 		buildRendering: function() {
@@ -85,18 +97,78 @@ define(['dojo/_base/declare',
 			this.advancedButton.placeAt(this.domNode);
 		},
 
-		inquiryToElasticsearch: function(/*Array*/inquiry) {
+		inquiryPartToElasticsearch: function(/*Object*/part) {
+			var filter = {};
+			if (part.type === 'text') {
+				filter.term = {};
+				filter.term[part.fields[0]] = part.value;
+			}
 
-			var esFilter = {};
-
-			var i, part;
-			for (i = 0; i < inquiry.length; i++) {
-				part = inquiry[i];
-
-				if (part.type === 'textQuery') {
-					esFilter.term = {};
-					esFilter.term[part.fields[0]] = part.value;
+			else if (part.type === 'date') {
+				if (part.range) {
+					filter.range = {};
+					filter.range[part.field] = {};
+					if (part.range.start) {
+						filter.range[part.field].gte = part.range.start;
+					}
+					if (part.range.end) {
+						filter.range[part.field].lte = part.range.end;
+					}
 				}
+			}
+
+			else if (part.type == 'geo') {
+				filter.geo_distance = {
+					distance: part.distance.value + part.distance.units
+				};
+				filter.geo_distance[part.field] = [part.near.lat, part.near.lng];
+				filter = {
+					and: [
+						filter,
+						{
+							exists: {
+								field: part.field
+							}
+						}
+					]
+				};
+			}
+
+			else if (part.type == 'sentiment') {
+
+			}
+
+			return filter;
+		},
+
+		inquiryToElasticsearch: function(/*Array*/inquiry) {
+			// summary:
+			//     Generate Elasticsearch query from inquiry.
+			//     Query matches all documents but filters based on
+			//     values of this form's fieldsets.
+
+			if (inquiry.length === 0) {
+				return null;
+			}
+
+			var filterParts = [];
+			var i;
+			for (i = 0; i < inquiry.length; i++) {
+				filterParts.push(this.inquiryPartToElasticsearch(inquiry[i]));
+			}
+
+			var filter = {};
+
+			if (filterParts.length === 0) {
+				filter = filterParts[0];
+			}
+
+			// If there are multiple parts to the inquiry, 'and' them together
+			// in the Elasticsearch query.
+			else {
+				filter = {
+					and: filterParts
+				};
 			}
 
 			return {
@@ -105,7 +177,7 @@ define(['dojo/_base/declare',
 						query: {
 							match_all: {}
 						},
-						filter: esFilter
+						filter: filter
 					}
 				}
 			};
@@ -113,6 +185,8 @@ define(['dojo/_base/declare',
 		},
 
 		reset: function() {
+			// summary:
+			//     Reset all fieldsets and emit event with null query.
 			this.baseFieldset.reset();
 			var i;
 			for (i = 0; i < this.advancedFieldsets.length; i++) {
@@ -122,16 +196,35 @@ define(['dojo/_base/declare',
 		},
 
 		search: function() {
-			var inquiry = [this.baseFieldset.buildInquiryPart()];
+			// summary:
+			//   Build Elasticsearch query from fieldsets and emit event to
+			//   notify listeners of new query.
+
+			var inquiry = [];
+
+			var basePart = this.baseFieldset.buildInquiryPart();
+			if (basePart) {
+				inquiry.push(basePart);
+			}
 
 			if (this.advancedMode) {
-				var i;
+				console.log('advanced mode');
+				var i, part;
 				for (i = 0; i < this.advancedFieldsets.length; i++) {
-					inquiry.push(this.advancedFieldsets[i].buildInquiryPart());
+					console.log('add set ' + i);
+					part = this.advancedFieldsets[i].buildInquiryPart();
+					if (part) {
+						inquiry.push(part);
+					}
 				}
 			}
 
+			console.log(inquiry);
+
 			var esQuery = this.inquiryToElasticsearch(inquiry);
+
+			console.log(JSON.stringify(esQuery));
+			console.log(esQuery);
 
 			this.emit('submit', esQuery);
 		},

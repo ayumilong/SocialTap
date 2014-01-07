@@ -36,6 +36,10 @@ define(['dojo/_base/declare',
 		},
 
 		buildInquiryPart: function() {
+
+			// TODO: Implement this
+			return null;
+
 			var inquiryPart = {
 				type: 'sentiment',
 				field: 'sentiment'
@@ -46,6 +50,8 @@ define(['dojo/_base/declare',
 			for (i = 0; i < sentiments.length; i++) {
 				inquiryPart[sentiments[i]] = this.checkboxes[sentiments[i]].get('checked');
 			}
+
+			return inquiryPart;
 		},
 
 		reset: function() {

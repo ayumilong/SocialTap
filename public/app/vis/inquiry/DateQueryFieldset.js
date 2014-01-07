@@ -82,17 +82,35 @@ define(['dojo/_base/declare',
 		},
 
 		buildInquiryPart: function() {
-			return {
-				type: 'dateQuery',
+
+			var start = this.startField.get('value');
+			var end = this.endField.get('value');
+
+			var days = this.days.filter(lang.hitch(this, function(d, index) {
+				return this.dayCheckBoxes[index].get('checked');
+			}));
+
+			if (!end && !start && days.length === 0) {
+				return null;
+			}
+
+			var part = {
+				type: 'date',
 				field: 'postedTime',
-				range: {
-					start: this.startField.get('value'),
-					end: this.endField.get('value')
-				},
-				days: this.days.filter(lang.hitch(this, function(d, index) {
-					return this.dayCheckBoxes[index].get('checked');
-				}))
+				range: {}
 			};
+
+			if (start) {
+				part.range.start = start;
+			}
+			if (end) {
+				part.range.end = end;
+			}
+			if (days) {
+				part.days = days;
+			}
+
+			return part;
 		},
 
 		reset: function() {

@@ -62,9 +62,16 @@ define(['dojo/_base/declare',
 		},
 
 		buildInquiryPart: function() {
+
+			var query = this.queryField.get('value');
+
+			if (!query) {
+				return null;
+			}
+
 			return {
-				type: 'textQuery',
-				value: this.queryField.get('value'),
+				type: 'text',
+				value: query,
 				fields: ['body']
 			};
 		},
