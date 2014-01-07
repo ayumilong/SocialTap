@@ -8,81 +8,152 @@ define(['dojo/_base/declare',
 ], function(declare, lang, domGeom, BaseVis) {
 	return declare([BaseVis], {
 
-		numLevels: 10,
 
-		numEntries: 50,
+		xaxis: "month",
+		parseDate: null,
 
-		startup: function() {
-			// TODO:
-			//     Inquiry should not be hard coded.
-			//     Inquiry should not be a raw Elasticsearch query
-			//     Eventually, shouldn't be overriding startup at all
-			this.set('inquiry', {
-			    elasticsearch: {
-					facets: {
-						words: {
-							terms: {
-								field: "twitter_entities.hashtags.text",
-								size: this.numEntries
-							}
-						}
-					}
-			    }
-			});
-
-			this.inherited(arguments);
+		buildElasticsearchQuery: function(baseQuery) {
+			return lang.mixin(baseQuery, { "size" : 1000 });
 		},
 
 		draw: function(data) {
-			var size = domGeom.getContentBox(this.domNode);
-			var wordSize;
-			var i = 0;
-			var maxHeight = 60;
-			var minHeight = 10;
-			var scale = maxHeight - minHeight;
-			var numEntries = this.numEntries;
-			var numLevels = this.numLevels;
-			var level = numLevels;
-			console.log(size);
-			d3.layout.cloud().size([size.w, size.h])
-				.words(data.facets.words.terms.map(function(d) {
-					if (i >= numEntries / numLevels) {
-						i = 0;
-						level = level - 1;
-					}
-					wordSize = ((level / numLevels) * scale) + minHeight;
-					i = i + 1;
-					return {text: d.term, size: wordSize};
-				}))
-				.padding(2)
-				.rotate(function() { return 0; })
-				.font("Impact")
-				.fontSize(function(d) { return d.size; })
-				.on("end", lang.hitch(this, this.drawWords))
-				.start();
-		},
+			console.log(data);
+			var sample = data.hits.hits;
+			var i = 0, map = {}, date, key, xDomain;
 
-		drawWords: function(words) {
-			d3.select(this.domNode).append("svg")
-				.attr("width", "100%")
-				.attr("height", "100%")
-			.append("svg") // Center cloud in view
-				.attr("x", "50%")
-				.attr("y", "50%")
-				.style("overflow", "visible")
-			.append("g")
-			.selectAll("text")
-		        .data(words)
-			.enter().append("text")
-				.style("font-size", function(d) { return d.size + "px"; })
-				.style("font-family", "Impact")
-				.style("fill", function(d, i) { return d3.scale.category20(i); })
-				.attr("text-anchor", "middle")
-				.attr("transform", function(d) {
-					return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-				})
-				.text(function(d) { return d.text; });
+			//var parseDate = d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse;
+
+			var margin = {top: 20, right: 20, bottom: 20, left: 40};
+
+			var width = parseInt(d3.select(this.domNode).style("width").split("px")[0], 10) - margin.left - margin.right;
+			var height = parseInt(d3.select(this.domNode).style("height").split("px")[0], 10) - margin.top - margin.bottom - 100;
+
+			console.log("width: " + width);
+
+
+			var x = d3.time.scale()
+			    .range([0, width]);
+			var y = d3.scale.linear()
+				.range([height, 0]);
+
+			var xAxis = d3.svg.axis()
+			    .scale(x)
+			    .orient("bottom");
+			var yAxis = d3.svg.axis()
+				.scale(y)
+			    .orient("left");
+
+			var line = d3.svg.line()
+				.x(function(d) { return x(d.date); })
+				.y(function(d) { return y(d.amount); });
+
+			switch (this.xaxis) {
+				case "day":
+					this.parseDate = d3.time.format("%H").parse;
+					break;
+				case "week":
+					this.parseDate = d3.time.format("%w").parse;
+					break;
+				case "month":
+					this.parseDate = d3.time.format("%d").parse;
+					break;
+				case "year":
+					this.parseDate = d3.time.format("%d-%m");
+					break;
+				case "all":
+					this.parseDate = d3.time.format("%d-%b-%m");
+					break;
+			}
+
+			while (i < sample.length) {
+				date = new Date(sample[i]._source.postedTime);
+				i+=1;
+				switch (this.xaxis) {
+					case "day":
+						key = date.getHours();
+						break;
+					case "week":
+						key = date.getDay();
+						break;
+					case "month":
+						key = date.getDate();						
+						break;
+					case "year":
+						key = date.getDate() + "-" + date.getMonth();
+						break;
+					case "all":
+						key = date.getDate() + "-" + date.getDate() + "-" + date.getMonth();
+						break;
+				}
+				console.log(key);
+				if (map[key] == null) {
+					map[key] = {};
+					map[key].date = this.parseDate(key.toString());
+					map[key].amount = 0;
+				}
+				map[key].amount += 1;
+			}
+
+			switch (this.xaxis) {
+				case "day":
+					this.parseDate = d3.time.format("%H").parse;
+					xDomain = [this.parseDate("0"), this.parseDate("23")];
+					break;
+				case "week":
+					this.parseDate = d3.time.format("%w").parse;
+					xDomain = [this.parseDate("0"), this.parseDate("6")];
+					break;
+				case "month":
+					this.parseDate = d3.time.format("%d").parse;
+					xDomain = [this.parseDate("0"), this.parseDate("30")];
+					break;
+				case "year":
+					this.parseDate = d3.time.format("%d-%m");
+					xDomain = [this.parseDate("0"), this.parseDate("364")];
+					break;
+				case "all":
+					this.parseDate = d3.time.format("%d-%b-%m");
+					xDomain = d3.extent(data, function(d) { return d.date; });
+					break;
+			}
+
+			data = d3.values(map);
+			console.log(data);
+
+			var svg = d3.select(this.domNode).append("svg")
+			    .attr("width", width)
+			    .attr("height", height + 100)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			x.domain(xDomain);
+			y.domain(d3.extent(data, function(d) { return d.amount; }));
+
+			svg.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + height + ")")
+				.call(xAxis);
+
+			svg.append("g")
+				.attr("class", "y axis")
+				.call(yAxis)
+				.append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 6)
+				.attr("dy", ".71em")
+				.style("text-anchor", "end")
+				.text("Amount");
+
+			svg.append("path")
+				.datum(data)
+				.attr("class", "line")
+				.attr("d", line)
+				.style("fill", "none")
+				.style("stroke", "steelblue")
+				.style("stroke-width", "1.5px");
+				
 		}
+
 
 	});
 });
