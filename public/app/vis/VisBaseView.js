@@ -1,12 +1,16 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
-		'dojo-mama/views/ModuleView'
-], function(declare, lang, ModuleView) {
+		'dojo/on',
+		'dojo-mama/views/ModuleView',
+		'./inquiry/InquiryForm'
+], function(declare, lang, on, ModuleView, InquiryForm) {
 	return declare([ModuleView], {
 
 		datasetId: null,
 
-		inquiryPane: null,
+		elasticsearchQuery: null,
+
+		inquiryForm: null,
 
 		// vis: Object
 		//     The visualization for this view.
@@ -22,6 +26,17 @@ define(['dojo/_base/declare',
 			if (this.vis) {
 				this.vis.set('active', true);
 			}
+		},
+
+		buildRendering: function() {
+			this.inherited(arguments);
+
+			this.inquiryForm = new InquiryForm();
+			this.inquiryForm.placeAt(this.domNode);
+
+			on(this.inquiryForm, 'search', lang.hitch(this, function(query) {
+				this.set('elasticsearchQuery', query);
+			}));
 		},
 
 		deactivate: function() {
@@ -48,6 +63,15 @@ define(['dojo/_base/declare',
 			}
 		},
 
+		_setElasticsearchQueryAttr: function(/*Object*/query) {
+			this._set('elasticsearchQuery', query);
+
+			if (this.vis) {
+				this.vis.set('elasticsearchQuery', query);
+				this.vis.reload();
+			}
+		},
+
 		_setVisModuleIdAttr: function(/*String*/visModuleId) {
 			this._set('visModuleId', visModuleId);
 
@@ -60,12 +84,15 @@ define(['dojo/_base/declare',
 			// Load the requested module,
 			require([visModuleId], lang.hitch(this, function(VisModule) {
 				this.vis = new VisModule({
-					active: this.active,
-					datasetId: this.datasetId
+					active: this.active
 				});
 
 				// TODO: Pass the inquiry from this.inquiryPane to new vis
 				this.vis.placeAt(this.domNode, 'last');
+
+				this.vis.set('datasetId', this.datasetId);
+				this.vis.set('elasticsearchQuery', this.elasticsearchQuery);
+
 				if (this.datasetId) {
 					this.vis.reload();
 				}

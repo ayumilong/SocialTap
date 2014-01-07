@@ -44,4 +44,99 @@
 		height: 100%;
 		width: 100%;
 	}
+
+	.inquiryForm {
+		background: white;
+		border: 3px solid #87826a;
+		border-radius: 4px;
+		min-height: 100px;
+		max-height: 600px;
+		padding: 8px;
+		position: absolute;
+		right: 5px;
+		top: 5px;
+		width: 400px;
+		z-index: 99;
+
+		&.minimized {
+
+		}
+
+		&.expanded {
+
+		}
+
+		fieldset {
+			border: 1px solid #f2f2ea;
+			border-radius: 4px;
+			padding: 5px;
+			margin-bottom: 10px;
+			margin-top: 3px;
+		}
+
+		input[type="text"], input[type="date"] {
+			border: 1px solid #87826a;
+			border-radius: 4px;
+			font-size: 16px;
+			padding: 4px;
+		}
+
+		.textQueryFieldset {
+			input[type="text"] {
+				width: calc(~"100% - 12px");
+			}
+
+			label, input[type="checkbox"] {
+				margin-top: 15px;
+			}
+		}
+
+		.dateQueryFieldset {
+			.start, .end {
+				width: 44%;
+			}
+
+			span {
+				display: inline-block;
+				text-align: center;
+				width: calc(~"12% - 30px");
+			}
+
+			label {
+				margin-top: 15px;
+				width: 22px;
+			}
+
+			input[type="checkbox"] {
+				margin-right: calc(~"(100% - 10px - (36px * 7)) / 7");
+				margin-top: 15px;
+				width: 14px;
+			}
+		}
+
+		.sentimentQueryFieldset {
+			label {
+				margin-right: 40px;
+			}
+		}
+
+		.geoQueryFieldset {
+			input[type="text"] {
+				margin-left: 10px;
+				width: 70px;
+			}
+
+			div {
+				margin-top: 10px;
+			}
+
+			select {
+				margin-left: 10px;
+			}
+		}
+
+		.advancedButton, .searchButton {
+			float: right;
+		}
+	}
 }

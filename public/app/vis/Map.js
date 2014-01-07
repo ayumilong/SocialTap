@@ -4,7 +4,7 @@ define(['dojo/_base/declare',
 		'dojo/request/xhr',
 		'dojo/dom-construct',
 		'./Base',
-		'app/vis/jsPlugin!static/d3.js',
+		'app/vis/jsPlugin!static/d3.js'
 ], function(declare, lang, xhr, domConstruct, BaseVis) {
 	return declare([BaseVis], {
 
@@ -12,36 +12,22 @@ define(['dojo/_base/declare',
 		countries: null,
 		path: null,
 
-		startup: function() {
-			// TODO:
-			//     Inquiry should not be hard coded.
-			//     Inquiry should not be a raw Elasticsearch query
-			//     Eventually, shouldn't be overriding startup at all
-			var word = "christmas";
-			this.set('inquiry', {
-				elasticsearch: {
-					facets: {
-						top_countries: {
-							terms: {
-								size: 1000,
-								field: "location.displayName"
-							}
-						},
-						top_states: {
-							terms : {
-								field : "place.state",
-								size : 1000
-							}
-						}
-					},
-					query: {
-						match: {
-							body: word
-						}
+		buildElasticsearchQuery: function(baseQuery) {
+			baseQuery.facets = {
+				top_countries: {
+					terms: {
+						size: 100,
+						field: "location.displayName"
+					}
+				},
+				top_states: {
+					terms : {
+						field : "place.state",
+						size : 100
 					}
 				}
-			});
-			this.inherited(arguments);
+			};
+			return baseQuery;
 		},
 
 		draw: function(data) {

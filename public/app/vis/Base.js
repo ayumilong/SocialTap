@@ -21,9 +21,9 @@ define(['dojo/_base/declare',
 		//     ID of dataset to run inquiry against.
 		datasetId: null,
 
-		// inquiry: Object
-		//     Inquiry to run/display.
-		inquiry: null,
+		// es_query: Object
+		//     Elastisearch query built from inquiry and vis options.
+		elasticsearchQuery: null,
 
 		// data: Object
 		//     Data received from API for current dataset/inquiry.
@@ -32,6 +32,15 @@ define(['dojo/_base/declare',
 		// redrawOnResize: Boolean
 		//     Whether or not to clear and redraw the visualization when this widget is resized.
 		redrawOnResize: true,
+
+		buildElasticsearchQuery: function(/*Object*/baseQuery) {
+			// summary:
+			//    Subclasses should override this method to provide the Elasticsearch query
+			//    necessary for the visualization.
+			// baseQuery: Object
+			//    Elasticsearch query with filter built from current inquiry.
+			return baseQuery;
+		},
 
 		draw: function(data) {
 			// summary:
@@ -74,7 +83,7 @@ define(['dojo/_base/declare',
 			// TODO:
 			//     this.dataPromise = xhr.post('/api/v0/inquiries', {
 			this.dataPromise = xhr.post('/api/v0/datasets/' + this.datasetId + '/search', {
-				data: JSON.stringify(this.inquiry),
+				data: JSON.stringify({elasticsearch: this.elasticsearchQuery}),
 				handleAs: 'json',
 				headers: {
 					'Content-Type': 'application/json'
@@ -106,6 +115,18 @@ define(['dojo/_base/declare',
 			if (data) {
 				this.redraw();
 			}
+		},
+
+		_setElasticsearchQueryAttr: function(/*Object*/query) {
+			if (!query) {
+				query = {
+					query: {
+						match_all: {}
+					}
+				};
+			}
+			query = this.buildElasticsearchQuery(query);
+			this._set('elasticsearchQuery', query);
 		}
 	});
 });

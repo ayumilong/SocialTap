@@ -12,25 +12,16 @@ define(['dojo/_base/declare',
 
 		numEntries: 50,
 
-		startup: function() {
-			// TODO:
-			//     Inquiry should not be hard coded.
-			//     Inquiry should not be a raw Elasticsearch query
-			//     Eventually, shouldn't be overriding startup at all
-			this.set('inquiry', {
-			    elasticsearch: {
-					facets: {
-						words: {
-							terms: {
-								field: "twitter_entities.hashtags.text",
-								size: this.numEntries
-							}
-						}
+		buildElasticsearchQuery: function(query) {
+			query.facets = {
+				words: {
+					terms: {
+						field: "twitter_entities.hashtags.text",
+						size: this.numEntries
 					}
-			    }
-			});
-
-			this.inherited(arguments);
+				}
+			};
+			return query;
 		},
 
 		draw: function(data) {

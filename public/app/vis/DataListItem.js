@@ -51,10 +51,6 @@ define([
 				this.buildView();
 			},
 
-			resize: function() {
-				console.log("this happens");
-			},
-
 			buildView: function(){
 				var sentiment, hashtags = "", mentions = "", links ="";
 				var i;
