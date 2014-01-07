@@ -1,26 +1,39 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
+		'dojo/dom-construct',
 		'dojo/on',
+		'dojox/mobile/Pane',
+		'dojo-mama/util/ScrollablePane',
 		'dojo-mama/views/ModuleView',
 		'./inquiry/InquiryForm'
-], function(declare, lang, on, ModuleView, InquiryForm) {
+], function(declare, lang, domConstruct, on, Pane, ScrollablePane, ModuleView, InquiryForm) {
 	return declare([ModuleView], {
 
+		'class': 'visView',
+
+		// datasetId: Integer
+		//     ID of dataset being visualized.
 		datasetId: null,
 
+		// elasticsearchQuery: Object
+		//     Elasticsearch query with filter built from inquiry.
 		elasticsearchQuery: null,
-
-		inquiryForm: null,
 
 		// vis: Object
 		//     The visualization for this view.
 		vis: null,
+
+		// visDetailsPane: Object
+		//     Pane for the visualization to display extra information.
+		visDetailsPane: null,
 
 		// visModuleId: String
 		//     The AMD module ID for the visualization to load for this view.
 		visModuleId: null,
 
 		activate: function(e) {
+			// summary:
+			//     Get dataset ID from route and activate visualization.
 			this.inherited(arguments);
 			this.set('datasetId', e.params.dataset_id);
 			if (this.vis) {
@@ -31,29 +44,45 @@ define(['dojo/_base/declare',
 		buildRendering: function() {
 			this.inherited(arguments);
 
-			this.inquiryForm = new InquiryForm();
-			this.inquiryForm.placeAt(this.domNode);
+			var rightPane = new ScrollablePane({
+				'class': 'visRightPane'
+			});
+			rightPane.placeAt(this.domNode);
 
-			on(this.inquiryForm, 'search', lang.hitch(this, function(query) {
+			domConstruct.create('div', {
+				'class': 'dmListDivider',
+				innerHTML: 'Inquiry'
+			}, rightPane.domNode);
+
+			var inquiryForm = new InquiryForm();
+			inquiryForm.placeAt(rightPane.domNode);
+			on(inquiryForm, 'submit', lang.hitch(this, function(query) {
 				this.set('elasticsearchQuery', query);
 			}));
+
+			domConstruct.create('div', {
+				'class': 'dmListDivider',
+				innerHTML: 'Details'
+			}, rightPane.domNode);
+
+			this.visDetailsPane = new Pane({
+				'class': 'visDetailsPane'
+			});
+			this.visDetailsPane.placeAt(rightPane.domNode);
 		},
 
 		deactivate: function() {
+			// summary:
+			//     Deactivate visualization.
 			this.inherited(arguments);
 			if (this.vis) {
 				this.vis.set('active', false);
 			}
 		},
 
-		startup: function() {
-			this.inherited(arguments);
-			// TODO:
-			//   Startup inquiry pane
-			//   Handle inquiry pane change event by setting inquiry property of this.vis
-		},
-
 		_setDatasetIdAttr: function(/*Integer*/datasetId) {
+			// summary:
+			//     Propagate datasetId through to visualization if it exists.
 			this._set('datasetId', datasetId);
 			if (this.vis) {
 				this.vis.set('datasetId', datasetId);
@@ -64,6 +93,8 @@ define(['dojo/_base/declare',
 		},
 
 		_setElasticsearchQueryAttr: function(/*Object*/query) {
+			// summary:
+			//     Propagate elasticsearchQuery through to visualization if it exists.
 			this._set('elasticsearchQuery', query);
 
 			if (this.vis) {
@@ -84,15 +115,14 @@ define(['dojo/_base/declare',
 			// Load the requested module,
 			require([visModuleId], lang.hitch(this, function(VisModule) {
 				this.vis = new VisModule({
-					active: this.active
+					active: this.active,
+					detailsPane: this.detailsPane
 				});
-
-				// TODO: Pass the inquiry from this.inquiryPane to new vis
 				this.vis.placeAt(this.domNode, 'last');
 
+				// Set visualization's dataset ID and ES query and load data.
 				this.vis.set('datasetId', this.datasetId);
 				this.vis.set('elasticsearchQuery', this.elasticsearchQuery);
-
 				if (this.datasetId) {
 					this.vis.reload();
 				}

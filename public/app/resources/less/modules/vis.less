@@ -42,29 +42,23 @@
 
 	.vis {
 		height: 100%;
-		width: 100%;
+		left: 0;
+		position: absolute;
+		right: 262px;
+	}
+
+	.visRightPane {
+		border-left: 2px solid #f2f2ea;
+		height: 100%;
+		position: absolute;
+		right: 0;
+		width: 260px;
 	}
 
 	.inquiryForm {
-		background: white;
-		border: 3px solid #87826a;
-		border-radius: 4px;
-		min-height: 100px;
-		max-height: 600px;
-		padding: 8px;
-		position: absolute;
-		right: 5px;
-		top: 5px;
-		width: 400px;
-		z-index: 99;
-
-		&.minimized {
-
-		}
-
-		&.expanded {
-
-		}
+		overflow: hidden;
+		padding: 5px;
+		width: 250px;
 
 		fieldset {
 			border: 1px solid #f2f2ea;
@@ -92,31 +86,25 @@
 		}
 
 		.dateQueryFieldset {
-			.start, .end {
-				width: 44%;
+			.startField, .endField {
+				width: 70%;
 			}
 
-			span {
-				display: inline-block;
-				text-align: center;
-				width: calc(~"12% - 30px");
-			}
-
-			label {
+			fieldset label {
+				display: inline-block;;
+				margin-right: calc(~"(100% - 10px - (40px * 4)) / 4");
 				margin-top: 15px;
-				width: 22px;
+				width: 40px;
 			}
 
 			input[type="checkbox"] {
-				margin-right: calc(~"(100% - 10px - (36px * 7)) / 7");
-				margin-top: 15px;
 				width: 14px;
 			}
 		}
 
 		.sentimentQueryFieldset {
-			label {
-				margin-right: 40px;
+			fieldset label {
+				margin-right: 150px;
 			}
 		}
 
@@ -135,8 +123,19 @@
 			}
 		}
 
-		.advancedButton, .searchButton {
+		.button {
+			color: white;
 			float: right;
+			margin-bottom: 8px;
+			margin-left: 15px;
+		}
+
+		.clearButton {
+			background: #d9534f;
+		}
+
+		.searchButton {
+			background: #428bca;
 		}
 	}
 }

@@ -59,14 +59,23 @@ define(['dojo/_base/declare',
 
 			this.unitsSelect = new Select({
 				'class': 'distanceField',
-				options: [{value: 'miles', label: 'miles'}, {value: 'kilometers', label: 'kilometers'}]
+				options: [{value: 'mi', label: 'mi'}, {value: 'km', label: 'km'}]
 			});
 			this.unitsSelect.placeAt(div);
 		},
 
 		buildInquiryPart: function() {
+
+			var lat = this.latField.get('value');
+			var lng = this.lngField.get('value');
+			var distance = this.distanceField.get('value');
+
+			if (!distance || !lat || !lng) {
+				return null;
+			}
+
 			return {
-				type: 'geoQuery',
+				type: 'geo',
 				field: 'geo.coordinates',
 				near: {
 					lat: this.latField.get('value'),

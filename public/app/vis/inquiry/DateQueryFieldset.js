@@ -40,52 +40,77 @@ define(['dojo/_base/declare',
 			var fieldsetNode = domConstruct.create('fieldset', {}, this.domNode);
 
 			this.startField = new TextBox({
-				'class': 'start',
-				placeHolder: 'Start',
+				'class': 'startField',
+				placeHolder: 'mm/dd/yyyy',
 				trim: true
 			});
 			domAttr.set(this.startField.domNode, 'type', 'date');
 			this.startField.placeAt(fieldsetNode);
 
-			domConstruct.create('span', {
-				innerHTML: ' - '
-			}, fieldsetNode);
+			domConstruct.create('label', {
+				'for': this.startField.get('id'),
+				innerHTML: 'Start'
+			}, this.startField.domNode, 'before');
 
 			this.endField = new TextBox({
-				'class': 'end',
+				'class': 'endField',
 				placeHolder: 'End',
 				trim: true
 			});
 			domAttr.set(this.endField.domNode, 'type', 'date');
 			this.endField.placeAt(fieldsetNode);
 
+			domConstruct.create('label', {
+				'for': this.endField.get('id'),
+				innerHTML: 'End'
+			}, this.endField.domNode, 'before');
+
 			this.days = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 			this.dayCheckBoxes = [];
-			var i, cb;
+			var i, label, cb;
 			for (i = 0; i < this.days.length; i++) {
-				cb = new CheckBox();
-				cb.placeAt(fieldsetNode);
-				this.dayCheckBoxes.push(cb);
-
-				domConstruct.create('label', {
-					'for': cb.get('id'),
+				label = domConstruct.create('label', {
 					innerHTML: this.days[i]
-				}, cb.domNode, 'before');
+				}, fieldsetNode);
+
+				cb = new CheckBox();
+				cb.placeAt(label, 'first');
+				domAttr.set(label, 'for', cb.get('id'));
+
+				this.dayCheckBoxes.push(cb);
 			}
 		},
 
 		buildInquiryPart: function() {
-			return {
-				type: 'dateQuery',
+
+			var start = this.startField.get('value');
+			var end = this.endField.get('value');
+
+			var days = this.days.filter(lang.hitch(this, function(d, index) {
+				return this.dayCheckBoxes[index].get('checked');
+			}));
+
+			if (!end && !start && days.length === 0) {
+				return null;
+			}
+
+			var part = {
+				type: 'date',
 				field: 'postedTime',
-				range: {
-					start: this.startField.get('value'),
-					end: this.endField.get('value')
-				},
-				days: this.days.filter(lang.hitch(this, function(d, index) {
-					return this.dayCheckBoxes[index].get('checked');
-				}))
+				range: {}
 			};
+
+			if (start) {
+				part.range.start = start;
+			}
+			if (end) {
+				part.range.end = end;
+			}
+			if (days) {
+				part.days = days;
+			}
+
+			return part;
 		},
 
 		reset: function() {
