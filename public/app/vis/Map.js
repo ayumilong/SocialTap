@@ -23,18 +23,17 @@ define(['dojo/_base/declare',
 					facets: {
 						top_countries: {
 							terms: {
-								size: 100,
+								size: 1000,
 								field: "location.displayName"
 							}
 						},
 						top_states: {
 							terms : {
 								field : "place.state",
-								size : 100
+								size : 1000
 							}
 						}
 					},
-					size: 100,
 					query: {
 						match: {
 							body: word
