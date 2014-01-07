@@ -59,7 +59,7 @@ define(['dojo/_base/declare',
 
 			this.unitsSelect = new Select({
 				'class': 'distanceField',
-				options: [{value: 'miles', label: 'miles'}, {value: 'kilometers', label: 'kilometers'}]
+				options: [{value: 'mi', label: 'mi'}, {value: 'km', label: 'km'}]
 			});
 			this.unitsSelect.placeAt(div);
 		},

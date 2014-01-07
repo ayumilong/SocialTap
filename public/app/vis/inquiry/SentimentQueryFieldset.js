@@ -27,7 +27,7 @@ define(['dojo/_base/declare',
 				}, fieldsetNode);
 
 				cb = new CheckBox();
-				cb.placeAt(label);
+				cb.placeAt(label, 'first');
 
 				domAttr.set(label, 'for', cb.get('id'));
 

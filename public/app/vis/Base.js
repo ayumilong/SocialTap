@@ -1,3 +1,4 @@
+/*global requestAnimationFrame*/
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-construct',
@@ -21,6 +22,10 @@ define(['dojo/_base/declare',
 		//     ID of dataset to run inquiry against.
 		datasetId: null,
 
+		// detailsPane: Object
+		//     Pane for displaying extra information about visualization content.
+		detailsPane: null,
+
 		// es_query: Object
 		//     Elastisearch query built from inquiry and vis options.
 		elasticsearchQuery: null,
@@ -43,6 +48,7 @@ define(['dojo/_base/declare',
 		},
 
 		draw: function(data) {
+			/*jslint unparam: true*/
 			// summary:
 			//     Subclasses should override this method to draw the visualization.
 		},
@@ -73,15 +79,11 @@ define(['dojo/_base/declare',
 				return;
 			}
 
-			console.log('Vis load data for set ' + this.datasetId);
-
 			if (this.dataPromise !== null) {
 				this.dataPromise.cancel();
 			}
 
 			this.set('data', null);
-			// TODO:
-			//     this.dataPromise = xhr.post('/api/v0/inquiries', {
 			this.dataPromise = xhr.post('/api/v0/datasets/' + this.datasetId + '/search', {
 				data: JSON.stringify({elasticsearch: this.elasticsearchQuery}),
 				handleAs: 'json',
@@ -118,6 +120,11 @@ define(['dojo/_base/declare',
 		},
 
 		_setElasticsearchQueryAttr: function(/*Object*/query) {
+			// summary:
+			//     Accept base query from inquiry form and add this
+			//     visualization's extra parameters to it.
+
+			// Minimal query matches all results.
 			if (!query) {
 				query = {
 					query: {
@@ -125,7 +132,9 @@ define(['dojo/_base/declare',
 					}
 				};
 			}
+
 			query = this.buildElasticsearchQuery(query);
+
 			this._set('elasticsearchQuery', query);
 		}
 	});

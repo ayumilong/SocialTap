@@ -116,7 +116,7 @@ define(['dojo/_base/declare',
 
 			var esQuery = this.inquiryToElasticsearch(inquiry);
 
-			this.emit('search', esQuery);
+			this.emit('submit', esQuery);
 		},
 
 		_setAdvancedModeAttr: function(/*Boolean*/advancedMode) {
