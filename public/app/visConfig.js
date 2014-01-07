@@ -17,6 +17,11 @@ define({
 			id: 'app/vis/Map',
 			route: '/vis/map/:dataset_id',
 			title: 'Map'
+		},
+		{
+			id: 'app/vis/LineGraph',
+			route: '/vis/linegraph/:dataset_id',
+			title: "Line Graph"
 		}
 	]
 });
