@@ -66,6 +66,14 @@ define(['dojo/_base/declare',
 			});
 			searchButton.placeAt(this.domNode);
 
+			var clearButton = new Button({
+				'class': 'clearButton button',
+				duration: 0,
+				label: 'Clear',
+				onClick: lang.hitch(this, this.reset)
+			});
+			clearButton.placeAt(this.domNode);
+
 			this.advancedButton = new Button({
 				'class': 'advancedButton button',
 				label: 'Advanced',
@@ -102,6 +110,15 @@ define(['dojo/_base/declare',
 				}
 			};
 
+		},
+
+		reset: function() {
+			this.baseFieldset.reset();
+			var i;
+			for (i = 0; i < this.advancedFieldsets.length; i++) {
+				this.advancedFieldsets[i].reset();
+			}
+			this.emit('submit', null);
 		},
 
 		search: function() {

@@ -17,6 +17,10 @@ define(['dojo/_base/declare',
 		//     body in the text search.
 		includeExtraFields: false,
 
+		// includeFieldsCheckbox: Object
+		//     Checkbox to select whether to include extra fields or not.
+		includeFieldsCheckbox: null,
+
 		// label: String
 		//     Label for this fieldset.
 		label: null,
@@ -40,16 +44,16 @@ define(['dojo/_base/declare',
 			});
 			this.queryField.placeAt(fieldsetNode);
 
-			var includeFieldsCheckbox = new CheckBox();
-			includeFieldsCheckbox.placeAt(fieldsetNode);
-			includeFieldsCheckbox.set('onChange', lang.hitch(this, function() {
+			this.includeFieldsCheckbox = new CheckBox();
+			this.includeFieldsCheckbox.placeAt(fieldsetNode);
+			this.includeFieldsCheckbox.set('onChange', lang.hitch(this, function() {
 				this.set('includeExtraFields', !this.includeExtraFields);
 			}));
 
 			domConstruct.create('label', {
-				'for': includeFieldsCheckbox.get('id'),
+				'for': this.includeFieldsCheckbox.get('id'),
 				innerHTML: 'Include additional fields:'
-			}, includeFieldsCheckbox.domNode, 'before');
+			}, this.includeFieldsCheckbox.domNode, 'before');
 
 			this.fieldsSelectionNode = domConstruct.create('div', {
 				'class': 'hidden'
@@ -67,7 +71,7 @@ define(['dojo/_base/declare',
 
 		reset: function() {
 			this.queryField.set('value', '');
-			this.includeExtraFields.set('checked', false);
+			this.includeFieldsCheckbox.set('checked', false);
 		},
 
 		_setIncludeExtraFieldsAttr: function(includeExtraFields) {
