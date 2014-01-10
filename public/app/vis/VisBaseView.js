@@ -5,8 +5,10 @@ define(['dojo/_base/declare',
 		'dojox/mobile/Pane',
 		'dojo-mama/util/ScrollablePane',
 		'dojo-mama/views/ModuleView',
-		'./inquiry/InquiryForm'
-], function(declare, lang, domConstruct, on, Pane, ScrollablePane, ModuleView, InquiryForm) {
+		'./inquiry/InquiryForm',
+		'./OptionsPane'
+], function(declare, lang, domConstruct, on, Pane, ScrollablePane, ModuleView, InquiryForm, OptionsPane) {
+
 	return declare([ModuleView], {
 
 		'class': 'visView',
@@ -30,6 +32,8 @@ define(['dojo/_base/declare',
 		// visModuleId: String
 		//     The AMD module ID for the visualization to load for this view.
 		visModuleId: null,
+
+		visOptionsPane: new OptionsPane(),
 
 		activate: function(e) {
 			// summary:
@@ -62,6 +66,22 @@ define(['dojo/_base/declare',
 
 			domConstruct.create('div', {
 				'class': 'dmListDivider',
+				innerHTML: 'Options'
+			}, rightPane.domNode);
+
+			this.visOptionsPane = new OptionsPane();
+			this.visOptionsPane.placeAt(rightPane.domNode);
+			on(this.visOptionsPane, 'optionSet', lang.hitch(this, function(opt) {
+				console.log('option set');
+				console.log(opt.name + ' = ' + opt.value);
+				if (this.vis) {
+					this.vis.set(opt.name, opt.value);
+					this.vis.reload();
+				}
+			}));
+
+			domConstruct.create('div', {
+				'class': 'dmListDivider',
 				innerHTML: 'Details'
 			}, rightPane.domNode);
 
@@ -69,6 +89,7 @@ define(['dojo/_base/declare',
 				'class': 'visDetailsPane'
 			});
 			this.visDetailsPane.placeAt(rightPane.domNode);
+
 		},
 
 		deactivate: function() {
@@ -114,11 +135,19 @@ define(['dojo/_base/declare',
 
 			// Load the requested module,
 			require([visModuleId], lang.hitch(this, function(VisModule) {
+				if (this.visOptionsChangedHandle) {
+					this.visOptionsChangedHandle.remove();
+				}
 				this.vis = new VisModule({
 					active: this.active,
 					detailsPane: this.detailsPane
 				});
 				this.vis.placeAt(this.domNode, 'last');
+
+				this.visOptionsPane.set('options', this.vis.get('options'));
+				this.visOptionsChangedHandle = on(this.vis, 'optionsChanged', lang.hitch(this, function(newOptions) {
+					this.visOptionsPane.set('options', newOptions);
+				}));
 
 				// Set visualization's dataset ID and ES query and load data.
 				this.vis.set('datasetId', this.datasetId);

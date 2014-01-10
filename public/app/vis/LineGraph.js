@@ -16,6 +16,22 @@ define(['dojo/_base/declare',
 			return lang.mixin(baseQuery, { "size" : 1000 });
 		},
 
+		constructor: function() {
+			this.options = [
+				{
+					name: 'xaxis',
+					label: 'Range',
+					values: [
+						{ label: 'Day', value: 'day' },
+						{ label: 'Week', value: 'week' },
+						{ label: 'Month', value: 'month' },
+						{ label: 'Year', value: 'year' },
+						{ label: 'All', value: 'all' }
+					]
+				}
+			];
+		},
+
 		draw: function(data) {
 			console.log(data);
 			var sample = data.hits.hits;
@@ -58,10 +74,10 @@ define(['dojo/_base/declare',
 					this.parseDate = d3.time.format("%d").parse;
 					break;
 				case "year":
-					this.parseDate = d3.time.format("%d-%m");
+					this.parseDate = d3.time.format("%d-%m").parse;
 					break;
 				case "all":
-					this.parseDate = d3.time.format("%d-%b-%m");
+					this.parseDate = d3.time.format("%d-%b-%m").parse;
 					break;
 			}
 
@@ -76,7 +92,7 @@ define(['dojo/_base/declare',
 						key = date.getDay();
 						break;
 					case "month":
-						key = date.getDate();						
+						key = date.getDate();
 						break;
 					case "year":
 						key = date.getDate() + "-" + date.getMonth();
@@ -108,11 +124,11 @@ define(['dojo/_base/declare',
 					xDomain = [this.parseDate("0"), this.parseDate("30")];
 					break;
 				case "year":
-					this.parseDate = d3.time.format("%d-%m");
-					xDomain = [this.parseDate("0"), this.parseDate("364")];
+					this.parseDate = d3.time.format("%d-%m").parse;
+					xDomain = [this.parseDate("1-1"), this.parseDate("31-12")];
 					break;
 				case "all":
-					this.parseDate = d3.time.format("%d-%b-%m");
+					this.parseDate = d3.time.format("%d-%b-%m").parse;
 					xDomain = d3.extent(data, function(d) { return d.date; });
 					break;
 			}
@@ -151,7 +167,7 @@ define(['dojo/_base/declare',
 				.style("fill", "none")
 				.style("stroke", "steelblue")
 				.style("stroke-width", "1.5px");
-				
+
 		}
 
 
