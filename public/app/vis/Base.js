@@ -62,6 +62,7 @@ define(['dojo/_base/declare',
 
 		handleData: function(response) {
 			this.dataPromise = null;
+			this.emit('display_info', 'Inquiry matched ' + response.data.hits.total + ' items');
 			this.set('data', response.data);
 		},
 
