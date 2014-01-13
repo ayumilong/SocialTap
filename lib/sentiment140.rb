@@ -23,8 +23,10 @@ module Sentiment140
     def get_bulk_sentiment input_objects
       url = s140_url 'bulkClassifyJson', {appid: @app_id}
       post_data = JSON[{'data' => input_objects}]
-      response = Curl::Easy.http_post url, post_data
-      JSON[response.body_str]['data']
+      response = Curl::Easy.http_post url, post_data do |c|
+        c.encoding = "UTF-8"
+      end
+      JSON.parse(response.body_str)['data']
     end
 
     def s140_url type, params
