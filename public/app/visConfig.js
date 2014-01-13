@@ -2,26 +2,23 @@ define({
 	visualizations: [
 		{
 			id: 'app/vis/Browse',
-			route: '/vis/browse/:dataset_id',
+			route: '/vis/:dataset_id/browse',
 			title: 'Browse'
 		},
 		{
 			id: 'app/vis/WordCloud',
-			route: '/vis/hashtags/:dataset_id',
-			title: 'Hashtag Cloud',
-			options: {
-				field: 'twitter_entities.hashtags.text'
-			}
+			route: '/vis/:dataset_id/word_cloud',
+			title: 'Hashtag Cloud'
 		},
 		{
 			id: 'app/vis/Map',
-			route: '/vis/map/:dataset_id',
+			route: '/vis/:dataset_id/map',
 			title: 'Map'
 		},
 		{
 			id: 'app/vis/LineGraph',
-			route: '/vis/linegraph/:dataset_id',
-			title: "Line Graph"
+			route: '/vis/:dataset_id/line_graph',
+			title: 'Line Graph'
 		}
 	]
 });

@@ -5,7 +5,7 @@ define(['dojo/_base/declare',
 		'dojox/mobile/Pane',
 		'dojo-mama/util/ScrollablePane',
 		'dojo-mama/views/ModuleView',
-		'./inquiry/InquiryForm',
+		'./InquiryForm',
 		'./OptionsPane'
 ], function(declare, lang, domConstruct, on, Pane, ScrollablePane, ModuleView, InquiryForm, OptionsPane) {
 
@@ -33,7 +33,7 @@ define(['dojo/_base/declare',
 		//     The AMD module ID for the visualization to load for this view.
 		visModuleId: null,
 
-		visOptionsPane: new OptionsPane(),
+		visOptionsPane: null,
 
 		activate: function(e) {
 			// summary:

@@ -13,10 +13,6 @@ define(['dojo/_base/declare',
 		//     override buildElasticsearchQuery and draw. See documentation for those methods
 		//     for details.
 
-		// active: Boolean
-		//     Whether or not this visualization is currently visible.
-		active: false,
-
 		'class': 'vis',
 
 		// dataPromise: Object
@@ -77,9 +73,6 @@ define(['dojo/_base/declare',
 		},
 
 		redraw: function() {
-			if (!this.active) {
-				return;
-			}
 			domConstruct.empty(this.domNode);
 			this.draw(this.data);
 		},

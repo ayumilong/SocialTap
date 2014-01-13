@@ -1,64 +1,29 @@
 .visModule {
 
-	.selectorBar {
-		margin: 0;
-		padding: 10px 0;
-		background: rgb(193,190,176);
-		text-align: center;
-		a {
-			.buttonMixin;
-			margin-right: 10px;
-
-			&:last-child {
-				margin-right: 0;
-			}
-		}
-	}
-
-	.listItem {
-		height: 20px;
-		width: 100%;
-		display: inline-block;
-		.author {
-			width: 20%;
-		}
-		.body {
-			width: 80%;
-		}
-	}
-	.prevDayButton, .nextDayButton {
-		min-width: 14px !important;
-	}
-
-	.prevDayButton {
-		.fa;
-		.fa-chevron-left;
-	}
-
-	.nextDayButton {
-		.fa;
-		.fa-chevron-right;
+	.visContainer {
+		float: left;
+		height: 100%;
+		width: calc(~"100% - 262px");
 	}
 
 	.vis {
 		height: 100%;
-		left: 0;
-		position: absolute;
-		right: 262px;
+		width: 100%;
 	}
 
-	.visRightPane {
+	.sidebar {
 		border-left: 2px solid #f2f2ea;
+		float: right;
 		height: 100%;
-		position: absolute;
-		right: 0;
 		width: 260px;
+	}
+
+	.sidebar > div {
+		padding: 5px;
 	}
 
 	.inquiryForm {
 		overflow: hidden;
-		padding: 5px;
-		width: 250px;
 
 		fieldset {
 			border: 1px solid #f2f2ea;
@@ -68,6 +33,10 @@
 			margin-top: 3px;
 		}
 
+		label {
+			display: inline-block;
+		}
+
 		input[type="text"], input[type="date"] {
 			border: 1px solid #87826a;
 			border-radius: 4px;
@@ -75,56 +44,46 @@
 			padding: 4px;
 		}
 
-		.textQueryFieldset {
+		fieldset.textFilter {
 			input[type="text"] {
 				width: calc(~"100% - 12px");
 			}
-
-			label, input[type="checkbox"] {
-				margin-top: 15px;
-			}
 		}
 
-		.dateQueryFieldset {
-			.startField, .endField {
+		fieldset.dateFilter {
+			label {
+				display: inline-block;
+				width: 20%;
+			}
+			input[type="date"] {
 				width: 70%;
 			}
+		}
 
-			fieldset label {
-				display: inline-block;;
-				margin-right: calc(~"(100% - 10px - (40px * 4)) / 4");
-				margin-top: 15px;
-				width: 40px;
-			}
-
-			input[type="checkbox"] {
-				width: 14px;
+		fieldset.sentimentFilter {
+			label {
+				width: 200px;
 			}
 		}
 
-		.sentimentQueryFieldset {
-			fieldset label {
-				margin-right: 150px;
-			}
-		}
-
-		.geoQueryFieldset {
-			input[type="text"] {
-				margin-left: 10px;
+		fieldset.geoFilter {
+			label {
 				width: 70px;
 			}
 
-			div {
-				margin-top: 10px;
+			input[type="text"] {
+				margin-left: 5px;
+				width: 60px;
 			}
 
 			select {
-				margin-left: 10px;
+				margin-left: 5px;
 			}
 		}
 
 		.button {
 			color: white;
+			cursor: pointer;
 			float: right;
 			margin-bottom: 8px;
 			margin-left: 15px;
@@ -134,16 +93,8 @@
 			background: #d9534f;
 		}
 
-		.searchButton {
+		.submitButton {
 			background: #428bca;
-		}
-	}
-
-	.visOptionsPane {
-		padding: 5px;
-
-		label {
-			margin-right: 3px;
 		}
 	}
 }
