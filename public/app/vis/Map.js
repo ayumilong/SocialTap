@@ -4,7 +4,7 @@ define(['dojo/_base/declare',
 		'dojo/request/xhr',
 		'dojo/dom-construct',
 		'./Base',
-		'app/vis/jsPlugin!static/d3.js'
+		'app/util/staticjs!static/d3.js'
 ], function(declare, lang, xhr, domConstruct, BaseVis) {
 	return declare([BaseVis], {
 

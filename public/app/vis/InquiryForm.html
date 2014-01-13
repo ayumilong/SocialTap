@@ -1,0 +1,41 @@
+<div class="${baseClass}">
+	<form>
+		<fieldset class="textFilter">
+			<legend>Filter by text</legend>
+			<input data-dojo-attach-point="textQueryNode" placeholder="Query" type="text" id="inquiryTextFilterQuery">
+		</fieldset>
+		<div data-dojo-attach-point="advancedFiltersNode" class="hidden">
+			<fieldset class="dateFilter">
+				<legend>Filter by date</legend>
+				<label for="inquiryDateFilterRangeStart">Start</label>
+				<input data-dojo-attach-point="dateRangeStartNode" type="date" id="inquiryDateFilterRangeStart">
+				<label for="inquiryDateFilterRangeEnd">End</label>
+				<input data-dojo-attach-point="dateRangeEndNode" type="date" id="inquiryDateFilterRangeEnd">
+			</fieldset>
+			<fieldset class="geoFilter">
+				<legend>Filter by location</legend>
+				<label for="inquiryGeoFilterLat">Lat/Lon</label>
+				<input data-dojo-attach-point="geoLatNode" placeholder="0.000" type="text" id="inquiryGeoFilterLat">
+				<input data-dojo-attach-point="geoLonNode" placeholder="0.000" type="text" id="inquiryGeoFilterLon">
+				<label for="inquiryGeoFilterDistance">Distance</label>
+				<input data-dojo-attach-point="geoDistanceNode" placeholder="0" type="text" id="inquiryGeoFilterDistance">
+				<select data-dojo-attach-point="geoDistanceUnitsNode">
+					<option value="mi">mi</option>
+					<option value="km">km</option>
+				</select>
+			</fieldset>
+			<fieldset class="sentimentFilter">
+				<legend>Filter by sentiment</legend>
+				<input type="checkbox" id="inquirySentimentFilterPositive">
+				<label for="inquirySentimentFilterPositive">Positive</label>
+				<input type="checkbox" id="inquirySentimentFilterNeutral">
+				<label for="inquirySentimentFilterNeutral">Neutral</label>
+				<input type="checkbox" id="inquirySentimentFilterNegative">
+				<label for="inquirySentimentFilterNegative">Negative</label>
+			</fieldset>
+		</div>
+		<a type="submit" data-dojo-attach-event="onclick:submit" class="button submitButton">Submit</a>
+		<a type="button" data-dojo-attach-event="onclick:clear" class="button clearButton">Clear</a>
+		<a data-dojo-attach-point="advancedModeToggle" data-dojo-attach-event="onclick:toggleAdvancedMode" class="button">Advanced</a>
+	</form>
+</div>

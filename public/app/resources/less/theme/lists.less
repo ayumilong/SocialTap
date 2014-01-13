@@ -1,10 +1,6 @@
-.mblEdgeToEdgeList {
-	margin: 0 10px;
-	background: transparent;
-}
-
-.dj_tablet .mblEdgeToEdgeList {
+ul {
 	margin: 10px 15px;
+	padding: 0;
 }
 
 .dmListDivider {
@@ -21,6 +17,7 @@
 	border-bottom: 1px solid rgb(231, 231, 222);
 	color: rgb(55,55,55);
 	font-weight: bold;
+	list-style-type: none;
 	margin-bottom: 0;
 	overflow: hidden;
 	position: relative;
@@ -30,6 +27,7 @@
 		padding: 0;
 
 		a {
+			display: inline-block;
 			overflow: hidden;
 			padding: 15px 20px 15px 0;
 
@@ -37,6 +35,10 @@
 				margin-top: -9px;
 				right: 0;
 				top: 50%;
+
+				&:before {
+					height: 100%;
+				}
 			}
 		}
 
@@ -61,12 +63,19 @@
 	}
 
 	.dmListItemIcon {
+		float: left;
 		margin: 0;
 	}
 
 	.dmListItemRightText {
+		float: right;
 		font-weight: normal;
 		text-align: right;
+	}
+
+	.dmRightIcon {
+		position: absolute;
+		right: 0;
 	}
 
 }

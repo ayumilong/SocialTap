@@ -6,9 +6,8 @@ define(['dojo/_base/declare',
 		'dojox/mobile',
 		'dojox/mobile/Pane',
 		'./DatasetSelector',
-		'./VisualizationSelector',
-		'../visConfig'
-], function(declare, lang, domAttr, topic, WidgetBase, mobile, Pane, DatasetSelector, VisualizationSelector, visConfig) {
+		'./VisualizationSelector'
+], function(declare, lang, domAttr, topic, WidgetBase, mobile, Pane, DatasetSelector, VisualizationSelector) {
 
 	// module:
 	//     app/layout/Layout
@@ -16,6 +15,10 @@ define(['dojo/_base/declare',
 	return declare([WidgetBase], {
 
 		baseClass: 'dmLayout',
+
+		// config: [private] Object
+		//     Configuration from dmConfig.js.
+		config: null,
 
 		// mode: [private] String
 		//    Either 'phone' or 'tablet'
@@ -33,20 +36,13 @@ define(['dojo/_base/declare',
 
 			this.inherited(arguments);
 
-			// Copy array so we're not modifying the original.
-			var visRoutes = visConfig.visualizations.slice(0);
-			visRoutes.unshift({
-				title: 'Info',
-				route: '/datasets/:dataset_id'
-			});
-
 			var datasetSelector = new DatasetSelector({
-				visRoutes: visRoutes
+				visRoutes: this.config.topNav
 			});
 			datasetSelector.placeAt(this.domNode);
 
 			var vizSelector = new VisualizationSelector({
-				visRoutes: visRoutes
+				visRoutes: this.config.topNav
 			});
 			vizSelector.placeAt(this.domNode);
 
