@@ -36,7 +36,29 @@ define(['dojo/_base/declare',
 		//     Data received from API for current dataset/inquiry.
 		data: null,
 
-
+		// options: Array
+		//     Array of options for a visualization.
+		//     [
+		//        {
+		//           name: Key for option in vis class
+		//           label: Label for input
+		//           allowedValues: [
+		//              {
+		//                 label: Label for option in select
+		//                 value: Value to set option to
+		//              }
+		//           ]
+		//        }
+		//     ]
+		//
+		//     This is used to create inputs for changing visualization options. When a
+		//     visualization is displayed, the options pane in the sidebar will update with
+		//     inputs to change its options. If the 'allowed_values' key is specified for an
+		//     option, a select box will be shown. Otherwise, a text input. When an input value
+		//     changes, set(option.name, input value) will be called on the visualization object.
+		//
+		//     When this.get('options') is called, another key 'currentValue' will be mixed in
+		//     with the value returned by this.get(option.name).
 		options: null,
 
 		// redrawOnResize: Boolean
@@ -149,19 +171,20 @@ define(['dojo/_base/declare',
 				return null;
 			}
 
+			return this.options.map(lang.hitch(this, function(opt) {
+				return lang.mixin(opt, { currentValue: this.get(opt.name) });
+			}));
+
 			// Mix current value of each option into returned array.
-			var opts = [];
+			/*var opts = [];
 			var i;
 			for (i = 0; i < this.options.length; i++) {
-				opts.push(lang.mixin(this.options[i], { currentValue: this.get(this.options[i].name) }));
+				opts.push(lang.mixin(this.options[i], {
+					currentValue: this.get(this.options[i].name)
+				}));
 			}
 
-			return opts;
-		},
-
-		_setOptionsAttr: function(/*Array*/options) {
-			this._set('options', options);
-			this.emit('optionsChanged', options);
+			return opts;*/
 		}
 	});
 });

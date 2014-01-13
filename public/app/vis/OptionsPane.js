@@ -1,30 +1,15 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
+		'dojo/dom-attr',
 		'dojo/dom-construct',
+		'dojo/on',
 		'dojo/Evented',
-		'dojox/mobile/Pane',
-		'app/util/Select'
-], function(declare, lang, domConstruct, Evented, Pane, Select) {
-	return declare([Pane, Evented], {
+		'dijit/_WidgetBase'
+], function(declare, lang, domAttr, domConstruct, on, Evented, _WidgetBase) {
+	return declare([_WidgetBase, Evented], {
 
 		'class': 'visOptionsPane',
 
-		// options: Array
-		//     Array of options for a visualization.
-		//     [
-		//        {
-		//           name: Key for option in vis class. When select is changed,
-		//                 vis.set(name, value from select) will be called
-		//           label: Label for select
-		//           values: [
-		//              {
-		//                 label: Label for option in select
-		//                 value: Value to set option to
-		//              }
-		//           ]
-		//
-		//        }
-		//     ]
 		options: null,
 
 		_setOptionsAttr: function(/*Array*/options) {
@@ -41,30 +26,49 @@ define(['dojo/_base/declare',
 				return;
 			}
 
-			var setChangeHandler = lang.hitch(this, function(select, opt) {
-				select.set('onChange', lang.hitch(this, function(val) {
-					this.emit('optionSet', {
+			var i, j, opt;
+			var inputNode, optNode;
+
+			var createChangeHandler = lang.hitch(this, function(opt) {
+				return lang.hitch(this, function(e) {
+					console.log(opt.name + ' set to ' + e.target.value);
+					this.emit('option_set', {
 						name: opt.name,
-						value: val
+						value: e.target.value
 					});
-				}));
+				});
 			});
 
-			var i, opt, select;
 			for (i = 0; i < options.length; i++) {
 				opt = options[i];
 
-				select = new Select({
-					options: opt.values,
-					value: opt.currentValue
-				});
-				select.placeAt(this.domNode);
-				setChangeHandler(select, opt);
+				if (opt.hasOwnProperty('allowedValues')) {
+					inputNode = domConstruct.create('select');
+					for (j = 0; j < opt.allowedValues.length; j++) {
+						optNode = domConstruct.create('option', {
+							innerHTML: opt.allowedValues[j].label,
+							value: opt.allowedValues[j].value
+						}, inputNode);
+
+						if (opt.allowedValues[j].value == opt.currentValue) {
+							domAttr.set(optNode, 'selected', 'selected');
+						}
+					}
+				}
+				else {
+					inputNode = domConstruct.create('input', {
+						type: 'text',
+						value: opt.currentValue
+					});
+				}
+
+				domConstruct.place(inputNode, this.domNode);
 
 				domConstruct.create('label', {
-					'for': select.get('id'),
 					innerHTML: opt.label
-				}, select.domNode, 'before');
+				}, inputNode, 'before');
+
+				on(inputNode, 'change', createChangeHandler(opt));
 			}
 		}
 

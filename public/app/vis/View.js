@@ -6,7 +6,8 @@ define(['dojo/_base/declare',
 		'dijit/_TemplatedMixin',
 		'dijit/_WidgetsInTemplateMixin',
 		'dojo-mama/views/_ModuleViewMixin',
-		'./InquiryForm'
+		'./InquiryForm',
+		'./OptionsPane'
 ], function(declare, lang, on, template, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, _ModuleViewMixin) {
 	return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, _ModuleViewMixin], {
 
@@ -34,7 +35,7 @@ define(['dojo/_base/declare',
 
 		// visOptionsNode: DomNode
 		//     Container for controls to set visualization options.
-		visOptionsNode: null,
+		visOptionsPane: null,
 
 		activate: function(e) {
 			this.inherited(arguments);
@@ -67,6 +68,8 @@ define(['dojo/_base/declare',
 				this.vis.set('datasetId', e.params.dataset_id);
 				this.vis.set('elasticsearchQuery', this.inquiryForm.get('elasticsearchQuery'));
 				this.vis.reload();
+
+				this.visOptionsPane.set('options', this.vis.get('options'));
 			}));
 		},
 
@@ -79,6 +82,11 @@ define(['dojo/_base/declare',
 					this.vis.set('elasticsearchQuery', esQuery);
 					this.vis.reload();
 				}
+			}));
+
+			this.visOptionsPane.on('option_set', lang.hitch(this, function(opt) {
+				this.vis.set(opt.name, opt.value);
+				this.vis.reload();
 			}));
 		}
 

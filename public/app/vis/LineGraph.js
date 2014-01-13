@@ -9,10 +9,10 @@ define(['dojo/_base/declare',
 	return declare([BaseVis], {
 
 		xaxis: "year",
-		axisMap: {	"day" : "1h", 
-					"week" : "day", 
-					"month" : "day", 
-					"year" : "day", 
+		axisMap: {	"day" : "1h",
+					"week" : "day",
+					"month" : "day",
+					"year" : "day",
 					"all" : "day" },
 		parseDate: null,
 
@@ -24,7 +24,7 @@ define(['dojo/_base/declare',
 														"interval" : this.axisMap[this.xaxis]
 													}
 												}
-											} 
+											}
 										});
 		},
 
@@ -33,7 +33,7 @@ define(['dojo/_base/declare',
 				{
 					name: 'xaxis',
 					label: 'Range',
-					values: [
+					allowedValues: [
 						{ label: 'Day', value: 'day' },
 						{ label: 'Week', value: 'week' },
 						{ label: 'Month', value: 'month' },
