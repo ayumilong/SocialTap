@@ -25,8 +25,7 @@ define([
 
 		var layout = new Layout({config: dmConfig});
 		layout.placeAt(win.body(), 'first');
-		//var layoutReady = layout.startup();
-		//
+
 		var mm = new ModuleManager({
 			config: lang.mixin(dmConfig, { moduleContentNode: layout.moduleContent.domNode })
 		});

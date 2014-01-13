@@ -43,8 +43,6 @@ define(['dojo/_base/declare',
 			this.config.modules['404'] = this.config.modules['404'] || { moduleId: './404/Module' };
 			this.config.transitionDuration = this.config.transitionDuration || 250;
 			this.config.baseRoute = '/';
-			// expose the config globally
-			//kernel.global.dmConfig = this.config = config;
 		},
 
 		startup: function() {
