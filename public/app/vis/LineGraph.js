@@ -28,6 +28,22 @@ define(['dojo/_base/declare',
 										});
 		},
 
+		constructor: function() {
+			this.options = [
+				{
+					name: 'xaxis',
+					label: 'Range',
+					values: [
+						{ label: 'Day', value: 'day' },
+						{ label: 'Week', value: 'week' },
+						{ label: 'Month', value: 'month' },
+						{ label: 'Year', value: 'year' },
+						{ label: 'All', value: 'all' }
+					]
+				}
+			];
+		},
+
 		draw: function(data) {
 			console.log(data);
 			var sample = data.facets.histo1.entries;
@@ -89,7 +105,7 @@ define(['dojo/_base/declare',
 						console.log(key);
 						break;
 					case "month":
-						key = date.getDate();						
+						key = date.getDate();
 						break;
 					case "year":
 						key = date.getMonth() + 1;
@@ -174,7 +190,7 @@ define(['dojo/_base/declare',
 				.style("fill", "none")
 				.style("stroke", "steelblue")
 				.style("stroke-width", "1.5px");
-				
+
 		}
 
 

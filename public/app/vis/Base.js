@@ -2,14 +2,16 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-construct',
+		'dojo/Evented',
 		'dojo/request/xhr',
 		'dijit/_WidgetBase',
-], function(declare, lang, domConstruct, xhr, WidgetBase) {
-	return declare([WidgetBase], {
+], function(declare, lang, domConstruct, Evented, xhr, WidgetBase) {
 
-		// active: Boolean
-		//     Whether or not this visualization is currently visible.
-		active: null,
+	return declare([WidgetBase, Evented], {
+		// summary:
+		//     Base class for visualizations. Handles loading data from API. Subclasses should
+		//     override buildElasticsearchQuery and draw. See documentation for those methods
+		//     for details.
 
 		'class': 'vis',
 
@@ -34,6 +36,9 @@ define(['dojo/_base/declare',
 		//     Data received from API for current dataset/inquiry.
 		data: null,
 
+
+		options: null,
+
 		// redrawOnResize: Boolean
 		//     Whether or not to clear and redraw the visualization when this widget is resized.
 		redrawOnResize: true,
@@ -51,10 +56,13 @@ define(['dojo/_base/declare',
 			/*jslint unparam: true*/
 			// summary:
 			//     Subclasses should override this method to draw the visualization.
+			// data:
+			//     Reponse from Elasticsearch.
 		},
 
 		handleData: function(response) {
 			this.dataPromise = null;
+			this.emit('display_info', 'Inquiry matched ' + response.data.hits.total + ' items');
 			this.set('data', response.data);
 		},
 
@@ -66,9 +74,6 @@ define(['dojo/_base/declare',
 		},
 
 		redraw: function() {
-			if (!this.active) {
-				return;
-			}
 			domConstruct.empty(this.domNode);
 			this.draw(this.data);
 		},
@@ -136,6 +141,27 @@ define(['dojo/_base/declare',
 			query = this.buildElasticsearchQuery(query);
 
 			this._set('elasticsearchQuery', query);
+		},
+
+		_getOptionsAttr: function() {
+
+			if (!this.options) {
+				return null;
+			}
+
+			// Mix current value of each option into returned array.
+			var opts = [];
+			var i;
+			for (i = 0; i < this.options.length; i++) {
+				opts.push(lang.mixin(this.options[i], { currentValue: this.get(this.options[i].name) }));
+			}
+
+			return opts;
+		},
+
+		_setOptionsAttr: function(/*Array*/options) {
+			this._set('options', options);
+			this.emit('optionsChanged', options);
 		}
 	});
 });

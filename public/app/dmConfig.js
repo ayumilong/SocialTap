@@ -19,5 +19,27 @@ define({
 			title: 'Visualizations',
 			moduleId: 'app/vis/Module'
 		}
-	}
+	},
+	topNav: [
+		{
+			route: '/datasets/:dataset_id',
+			title: 'Info'
+		},
+		{
+			route: '/vis/:dataset_id/browse',
+			title: 'Browse'
+		},
+		{
+			route: '/vis/:dataset_id/word_cloud',
+			title: 'Hashtag Cloud'
+		},
+		{
+			route: '/vis/:dataset_id/map',
+			title: 'Map'
+		},
+		{
+			route: '/vis/:dataset_id/line_graph',
+			title: 'Line Graph'
+		}
+	]
 });
