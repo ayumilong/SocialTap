@@ -1,14 +1,15 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
+		'dojo/Evented',
 		'dojo/request/xhr',
 		'dijit/_WidgetBase',
 		'dojo-mama/util/_InfiniteScrollMixin',
 		'./DataAccordion',
 		'./DataListItem'
-], function(declare, lang, xhr, WidgetBase, InfiniteScroll,
+], function(declare, lang, Evented, xhr, WidgetBase, InfiniteScroll,
 		DataAccordion, DataListItem)
 {
-	return declare([WidgetBase, InfiniteScroll], {
+	return declare([WidgetBase, InfiniteScroll, Evented], {
 
 		'class': 'vis',
 
@@ -48,6 +49,10 @@ define(['dojo/_base/declare',
 			console.log('handle data for page ' + pageNumber);
 
 			console.log(data);
+
+			if (pageNumber === 0) {
+				this.emit('display_info', 'Inquiry matched ' + data.hits.total + ' items');
+			}
 
 			var i, li;
 			for (i = 0; i < data.hits.hits.length; i++) {
