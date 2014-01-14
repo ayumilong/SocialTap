@@ -11,10 +11,13 @@ module SocialTap
 
   	def initialize
   	  @analyzers = []
-  	  @es_client = ESStorage.new
-      @run = true
+  	  @es_client = Elasticsearch::Client.new(
+        host: APP_CONFIG["Elasticsearch"]["hostname"],
+        port: APP_CONFIG["Elasticsearch"]["port"],
+        log: false)
+      @running = true
       # load all the analyzers present
-      self.update_analyzers_list
+      self.create_analyzer_pool
       # start main loop
   	  self.start
   	end
@@ -45,7 +48,7 @@ module SocialTap
       #docs_to_reprocess = {}
   	end
 
-  	def update_analyzers_list
+  	def create_analyzer_pool
   	  # return a list of all available post processors
   	  # get glob of filenames in post processing dir
   	  # for each file,
@@ -56,7 +59,7 @@ module SocialTap
 
   	def start
   	  # main loop to keep checking for things to process
-      while @run
+      while @running
         # check for posts to process
         posts_to_process = select_posts
         # 
@@ -65,16 +68,34 @@ module SocialTap
 
   	def stop
   	  # end post processing
-      @run = false
+      # for each child process,
+        # stop child process
+      # stop main loop
+      @running = false
   	end 
     
   end
 
   # parent class for Analyzers
   class Analyzer
-  	def initialize
-      # subclasses may implement this
+  	def initialize name
+      # subclasses may implement this, but should call super
+      @name = name
+      self.start
   	end
+
+    def start
+      @running = true
+      self.run
+    end
+
+    def stop
+      @running = false
+    end
+
+    def run
+      # subclasses should implement this
+    end
 
   	def analyze documents
   	  # subclasses should implement this
