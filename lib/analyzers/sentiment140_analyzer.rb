@@ -15,7 +15,8 @@ module OpenClemson
 
     def initialize
       @s140_client = Sentiment140::QueryAPI.new APP_CONFIG['Sentiment140']['app_id']
-      super
+      @document_cache = []
+      super # thanks for asking
     end
 
     def run
