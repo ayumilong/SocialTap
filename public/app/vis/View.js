@@ -66,7 +66,7 @@ define(['dojo/_base/declare',
 				}));
 
 				this.vis.set('datasetId', e.params.dataset_id);
-				this.vis.set('elasticsearchQuery', this.inquiryForm.get('elasticsearchQuery'));
+				this.vis.set('baseQuery', this.inquiryForm.get('elasticsearchQuery'));
 				this.vis.reload();
 
 				this.visOptionsPane.set('options', this.vis.get('options'));
