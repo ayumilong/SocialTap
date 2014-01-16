@@ -4,167 +4,80 @@ define(['dojo/_base/declare',
 		'dojo/dom-class',
 		'dojo/dom-construct',
 		'dojo/on',
-		'dojo/router',
-		'dojox/mobile/Button',
-		'dojox/mobile/EdgeToEdgeList',
-		'dojo-mama/util/DataPane',
-		'dojo-mama/util/LinkListItem',
-		'dojo-mama/util/ScrollablePane'],
-function(declare, kernel, lang, domClass, domConstruct, on, router, Button, EdgeToEdgeList,
-	DataPane, LinkListItem, ScrollablePane)
+		'dojo/text!./DatasetSelector.html',
+		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin',
+		'dojo-mama/util/_XHRMixin'
+], function(declare, kernel, lang, domClass, domConstruct, on,
+	template, _WidgetBase, _TemplatedMixin, _XHRMixin)
 {
-	return declare([DataPane], {
+	return declare([_WidgetBase, _TemplatedMixin, _XHRMixin], {
 		'class': 'stDatasetSelector',
 
-		datasetNameNode: null,
+		templateString: template,
 
-		toggleListButton: null,
-
-		selectedDatasetId: null,
-
-		datasets: null,
-
-		dataUrl: '/api/v0/datasets',
-
-		list: null,
-
-		listPane: null,
-
-		navRoute: null,
-
-		newDatasetOnClickHandle: null,
-
-		visRoutes: null,
-
-		constructor: function() {
-			this.visRoutes = kernel.global.config.topNav;
-		},
-
-		buildRendering: function() {
+		postCreate: function() {
 			this.inherited(arguments);
-
-			this.listPane = new ScrollablePane({
-				'class': 'stDatasetListPane hidden',
-			});
-			this.listPane.placeAt(this.contentNode);
-			this.listPane.startup();
-
-			this.list = new EdgeToEdgeList();
-			this.list.placeAt(this.listPane.domNode);
-			this.list.startup();
-
-			var newDatasetLink = domConstruct.create('a', {
-				'class': 'newDatasetLink',
-				'href': '#/datasets/create',
-				'innerHTML': 'Create New Dataset'
-			}, this.listPane.domNode);
-
-			this.newDatasetOnClickHandle = on(newDatasetLink, 'click', lang.hitch(this, function() {
-				this.closeDatasetList();
-			}));
-
-			this.toggleListButton = new Button({
-				'class': 'stToggleListButton fa fa-folder-o',
-				'duration': 0,
-				'title': 'View Available Datasets'
-			});
-			this.toggleListButton.placeAt(this.contentNode);
-			this.toggleListButton.startup();
-			this.toggleListButton.set('onClick', lang.hitch(this, this.openDatasetList));
-
-			this.datasetNameNode = domConstruct.create('span', {
-				'innerHTML': 'Select Dataset'
-			}, this.contentNode);
-
-			var i, navItem;
-			for (i = 0; i < this.visRoutes.length; i++) {
-				navItem = this.visRoutes[i];
-				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
-			}
+			on(this.toggleListButton, 'click', lang.hitch(this, this.toggleDatasetList));
+			on(this.newDatasetLink, 'click', lang.hitch(this, this.closeDatasetList));
+			this.loadData('datasets', '/api/v0/datasets');
 		},
 
-		handleRoute: function(e) {
-			this.closeDatasetList();
-			this.set('selectedDatasetId', parseInt(e.params[0], 10));
+		handleData: function(key, data) {
 
-			this.set('navRoute', e.newPath.replace('/' + e.params[0], '/:dataset_id'));
-
-			console.warn(e);
-		},
-
-		beforeLoad: function() {
-			this.list.destroyDescendants();
-		},
-
-		handleData: function(datasets) {
-			this.datasets = datasets;
-
-			var createClickHandler = lang.hitch(this, function(li, datasetId) {
-				li.set('onClick', lang.hitch(this, function() {
-					this.set('selectedDatasetId', datasetId);
+			var addClickHandler = lang.hitch(this, function(li, dataset) {
+				on(li, 'click', lang.hitch(this, function() {
+					this.datasetNameNode.innerHTML = dataset.name;
 					this.closeDatasetList();
 				}));
 			});
 
-			var i, li;
-			for (i = 0; i < datasets.length; i++) {
-				li = new LinkListItem({
-					'text': datasets[i].name,
-					'href': '#' + (this.navRoute ? this.navRoute.replace(':dataset_id', datasets[i].id) : '/datasets/' + datasets[i].id),
-					'style': {
-						cursor: 'pointer'
+			if (key === 'datasets') {
+				domConstruct.empty(this.datasetListNode);
+
+				var i, routeDataset;
+				var routeRegex, matches;
+				for (i = 0; i < kernel.global.config.topNav.length; i++) {
+					routeRegex = new RegExp(kernel.global.config.topNav[i].route.replace(':dataset_id', '(\\d+)'));
+					matches = window.location.hash.slice(1).match(routeRegex);
+					if (matches) {
+						routeDataset = parseInt(matches[1], 10);
+						break;
 					}
-				});
-				createClickHandler(li, datasets[i].id);
-				this.list.addChild(li);
-				li.startup();
-			}
+				}
 
-			// Now that data has loaded
-			this.set('selectedDatasetId', this.selectedDatasetId);
-		},
+				var li;
+				for (i = 0; i < data.length; i++) {
 
-		openDatasetList: function() {
-			domClass.remove(this.listPane.domNode, 'hidden');
-			this.reloadData();
-			domClass.replace(this.toggleListButton.domNode, 'fa-folder-open-o', 'fa-folder-o');
-			this.toggleListButton.set('onClick', lang.hitch(this, this.closeDatasetList));
-		},
-
-		closeDatasetList: function() {
-			domClass.add(this.listPane.domNode, 'hidden');
-			domClass.replace(this.toggleListButton.domNode, 'fa-folder-o', 'fa-folder-open-o');
-			this.toggleListButton.set('onClick', lang.hitch(this, this.openDatasetList));
-		},
-
-		destroy: function() {
-			if (this.newDatasetOnClickHandle) {
-				this.newDatasetOnClickHandle.remove();
-				this.newDatasetOnClickHandle = null;
-			}
-			this.inherited(arguments);
-		},
-
-		_setSelectedDatasetIdAttr: function(selectedDatasetId) {
-			this._set('selectedDatasetId', selectedDatasetId);
-
-			if (this.datasets) {
-				var i;
-				for (i = 0; i < this.datasets.length; i++) {
-					if (this.datasets[i].id == selectedDatasetId) {
-						this.datasetNameNode.innerHTML = this.datasets[i].name;
+					if (data[i].id === routeDataset) {
+						this.datasetNameNode.innerHTML = data[i].name;
 					}
+
+					li = domConstruct.create('li', {
+						innerHTML: '<a href="#/datasets/' + data[i].id + '">' + data[i].name + '</a>'
+					}, this.datasetListNode);
+					addClickHandler(li, data[i]);
 				}
 			}
 		},
 
-		_setNavRouteAttr: function(navRoute) {
-			this._set('navRoute', navRoute);
+		openDatasetList: function() {
+			domClass.remove(this.menuNode, 'hidden');
+			this.loadData('datasets', '/api/v0/datasets');
+			domClass.replace(this.toggleListButton, 'fa-folder-open-o', 'fa-folder-o');
+		},
 
-			var lis = this.list.getChildren();
-			var i;
-			for (i = 0; i < lis.length; i++) {
-				lis[i].set('href', '#' + navRoute.replace(':dataset_id', this.selectedDatasetId));
+		closeDatasetList: function() {
+			domClass.add(this.menuNode, 'hidden');
+			domClass.replace(this.toggleListButton, 'fa-folder-o', 'fa-folder-open-o');
+		},
+
+		toggleDatasetList: function() {
+			if (domClass.contains(this.menuNode, 'hidden')) {
+				this.openDatasetList();
+			}
+			else {
+				this.closeDatasetList();
 			}
 		}
 	});
