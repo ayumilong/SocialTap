@@ -15,6 +15,10 @@ define(['dojo/_base/declare',
 
 		'class': 'vis',
 
+		// baseQuery: Object
+		//     Elasticsearch query and filters from inquiry.
+		baseQuery: null,
+
 		// dataPromise: Object
 		//     Promise for data being loaded from API. Used to cancel request if loadData is
 		//     called again before the previous load was finished.
@@ -27,10 +31,6 @@ define(['dojo/_base/declare',
 		// detailsPane: Object
 		//     Pane for displaying extra information about visualization content.
 		detailsPane: null,
-
-		// es_query: Object
-		//     Elastisearch query built from inquiry and vis options.
-		elasticsearchQuery: null,
 
 		// data: Object
 		//     Data received from API for current dataset/inquiry.
@@ -110,9 +110,11 @@ define(['dojo/_base/declare',
 				this.dataPromise.cancel();
 			}
 
+			console.warn(this.buildElasticsearchQuery(this.baseQuery));
+
 			this.set('data', null);
 			this.dataPromise = xhr.post('/api/v0/datasets/' + this.datasetId + '/search', {
-				data: JSON.stringify({elasticsearch: this.elasticsearchQuery}),
+				data: JSON.stringify({elasticsearch: this.buildElasticsearchQuery(this.baseQuery)}),
 				handleAs: 'json',
 				headers: {
 					'Content-Type': 'application/json'
@@ -137,6 +139,19 @@ define(['dojo/_base/declare',
 			}
 		},
 
+		_setBaseQueryAttr: function(/*Object*/baseQuery) {
+			// Minimal query matches all results.
+			if (!baseQuery) {
+				baseQuery = {
+					query: {
+						match_all: {}
+					}
+				};
+			}
+
+			this._set('baseQuery', baseQuery);
+		},
+
 		_setDataAttr: function(/*Object*/data) {
 			// summary:
 			//     Redraw visualization with new data.
@@ -144,25 +159,6 @@ define(['dojo/_base/declare',
 			if (data) {
 				this.redraw();
 			}
-		},
-
-		_setElasticsearchQueryAttr: function(/*Object*/query) {
-			// summary:
-			//     Accept base query from inquiry form and add this
-			//     visualization's extra parameters to it.
-
-			// Minimal query matches all results.
-			if (!query) {
-				query = {
-					query: {
-						match_all: {}
-					}
-				};
-			}
-
-			query = this.buildElasticsearchQuery(query);
-
-			this._set('elasticsearchQuery', query);
 		},
 
 		_getOptionsAttr: function() {
@@ -174,17 +170,6 @@ define(['dojo/_base/declare',
 			return this.options.map(lang.hitch(this, function(opt) {
 				return lang.mixin(opt, { currentValue: this.get(opt.name) });
 			}));
-
-			// Mix current value of each option into returned array.
-			/*var opts = [];
-			var i;
-			for (i = 0; i < this.options.length; i++) {
-				opts.push(lang.mixin(this.options[i], {
-					currentValue: this.get(this.options[i].name)
-				}));
-			}
-
-			return opts;*/
 		}
 	});
 });
