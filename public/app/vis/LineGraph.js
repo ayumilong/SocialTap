@@ -97,22 +97,22 @@ define(['dojo/_base/declare',
 				date = new Date(sample[i].time);
 				switch (this.xaxis) {
 					case "day":
-						key = date.getHours();
+						key = date.getUTCHours();
 						break;
 					case "week":
-						key = date.getDay() + 1;
+						key = date.getUTCDay() + 1;
 						key = key + "-1-12";
 						console.log(key);
 						break;
 					case "month":
-						key = date.getDate();
+						key = date.getUTCDate();
 						break;
 					case "year":
-						key = date.getMonth() + 1;
-						key = date.getDate() + "-" + key;
+						key = date.getUTCMonth() + 1;
+						key = date.getUTCDate() + "-" + key;
 						break;
 					case "all":
-						key = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
+						key = date.getUTCDate() + "-" + date.getUTCMonth() + "-" + date.getUTCFullYear();
 						break;
 				}
 				console.log(sample[i]);
