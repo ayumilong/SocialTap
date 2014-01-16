@@ -40,7 +40,7 @@ define(['dojo/_base/declare',
 			// mixin some default configuration
 			this.config.index = this.config.index || { moduleId: './index/Module' };
 			this.config.networkTimeout = this.config.networkTimeout || 15000;
-			this.config.modules['404'] = this.config.modules['404'] || { moduleId: './404/Module' };
+			this.config.modules['404'] = this.config.modules['404'] || { moduleId: 'app/404/Module' };
 			this.config.transitionDuration = this.config.transitionDuration || 250;
 			this.config.baseRoute = '/';
 		},

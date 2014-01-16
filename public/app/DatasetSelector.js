@@ -1,4 +1,5 @@
 define(['dojo/_base/declare',
+		'dojo/_base/kernel',
 		'dojo/_base/lang',
 		'dojo/dom-class',
 		'dojo/dom-construct',
@@ -9,7 +10,7 @@ define(['dojo/_base/declare',
 		'dojo-mama/util/DataPane',
 		'dojo-mama/util/LinkListItem',
 		'dojo-mama/util/ScrollablePane'],
-function(declare, lang, domClass, domConstruct, on, router, Button, EdgeToEdgeList,
+function(declare, kernel, lang, domClass, domConstruct, on, router, Button, EdgeToEdgeList,
 	DataPane, LinkListItem, ScrollablePane)
 {
 	return declare([DataPane], {
@@ -34,6 +35,10 @@ function(declare, lang, domClass, domConstruct, on, router, Button, EdgeToEdgeLi
 		newDatasetOnClickHandle: null,
 
 		visRoutes: null,
+
+		constructor: function() {
+			this.visRoutes = kernel.global.config.topNav;
+		},
 
 		buildRendering: function() {
 			this.inherited(arguments);

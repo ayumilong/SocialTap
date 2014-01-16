@@ -1,5 +1,6 @@
 define(['dojo/_base/declare',
 		'dojo/_base/fx',
+		'dojo/_base/kernel',
 		'dojo/_base/lang',
 		'dojo/dom-attr',
 		'dojo/dom-class',
@@ -9,7 +10,7 @@ define(['dojo/_base/declare',
 		'dojox/mobile/Button',
 		'dojox/mobile/Pane',
 		'dojo-mama/util/LinkListItem'],
-function(declare, baseFx, lang, domAttr, domClass, domGeometry, router, EdgeToEdgeList,
+function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, EdgeToEdgeList,
 	Button, Pane, LinkListItem)
 {
 	return declare([Pane], {
@@ -24,6 +25,10 @@ function(declare, baseFx, lang, domAttr, domClass, domGeometry, router, EdgeToEd
 		scrollRightButton: null,
 
 		visRoutes: null,
+
+		constructor: function() {
+			this.visRoutes = kernel.global.config.topNav;
+		},
 
 		buildRendering: function() {
 			this.inherited(arguments);
@@ -54,10 +59,13 @@ function(declare, baseFx, lang, domAttr, domClass, domGeometry, router, EdgeToEd
 				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 
+			console.log('vis selector registered');
+
 			router.register('*path', lang.hitch(this, this.clearActive));
 		},
 
 		handleRoute: function(e) {
+			console.log('vis selector handle route');
 			this.set('datasetId', parseInt(e.params[0], 10));
 
 			this.list.getChildren().forEach(function(li) {
