@@ -5,8 +5,9 @@
 
 # should be used with Rails runner to get Rails environment
 
-require 'elasticsearch'
 require 'json'
+require 'elasticsearch'
+require 'amqp'
 
 module SocialTap
   class Analysis
@@ -50,6 +51,7 @@ module SocialTap
       missing_docs = @es_client.search query: missing_docs_query
   	  # TODO: get posts that have been flagged for reprocessing
       #docs_to_reprocess = {}
+      missing_docs
   	end
 
     # instatiate a single analyzer process
@@ -101,12 +103,15 @@ module SocialTap
       # subclasses may implement this, but should call super
       @name = name
       @worker = worker
+      self.setup_results_queue
       self.start
   	end
 
     # creates the communication queue for sending results to parent process
     def setup_results_queue
-      # return queue name
+      # create new queue
+
+      # tell parent process about the queue?
     end
 
     # initiate main data analysis process loop
