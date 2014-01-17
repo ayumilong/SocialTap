@@ -43,7 +43,8 @@
 		z-index: 99;
 
 		ul {
-			margin-bottom: 0;
+			margin: 0;
+			padding: 0;
 		}
 
 		.dmListItem {
@@ -52,13 +53,21 @@
 			}
 		}
 
-		.newDatasetLink {
+		ul li, .newDatasetLink {
 			border-top: 1px solid #e7e7de;
 			color: white;
 			display: block;
 			font-weight: bold;
 			margin: 0 15px;
 			padding: 15px 0;
+
+			&:hover {
+				text-decoration: none;
+			}
+		}
+
+		ul li a {
+			color: white;
 
 			&:hover {
 				text-decoration: none;

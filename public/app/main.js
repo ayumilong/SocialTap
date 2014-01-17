@@ -1,34 +1,28 @@
-/**
- * This file is the application's main JavaScript file. It is listed as a dependency in run.js and will automatically
- * load when run.js loads.
- *
- * Because this file has the special filename `main.js`, and because we've registered the `app` package in run.js,
- * whatever object this module returns can be loaded by other files simply by requiring `app` (instead of `app/main`).
- *
- */
-define([
-	'dojo/_base/lang',
-	'app/layout/Layout',
-	'app/dmConfig',
-	'dojo/_base/window',
-	'dojo/dom-class',
-	'dojo/has',
-	'dojo/ready',
-	'dojo-mama/ModuleManager',
-	'app/util/ProgressIndicator'
-], function (lang, Layout, dmConfig, win, domClass, has, ready, ModuleManager, ProgressIndicator) {
+define(['dojo/_base/kernel',
+		'dojo/_base/lang',
+		'dojo/dom-class',
+		'dojo/has',
+		'dojo/parser',
+		'dojo/ready',
+		'dojo-mama/ModuleManager',
+		'app/dmConfig'
+], function (kernel, lang, domClass, has, parser, ready, ModuleManager, dmConfig) {
 	ready(function() {
 
 		if (!has('touch')) {
 			domClass.add(document.getElementsByTagName('html')[0], 'no_touch');
 		}
 
-		var layout = new Layout({config: dmConfig});
-		layout.placeAt(win.body(), 'first');
+		kernel.global.config = dmConfig;
 
-		var mm = new ModuleManager({
-			config: lang.mixin(dmConfig, { moduleContentNode: layout.moduleContent.domNode })
+		parser.parse().then(function() {
+			var mm = new ModuleManager({
+				config: lang.mixin(kernel.global.config, {
+					moduleContentNode: document.getElementById('moduleContentNode')
+				})
+			});
+			mm.startup();
 		});
-		mm.startup();
+
 	});
 });
