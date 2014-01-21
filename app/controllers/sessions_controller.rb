@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
 
 	# GET /sessions/failure
 	def failure
-		head :no_content
+		render json: ({:error => params[:message]}.to_json), status: :unauthorized
 	end
 
 end

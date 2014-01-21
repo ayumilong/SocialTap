@@ -1,6 +1,6 @@
 SocialTap::Application.routes.draw do
   post 'auth/:provider/callback', to: 'sessions#create'
-  get 'auth/failure', to: 'sessions#failure'
+  match 'auth/failure', to: 'sessions#failure', via: [:get, :post]
   get 'auth/signout', to: 'sessions#destroy'
 
   get 'me', to: 'api/v0/users#me'

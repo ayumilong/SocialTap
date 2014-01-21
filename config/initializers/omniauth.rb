@@ -2,8 +2,11 @@
 
 OmniAuth.config.logger = Rails.logger
 
+OmniAuth.config.on_failure = Proc.new { |env|
+	OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+}
+
 Rails.application.config.middleware.use OmniAuth::Builder do
-	provider :developer unless Rails.env.production?
 	provider :twitter, APP_CONFIG['Twitter']['consumer_key'], APP_CONFIG['Twitter']['consumer_secret']
 	provider :identity, :fields => [:email, :name], on_failed_registration: lambda { |env|
 		# Instead of redirecting on a failed registration, send a JSON response
