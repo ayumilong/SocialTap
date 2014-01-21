@@ -11,15 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131211080650) do
-
-  create_table "auth_identities", force: true do |t|
-    t.string   "email"
-    t.string   "name"
-    t.string   "password_digest"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(version: 20140121192441) do
 
   create_table "data_mappings", force: true do |t|
     t.integer  "file_dataset_id"
@@ -50,6 +42,18 @@ ActiveRecord::Schema.define(version: 20131211080650) do
     t.integer "order"
     t.string  "name"
   end
+
+  create_table "identities", force: true do |t|
+    t.integer  "user_id"
+    t.string   "email"
+    t.string   "name"
+    t.string   "password_digest"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "identities", ["email"], name: "index_identities_on_email", unique: true
+  add_index "identities", ["user_id"], name: "index_identities_on_user_id"
 
   create_table "import_operations", force: true do |t|
     t.integer  "dataset_id"
@@ -93,10 +97,6 @@ ActiveRecord::Schema.define(version: 20131211080650) do
 
   create_table "users", force: true do |t|
     t.string   "name"
-    t.string   "email"
-    t.string   "password_digest"
-    t.string   "provider"
-    t.string   "uid"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
