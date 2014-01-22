@@ -58,8 +58,13 @@ class Api::V0::DatasetsController < ApplicationController
   # POST /api/v0/inquiries/1/search
   # POST /api/v0/inquiries/1/search.json
   def search
-    @dataset = Dataset.find(params[:id])
-    results = @dataset.search(params[:elasticsearch])
-    render json: results
+    @dataset = Dataset.find_by_id(params[:id])
+
+    if @dataset.nil?
+      render nothing: true, status: :not_found
+    else
+      results = @dataset.search(params[:elasticsearch])
+      render json: results
+    end
   end
 end
