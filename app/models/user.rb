@@ -2,36 +2,25 @@ class User < ActiveRecord::Base
 	has_and_belongs_to_many :datasets
 	has_many :inquiries
 
-	has_one :identity
+	has_many :identities
 	has_many :provider_identities
 
 	validates :name, {
 		presence: true
 	}
 
-	def self.from_omniauth(auth)
-		if auth[:provider] == 'identity'
-			identity = Identity.find_by_id(auth[:uid])
-		else
-			identity = ProviderIdentity.where(provider: auth[:provider], uid: auth[:uid]).limit(1).first
+	def merge(other_user)
+		other_user.identities.each do |id|
+			id.user = self
+			id.save
 		end
-		(identity && identity.user) || self.create_from_omniauth(auth)
-	end
 
-	def self.create_from_omniauth(auth)
-		user = User.new
-		user.name = auth[:info][:name]
-		user.save
-
-		if auth[:provider] == 'identity'
-			identity = Identity.find_by_id(auth[:uid])
-		else
-			identity = ProviderIdentity.create(provider: auth[:provider], uid: auth[:uid])
+		other_user.provider_identities.each do |id|
+			id.user = self
+			id.save
 		end
-		identity.user = user
-		identity.save
 
-		user
+		other_user.destroy
 	end
 
 end
