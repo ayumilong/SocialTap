@@ -4,7 +4,13 @@ class SessionsController < ApplicationController
 	def create
 		user = User.from_omniauth env['omniauth.auth']
 		session[:user_id] = user.id
-		render json: true, status: :created
+
+		if env['omniauth.auth'][:provider] == 'identity'
+			render json: true, status: :created
+		else
+			redirect_to '/'
+		end
+
 	end
 
 	# GET /sessions/destroy

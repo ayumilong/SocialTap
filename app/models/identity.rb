@@ -10,7 +10,7 @@ class Identity < OmniAuth::Identity::Models::ActiveRecord
 
 	validates :name, { presence: true }
 
-	validates :password, { length: { minimum: 6 } }
+	validates :password, { length: { minimum: 6 }, on: :create }
 
 	before_save { self.email = email.downcase }
 
