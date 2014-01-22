@@ -1,13 +1,17 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-attr',
+		'dojo/dom-class',
 		'dojo/on',
 		'dojo/request/xhr',
+		'dojo/router',
 		'dojo/text!./LoginForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
 		'dojo-mama/Views/_ModuleViewMixin'
-], function(declare, lang, domAttr, on, xhr, template, _WidgetBase, _TemplatedMixin, _ModuleViewMixin) {
+], function(declare, lang, domAttr, domClass, on, xhr, router, template, _WidgetBase,
+	_TemplatedMixin, _ModuleViewMixin)
+{
 	return declare([_WidgetBase, _TemplatedMixin, _ModuleViewMixin], {
 
 		'class': 'loginFormView',
@@ -23,6 +27,8 @@ define(['dojo/_base/declare',
 
 		login: function() {
 			domAttr.set(this.loginButton, 'disabled', 'disabled');
+			domClass.add(this.errorsNode, 'hidden');
+			this.errorsNode.innerHTML = '';
 			xhr.post('/auth/identity/callback', {
 				data: {
 					auth_key: this.emailField.value,
@@ -35,10 +41,18 @@ define(['dojo/_base/declare',
 					this.emailField.value = '';
 					this.passwordField.value = '';
 					console.log(response);
+					router.go('/');
 				}),
 				lang.hitch(this, function(err) {
 					domAttr.remove(this.loginButton, 'disabled');
-					console.error(err);
+
+					if (err.response.status == 401) {
+						this.errorsNode.innerHTML = 'Invalid email/password combination';
+						domClass.remove(this.errorsNode, 'hidden');
+					}
+					else {
+						console.error(err);
+					}
 				})
 			);
 		}
