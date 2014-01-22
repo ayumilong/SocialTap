@@ -1,13 +1,18 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-attr',
+		'dojo/dom-class',
+		'dojo/dom-construct',
 		'dojo/on',
 		'dojo/request/xhr',
+		'dojo/router',
 		'dojo/text!./RegistrationForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
 		'dojo-mama/Views/_ModuleViewMixin'
-], function(declare, lang, domAttr, on, xhr, template, _WidgetBase, _TemplatedMixin, _ModuleViewMixin) {
+], function(declare, lang, domAttr, domClass, domConstruct, on, xhr, router, template, _WidgetBase,
+	_TemplatedMixin, _ModuleViewMixin)
+{
 	return declare([_WidgetBase, _TemplatedMixin, _ModuleViewMixin], {
 
 		'class': 'registrationFormView',
@@ -23,6 +28,8 @@ define(['dojo/_base/declare',
 
 		register: function() {
 			domAttr.set(this.registerButton, 'disabled', 'disabled');
+			domClass.add(this.errorsNode, 'hidden');
+			domConstruct.empty(this.errorsNode);
 			xhr.post('/auth/identity/register', {
 				data: {
 					email: this.emailField.value,
@@ -39,10 +46,26 @@ define(['dojo/_base/declare',
 					this.confirmField.value = '';
 					domAttr.remove(this.registerButton, 'disabled');
 					console.log(response);
+					router.go('/');
 				}),
 				lang.hitch(this, function(err) {
 					domAttr.remove(this.registerButton, 'disabled');
-					console.error(err);
+
+					if (err.response.status == 400) {
+						var errorList = domConstruct.create('ul', {}, this.errorsNode);
+
+						var i;
+						for (i = 0; i < err.response.data.errors.length; i++) {
+							domConstruct.create('li', {
+								innerHTML: err.response.data.errors[i]
+							}, errorList);
+						}
+
+						domClass.remove(this.errorsNode, 'hidden');
+					}
+					else {
+						console.error(err);
+					}
 				})
 			);
 		}
