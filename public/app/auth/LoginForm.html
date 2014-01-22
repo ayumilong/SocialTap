@@ -1,0 +1,20 @@
+<div class="${baseClass}">
+	<div class="loginForm">
+		<div style="overflow: hidden;">
+			<h3>Login</h3>
+			<div data-dojo-attach-point="errorsNode" class="errorList hidden"></div>
+			<label for="email">Email Address</label>
+			<input data-dojo-attach-point="emailField" id="email" type="text">
+			<label for="password">Password</label>
+			<input data-dojo-attach-point="passwordField" id="password" type="password">
+
+			<button class="button blue login" data-dojo-attach-point="loginButton">Sign in</button>
+			<a href="#/auth/register" class="registerLink">Create a new account</a>
+		</div>
+		<div class="providers">
+			<a class="twitterAuth" href="/auth/twitter">
+				<img src="/app/resources/img/thirdparty/sign-in-with-twitter-gray.png">
+			</a>
+		</div>
+	</div>
+</div>

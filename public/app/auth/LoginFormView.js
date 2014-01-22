@@ -1,94 +1,62 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
-		"dojo/_base/window",
 		'dojo/dom-attr',
 		'dojo/dom-class',
-		'dojo/dom-construct',
+		'dojo/on',
 		'dojo/request/xhr',
- 		"dojox/mobile/SimpleDialog",
-		"dojox/mobile/ProgressIndicator",
-		'dojox/mobile/Button',
-		'dojox/mobile/TextBox',
-		'dojo-mama/util/toaster',
-		'dojo-mama/views/BaseView',
-		'app/util/Select'
-], function(declare, lang, win, domAttr, domClass, domConstruct, xhr, SimpleDialog, ProgressIndicator, Button, TextBox,
-	toaster, BaseView, Select)
+		'dojo/router',
+		'dojo/text!./LoginForm.html',
+		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin',
+		'dojo-mama/Views/_ModuleViewMixin'
+], function(declare, lang, domAttr, domClass, on, xhr, router, template, _WidgetBase,
+	_TemplatedMixin, _ModuleViewMixin)
 {
-	return declare([BaseView], {
+	return declare([_WidgetBase, _TemplatedMixin, _ModuleViewMixin], {
+
 		'class': 'loginFormView',
 		parentView: '/',
 		route: '/login',
+		templateString: template,
 		title: 'Login',
 
-		buildRendering: function() {
-			// var piIns = ProgressIndicator.getInstance();
-			// var showProgInd = function(simpleDlg){
-			// 	piIns.stop();
-			// 	simpleDlg.hide();
-			// }
-			// var hideProgInd = function(simpleDlg){
-			// 	piIns.stop();
-			// 	simpleDlg.hide();
-			// }
-
-			var dlg = new SimpleDialog();
-			win.body().appendChild(dlg.domNode);
-			var titleBox = domConstruct.create("div",
-			                                 {class: "mblSimpleDialogText",
-			                                 innerHTML: "User Login"},
-			                                 dlg.domNode);
-			var credentialsBox = domConstruct.create("div",
-			                                 {class: "mblSimpleDialogText"},
-			                                 dlg.domNode);
-			var buttonsBox = domConstruct.create("div",
-			                                 {class: "mblSimpleDialogText"},
-			                                 dlg.domNode);
-			var providersBox = domConstruct.create("div",
-			                                 {class: "mblSimpleDialogText"},
-			                                 dlg.domNode);
-
-			// var piBox = domConstruct.create("div",
-			//                                  {class: "mblSimpleDialogText"},
-			//                                  dlg.domNode);
-			// piBox.appendChild(piIns.domNode);
-			var userInput = new TextBox({class: "mblSimpleDialogInput",
-										 lowercase: true,
-										 trim: true,
-										 placeHolder: "E-mail address"})
-			var passwordInput = new TextBox({class: "mblSimpleDialogInput",
-										 placeHolder: "Password"})
-			var cancelBtn = new Button({class: "mblSimpleDialogButton2l mblRedButton",
-			                          innerHTML: "Cancel"});
-			var loginBtn = new Button({class: "mblSimpleDialogButton2r mblBlueButton",
-			                          innerHTML: "Login"});
-			cancelBtn.connect(loginBtn.domNode, "click",
-			                 function(e){ dlg.hide(); });
-			loginBtn.connect(loginBtn.domNode, "click",
-			                 function(e){ alert("Log me in!"); });
-			var twitterLoginLink = domConstruct.create('a',
-				                                       {href: "/auth/twitter"},
-				                                       providersBox);
-			var twitterLoginImage = domConstruct.create('img',
-				                                        {src: "/app/resources/img/thirdparty/sign-in-with-twitter-gray.png",
-				                                        alt: "Log in with Twitter"},
-				                                        twitterLoginLink);
-			userInput.placeAt(credentialsBox);
-			passwordInput.placeAt(credentialsBox);
-			cancelBtn.placeAt(buttonsBox);
-			loginBtn.placeAt(buttonsBox);
-			dlg.show();
-			// piIns.start();
-
-			// setTimeout(function(){
-			   
-			//   hideProgIndDlg(dlg);
-			// }, 0);
+		postCreate: function() {
+			this.inherited(arguments);
+			on(this.loginButton, 'click', lang.hitch(this, this.login));
 		},
-		submit: function() {
 
-		},
+		login: function() {
+			domAttr.set(this.loginButton, 'disabled', 'disabled');
+			domClass.add(this.errorsNode, 'hidden');
+			this.errorsNode.innerHTML = '';
+			xhr.post('/auth/identity/callback', {
+				data: {
+					auth_key: this.emailField.value,
+					password: this.passwordField.value
+				},
+				handleAs: 'json'
+			}).response.then(
+				lang.hitch(this, function(response) {
+					domAttr.remove(this.loginButton, 'disabled');
+					this.emailField.value = '';
+					this.passwordField.value = '';
+					console.log(response);
+					router.go('/');
+				}),
+				lang.hitch(this, function(err) {
+					domAttr.remove(this.loginButton, 'disabled');
+
+					if (err.response.status == 401) {
+						this.errorsNode.innerHTML = 'Invalid email/password combination';
+						domClass.remove(this.errorsNode, 'hidden');
+					}
+					else {
+						console.error(err);
+					}
+				})
+			);
+		}
+
+
 	});
-
-
 });

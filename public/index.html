@@ -18,8 +18,11 @@
 	<![endif]-->
 </head>
 <body>
-	<div data-dojo-type="app/DatasetSelector"></div>
-	<div data-dojo-type="app/VisualizationSelector"></div>
+	<div class="topBar">
+		<div data-dojo-type="app/DatasetSelector"></div>
+		<div data-dojo-type="app/VisualizationSelector"></div>
+		<div data-dojo-type="app/auth/ProfilePane"></div>
+	</div>
 	<div id="moduleContentNode" class="dmModuleContent"></div>
     <script data-dojo-config="async: 1, tlmSiblingOfDojo: 0, isDebug: 1, cacheBust: 1, waitSeconds: 15" src="dojo/dojo.js"></script>
     <script src="app/run.js"></script>

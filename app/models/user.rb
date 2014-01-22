@@ -1,22 +1,26 @@
 class User < ActiveRecord::Base
-  has_and_belongs_to_many :datasets
-  has_many :inquiries
+	has_and_belongs_to_many :datasets
+	has_many :inquiries
 
-  # OmniAuth authentication method containing password/email login info
-  has_one :auth_identity
-  
-  validates :name, presence: true, length: { maximum: 64 }
-  
-  def self.from_omniauth auth
-    where(auth.slice("provider", "uid")).first || create_from_omniauth(auth)
-  end
+	has_many :identities
+	has_many :provider_identities
 
-  def self.create_from_omniauth auth
-    create! do |user|
-      user.provider = auth["provider"]
-      user.uid = auth["uid"]
-      user.name = auth["info"]["nickname"]
-    end
-  end
+	validates :name, {
+		presence: true
+	}
+
+	def merge(other_user)
+		other_user.identities.each do |id|
+			id.user = self
+			id.save
+		end
+
+		other_user.provider_identities.each do |id|
+			id.user = self
+			id.save
+		end
+
+		other_user.destroy
+	end
 
 end

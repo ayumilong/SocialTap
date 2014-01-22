@@ -6,22 +6,36 @@
 	border-bottom-left-radius: 6px;
 	border-bottom-right-radius: 6px;
 	border-radius: 6px;
-	color: rgb(193, 190, 176);
+	color: white;
 	display: inline-block;
 	font-size: 12px;
-	font-weight: bold;
 	height: 30px;
 	line-height: 30px;
 	padding: 0 7px;
 	text-align: center;
 	text-decoration: none;
-	text-transform: uppercase;
 	width: auto;
 	min-width: 80px;
 }
 
 .button {
 	.buttonMixin;
+
+	&.blue {
+		background: #428bca;
+
+		&:active {
+			background: darken(#428bca, 35%);
+		}
+	}
+
+	&.red {
+		background: #d9534f;
+
+		&:active {
+			background: darken(#d9534f, 35%);
+		}
+	}
 
 	&:disabled {
 		background: darken(rgb(193, 190, 176), 15%);
@@ -36,6 +50,14 @@
 	&:hover {
 		background: darken(rgb(193, 190, 176), 35%);
 		text-decoration: none; /* Many buttons are also links, so must override a styles */
+
+		&.blue {
+			background: darken(#428bca, 35%);
+		}
+
+		&.red {
+			background: darken(#d9534f, 35%);
+		}
 	}
 }
 

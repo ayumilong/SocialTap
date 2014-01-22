@@ -1,7 +1,9 @@
 SocialTap::Application.routes.draw do
-  get 'auth/:provider/callback', to: "api/v0/sessions#create"
-  get 'auth/failure', to: redirect('/')
-  get 'auth/signout', to: "api/v0/sessions#destroy"
+  match 'auth/:provider/callback', to: 'sessions#create', via: [:get, :post]
+  match 'auth/failure', to: 'sessions#failure', via: [:get, :post]
+  get 'auth/signout', to: 'sessions#destroy'
+
+  get 'me', to: 'api/v0/users#me'
 
   namespace :api do
     namespace :v0 do

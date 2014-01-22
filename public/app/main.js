@@ -5,8 +5,9 @@ define(['dojo/_base/kernel',
 		'dojo/parser',
 		'dojo/ready',
 		'dojo-mama/ModuleManager',
-		'app/dmConfig'
-], function (kernel, lang, domClass, has, parser, ready, ModuleManager, dmConfig) {
+		'app/dmConfig',
+		'app/auth/user'
+], function (kernel, lang, domClass, has, parser, ready, ModuleManager, dmConfig, user) {
 	ready(function() {
 
 		if (!has('touch')) {
@@ -16,12 +17,21 @@ define(['dojo/_base/kernel',
 		kernel.global.config = dmConfig;
 
 		parser.parse().then(function() {
-			var mm = new ModuleManager({
-				config: lang.mixin(kernel.global.config, {
-					moduleContentNode: document.getElementById('moduleContentNode')
-				})
+			user.update().then(function() {
+				var mm = new ModuleManager({
+					/*beforeRoute: function(e) {
+						if (e.newPath !== '/' && e.params.module !== 'auth' && !user.isLoggedIn()) {
+							window.location.hash = '/auth/login';
+							return false;
+						}
+						return true;
+					},*/
+					config: lang.mixin(kernel.global.config, {
+						moduleContentNode: document.getElementById('moduleContentNode')
+					})
+				});
+				mm.startup();
 			});
-			mm.startup();
 		});
 
 	});

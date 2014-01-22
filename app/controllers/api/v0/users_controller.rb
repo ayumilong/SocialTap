@@ -1,4 +1,13 @@
 class Api::V0::UsersController < ApplicationController
+
+  def me
+    if signed_in?
+      render json: current_user
+    else
+      render json: nil, status: :unauthorized
+    end
+  end
+
   # GET /api/v0/users
   # GET /api/v0/users.json
   def index

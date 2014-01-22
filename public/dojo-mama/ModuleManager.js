@@ -149,6 +149,12 @@ define(['dojo/_base/declare',
 			//     The router event
 			console.log('handle route');
 
+			if (this.beforeRoute) {
+				if (!this.beforeRoute(e)) {
+					return;
+				}
+			}
+
 			var module,  // the module instance
 				moduleConfig,  // the module's config (defined in dmConfig)
 				moduleName = e.params.module || 'index',  // the module matched by the route
