@@ -5,9 +5,9 @@ define(['dojo/_base/declare',
 		'dijit/_WidgetBase',
 		'dojo-mama/util/_InfiniteScrollMixin',
 		'./DataAccordion',
-		'./DataListItem'
+		'./TweetListItem'
 ], function(declare, lang, Evented, xhr, WidgetBase, InfiniteScroll,
-		DataAccordion, DataListItem)
+		DataAccordion, TweetListItem)
 {
 	return declare([WidgetBase, InfiniteScroll, Evented], {
 
@@ -56,7 +56,7 @@ define(['dojo/_base/declare',
 
 			var i, li;
 			for (i = 0; i < data.hits.hits.length; i++) {
-				li = new DataListItem({
+				li = new TweetListItem({
 					data: data.hits.hits[i]._source,
 					label: data.hits.hits[i]._source.actor.displayName
 				});
