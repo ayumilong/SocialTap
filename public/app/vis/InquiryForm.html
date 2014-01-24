@@ -5,6 +5,12 @@
 			<input data-dojo-attach-point="textQueryNode" placeholder="Query" type="text" id="inquiryTextFilterQuery">
 		</fieldset>
 		<div data-dojo-attach-point="advancedFiltersNode" class="hidden">
+			<fieldset data-dojo-attach-point="textQueryFieldsNode">
+				<legend>Include fields in text filter</legend>
+				<div><label for="bodyCheck">Tweet body</label><input type="checkbox" id="bodyCheck" value="body" checked="checked"></div>
+				<div><label for="usernamedCheck">Username</label><input type="checkbox" id="usernameCheck" value="actor.displayName"></div>
+				<div><label for="hashtagsCheck">Hashtags</label><input type="checkbox" id="hashtagsCheck" value="twitter_entities.hashtags.text"></div>
+			</fieldset>
 			<fieldset class="dateFilter">
 				<legend>Filter by date</legend>
 				<label for="inquiryDateFilterRangeStart">Start</label>

@@ -2,12 +2,14 @@ define(['dojo/_base/declare',
 		'dojo/dom-attr',
 		'dojo/dom-class',
 		'dojo/Evented',
+		'dojo/query',
 		'dojo/text!./InquiryForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-], function(declare, domAttr, domClass, Evented, template, _WidgetBase, _TemplatedMixin)
+], function(declare, domAttr, domClass, Evented, query, template, _WidgetBase, _TemplatedMixin)
 {
 	return declare([_WidgetBase, _TemplatedMixin, Evented], {
+
 
 		// advancedMode: Boolean
 		//     Whether or not to show advanced filter controls.
@@ -63,6 +65,8 @@ define(['dojo/_base/declare',
 
 			var inquiry = this.get('inquiry');
 
+			console.warn(inquiry);
+
 			var filters = [];
 			var filterType, part, filter;
 			for (filterType in inquiry) {
@@ -73,8 +77,18 @@ define(['dojo/_base/declare',
 
 					// Text filter
 					if (filterType == 'text') {
-						filter.term = {};
-						filter.term[part.field] = part.value;
+						if (part.fields.length === 1) {
+							filter.terms = {};
+							filter.terms[part.fields[0]] = part.value.split(' ');
+						}
+						else {
+							filter.or = [];
+							for (var i = 0; i < part.fields.length; i++) {
+								var f = { terms: {} };
+								f.terms[part.fields[i]] = part.value.split(' ');
+								filter.or.push(f);
+							}
+						}
 					}
 
 					// Date filter
@@ -145,6 +159,9 @@ define(['dojo/_base/declare',
 					}
 				};
 			}
+
+			console.warn(query);
+
 			return query;
 		},
 
@@ -155,10 +172,18 @@ define(['dojo/_base/declare',
 			var inquiry = {};
 
 			// Text
+			var nodes = query('input[type="checkbox"]', this.textQueryFieldsNode);
+			var fields = [];
+			for (var i = 0; i < nodes.length; i++) {
+				if (nodes[i].checked) {
+					fields.push(nodes[i].value);
+				}
+			}
+
 			var textQuery = domAttr.get(this.textQueryNode, 'value');
 			if (textQuery) {
 				inquiry.text = {
-					field: 'body',
+					fields: fields,
 					value: textQuery
 				};
 			}
