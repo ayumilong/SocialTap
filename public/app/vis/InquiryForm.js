@@ -65,7 +65,8 @@ define(['dojo/_base/declare',
 
 			var inquiry = this.get('inquiry');
 
-			console.warn(inquiry);
+			console.log('inquiry');
+			console.log(inquiry);
 
 			var filters = [];
 			var filterType, part, filter;
@@ -93,13 +94,55 @@ define(['dojo/_base/declare',
 
 					// Date filter
 					else if (filterType == 'date') {
-						filter.range = {};
-						filter.range[part.field] = {};
-						if (part.start) {
-							filter.range[part.field].gte = part.start;
+						var rangeFilter = null;
+						if (part.range) {
+							rangeFilter = { range: {} };
+							rangeFilter.range = {};
+							rangeFilter.range[part.field] = {};
+							if (part.range.start) {
+								rangeFilter.range[part.field].gte = part.range.start;
+							}
+							if (part.range.end) {
+								rangeFilter.range[part.field].lte = part.range.end;
+							}
 						}
-						if (part.end) {
-							filter.range[part.field].lte = part.end;
+
+						var daysFilter = null;
+						if (part.days) {
+							var dayFilters = [];
+							for (var j = 0; j < part.days.length; j++) {
+								dayFilters.push({
+									script: {
+										script: "((doc['postedTime'].date.millis / 86400000) % 7) == day",
+										params: {
+											day: ((part.days[j] + 3) % 7)
+										}
+									}
+								});
+							}
+							if (dayFilters.length == 1) {
+								daysFilter = dayFilters[0];
+							}
+							else {
+								daysFilter = {
+									or: dayFilters
+								};
+							}
+						}
+
+						if (rangeFilter) {
+							filter = rangeFilter;
+						}
+						if (daysFilter) {
+							filter = daysFilter;
+						}
+						if (rangeFilter && daysFilter) {
+							filter = {
+								and: [
+									rangeFilter,
+									daysFilter
+								]
+							};
 						}
 					}
 
@@ -160,7 +203,8 @@ define(['dojo/_base/declare',
 				};
 			}
 
-			console.warn(query);
+			console.log('elasticsearch query');
+			console.log(query);
 
 			return query;
 		},
@@ -191,16 +235,27 @@ define(['dojo/_base/declare',
 			// Date
 			var rangeStart = domAttr.get(this.dateRangeStartNode, 'value');
 			var rangeEnd = domAttr.get(this.dateRangeEndNode, 'value');
-			if (rangeStart || rangeEnd) {
+			var dayNodes = query('input[type="checkbox"]:checked', this.dateFilterNode);
+			var days = [];
+			for (i = 0; i < dayNodes.length; i++) {
+				days.push(parseInt(dayNodes[i].value, 10));
+			}
+
+			if (rangeStart || rangeEnd || days.length > 0) {
 				inquiry.date = {
 					field: 'postedTime'
 				};
 			}
 			if (rangeStart) {
-				inquiry.date.start = rangeStart;
+				inquiry.date.range = inquiry.date.range || {};
+				inquiry.date.range.start = rangeStart;
 			}
 			if (rangeEnd) {
-				inquiry.date.end = rangeEnd;
+				inquiry.date.range = inquiry.date.range || {};
+				inquiry.date.range.end = rangeEnd;
+			}
+			if (days.length > 0) {
+				inquiry.date.days = days;
 			}
 
 			// Geo

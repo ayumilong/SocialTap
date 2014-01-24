@@ -11,12 +11,24 @@
 				<div><label for="usernamedCheck">Username</label><input type="checkbox" id="usernameCheck" value="actor.displayName"></div>
 				<div><label for="hashtagsCheck">Hashtags</label><input type="checkbox" id="hashtagsCheck" value="twitter_entities.hashtags.text"></div>
 			</fieldset>
-			<fieldset class="dateFilter">
+			<fieldset data-dojo-attach-point="dateFilterNode" class="dateFilter">
 				<legend>Filter by date</legend>
 				<label for="inquiryDateFilterRangeStart">Start</label>
 				<input data-dojo-attach-point="dateRangeStartNode" type="date" id="inquiryDateFilterRangeStart">
 				<label for="inquiryDateFilterRangeEnd">End</label>
 				<input data-dojo-attach-point="dateRangeEndNode" type="date" id="inquiryDateFilterRangeEnd">
+				<p>Limit to</p>
+				<div style="width: 50%; float: left;">
+					<div><input id="sundayCheck" type="checkbox" value="0"><label for="sundayCheck">Sunday</label></div>
+					<div><input id="mondayCheck" type="checkbox" value="1"><label for="mondayCheck">Monday</label></div>
+					<div><input id="tuesdayCheck" type="checkbox" value="2"><label for="tuesdayCheck">Tuesday</label></div>
+					<div><input id="wednesdayCheck" type="checkbox" value="3"><label for="wednesdayCheck">Wednesday</label></div>
+				</div>
+				<div style="width: 50%; float: left;">
+					<div><input id="thursdayCheck" type="checkbox" value="4"><label for="thursdayCheck">Thursday</label></div>
+					<div><input id="fridayCheck" type="checkbox" value="5"><label for="fridayCheck">Friday</label></div>
+					<div><input id="saturdayCheck" type="checkbox" value="6"><label for="saturdayCheck">Saturday</label></div>
+				</div>
 			</fieldset>
 			<fieldset class="geoFilter">
 				<legend>Filter by location</legend>
