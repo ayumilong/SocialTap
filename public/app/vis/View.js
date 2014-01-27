@@ -79,7 +79,7 @@ define(['dojo/_base/declare',
 			// When inquiry form is changed, apply the new Elasticsearch filter to the visualization.
 			this.inquiryForm.on('inquiry', lang.hitch(this, function(esQuery) {
 				if (this.vis) {
-					this.vis.set('elasticsearchQuery', esQuery);
+					this.vis.set('baseQuery', esQuery);
 					this.vis.reload();
 				}
 			}));
