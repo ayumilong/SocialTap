@@ -1,12 +1,15 @@
 define(['dojo/_base/declare',
+		'dojo/_base/lang',
 		'dojo/dom-attr',
 		'dojo/dom-class',
 		'dojo/Evented',
+		'dojo/keys',
+		'dojo/on',
 		'dojo/query',
 		'dojo/text!./InquiryForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-], function(declare, domAttr, domClass, Evented, query, template, _WidgetBase, _TemplatedMixin)
+], function(declare, lang, domAttr, domClass, Evented, keys, on, query, template, _WidgetBase, _TemplatedMixin)
 {
 	return declare([_WidgetBase, _TemplatedMixin, Evented], {
 
@@ -33,10 +36,22 @@ define(['dojo/_base/declare',
 			this.emit('inquiry', this.get('elasticsearchQuery'));
 		},
 
+		postCreate: function() {
+			this.inherited(arguments);
+
+			on(this.domNode, 'keydown', lang.hitch(this, function(e) {
+				if (e.keyCode == keys.ENTER) {
+					this.submit();
+				}
+			}));
+		},
+
 		submit: function(e) {
 			// summary:
 			//     Set filter on visualization.
-			e.preventDefault();
+			if (e) {
+				e.preventDefault();
+			}
 			this.emit('inquiry', this.get('elasticsearchQuery'));
 		},
 
