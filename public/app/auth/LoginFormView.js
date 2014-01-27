@@ -8,7 +8,7 @@ define(['dojo/_base/declare',
 		'dojo/text!./LoginForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-		'dojo-mama/Views/_ModuleViewMixin'
+		'dojo-mama/views/_ModuleViewMixin'
 ], function(declare, lang, domAttr, domClass, on, xhr, router, template, _WidgetBase,
 	_TemplatedMixin, _ModuleViewMixin)
 {
