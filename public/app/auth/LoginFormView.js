@@ -2,6 +2,7 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-attr',
 		'dojo/dom-class',
+		'dojo/keys',
 		'dojo/on',
 		'dojo/request/xhr',
 		'dojo/router',
@@ -9,7 +10,7 @@ define(['dojo/_base/declare',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
 		'dojo-mama/views/_ModuleViewMixin'
-], function(declare, lang, domAttr, domClass, on, xhr, router, template, _WidgetBase,
+], function(declare, lang, domAttr, domClass, keys, on, xhr, router, template, _WidgetBase,
 	_TemplatedMixin, _ModuleViewMixin)
 {
 	return declare([_WidgetBase, _TemplatedMixin, _ModuleViewMixin], {
@@ -23,6 +24,11 @@ define(['dojo/_base/declare',
 		postCreate: function() {
 			this.inherited(arguments);
 			on(this.loginButton, 'click', lang.hitch(this, this.login));
+			on(this.domNode, 'keydown', lang.hitch(this, function(e) {
+				if (e.keyCode == keys.ENTER) {
+					this.login();
+				}
+			}));
 		},
 
 		login: function() {
