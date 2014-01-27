@@ -76,8 +76,9 @@ define(['dojo/_base/declare',
 		    d3.select(this)
 				.transition()
 		        .delay(0)
-		        .duration(400)
-		        .style("fill", "#BBCDED");
+		        .duration(100)
+				.attr('stroke', '#000000')
+				.attr('stroke-width', 1.8);
 		},
 
 
@@ -171,6 +172,7 @@ define(['dojo/_base/declare',
 				// }
 			}
 			console.log(data);
+			console.log(max);
 			this.countries.transition()
 				.delay(0)
 				.duration(400)
@@ -209,10 +211,12 @@ define(['dojo/_base/declare',
 			d3.select(this)
 				.transition()
 		        .delay(0)
-		        .duration(400)
-		        .style("fill", function() {
+		        .duration(100)
+				.attr('stroke', '#999999')
+				.attr('stroke-width', 0.8)
+		        /* .style("fill", function() {
 					return d3.select(this).data()[0].properties.color;
-				});
+				})*/ ;
 		},
 
 		country_data: function() { return {"type":"FeatureCollection","features":[
