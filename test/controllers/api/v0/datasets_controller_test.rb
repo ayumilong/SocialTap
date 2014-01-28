@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class DatasetsControllerTest < ActionController::TestCase
+class Api::V0::DatasetsControllerTest < ActionController::TestCase
   setup do
     @dataset = datasets(:one)
   end

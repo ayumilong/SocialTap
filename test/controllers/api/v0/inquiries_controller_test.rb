@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class InquiriesControllerTest < ActionController::TestCase
+class Api::V0::InquiriesControllerTest < ActionController::TestCase
   setup do
     @inquiry = inquiries(:one)
   end

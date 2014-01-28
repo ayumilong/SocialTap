@@ -36,13 +36,6 @@ ActiveRecord::Schema.define(version: 20140122160557) do
     t.boolean "is_owner"
   end
 
-  create_table "datasets_vizs", force: true do |t|
-    t.integer "viz_id"
-    t.integer "dataset_id"
-    t.integer "order"
-    t.string  "name"
-  end
-
   create_table "identities", force: true do |t|
     t.integer  "user_id"
     t.string   "email"
@@ -108,13 +101,6 @@ ActiveRecord::Schema.define(version: 20140122160557) do
 
   create_table "users", force: true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "vizs", force: true do |t|
-    t.string   "name"
-    t.string   "module_name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
