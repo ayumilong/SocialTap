@@ -4,25 +4,26 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-attr',
 		'dojo/dom-class',
+		'dojo/dom-construct',
 		'dojo/dom-geometry',
 		'dojo/router',
-		'dojox/mobile/EdgeToEdgeList',
-		'dojox/mobile/Button',
-		'dojox/mobile/Pane',
-		'dojo-mama/util/LinkListItem'],
-function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, EdgeToEdgeList,
-	Button, Pane, LinkListItem)
+		'dojo/text!./VisualizationSelector.html',
+		'dojo-mama/util/LinkListItem',
+		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin'],
+function(declare, baseFx, kernel, lang, domAttr, domClass, domConstruct, domGeometry, router, template,
+	LinkListItem, _WidgetBase, _TemplatedMixin)
 {
-	return declare([Pane], {
+	return declare([_WidgetBase, _TemplatedMixin], {
 		'class': 'stVisualizationSelector',
 
-		list: null,
+		templateString: template,
 
 		datasetId: null,
 
+		listItemWidth: 151,
+
 		scrollOffset: 0,
-		scrollLeftButton: null,
-		scrollRightButton: null,
 
 		visRoutes: null,
 
@@ -30,28 +31,8 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 			this.visRoutes = kernel.global.config.topNav;
 		},
 
-		buildRendering: function() {
+		postCreate: function() {
 			this.inherited(arguments);
-
-			this.scrollLeftButton = new Button({
-				'class': 'scrollLeft fa fa-chevron-left hidden',
-				'duration': 0,
-				'onClick': lang.hitch(this, this.scrollLeft)
-			});
-			this.scrollLeftButton.placeAt(this.domNode);
-			this.scrollLeftButton.startup();
-
-			this.list = new EdgeToEdgeList();
-			this.list.placeAt(this.domNode);
-			this.list.startup();
-
-			this.scrollRightButton = new Button({
-				'class': 'scrollRight fa fa-chevron-right hidden',
-				'duration': 0,
-				'onClick': lang.hitch(this, this.scrollRight)
-			});
-			this.scrollRightButton.placeAt(this.domNode);
-			this.scrollRightButton.startup();
 
 			var i, navItem;
 			for (i = 0; i < this.visRoutes.length; i++) {
@@ -59,24 +40,25 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 				router.register(navItem.route.replace(':dataset_id', '(\\d+)'), lang.hitch(this, this.handleRoute));
 			}
 
-			console.log('vis selector registered');
-
 			router.register('*path', lang.hitch(this, this.clearActive));
+
+			window.addEventListener('resize', lang.hitch(this, this.resize));
 		},
 
 		handleRoute: function(e) {
-			console.log('vis selector handle route');
 			this.set('datasetId', parseInt(e.params[0], 10));
 
-			this.list.getChildren().forEach(function(li) {
-				domClass.remove(li.domNode, 'active');
-			});
+			var children = this.listNode.childNodes;
+			var i;
+			for (i = 0; i < children.length; i++) {
+				domClass.remove(children[i], 'active');
+			}
 
-			var i, navItem;
+			var navItem;
 			for (i = 0; i < this.visRoutes.length; i++) {
 				navItem = this.visRoutes[i];
 				if (navItem.route.replace(':dataset_id', e.params[0]) == e.newPath) {
-					domClass.add(this.list.getChildren()[i].domNode, 'active');
+					domClass.add(this.listNode.childNodes[i], 'active');
 					break;
 				}
 			}
@@ -93,9 +75,10 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 				}
 			}
 			if (!match) {
-				this.list.getChildren().forEach(function(li) {
-					domClass.remove(li.domNode, 'active');
-				});
+				var children = this.listNode.childNodes;
+				for (i = 0; i < children.length; i++) {
+					domClass.remove(children[i], 'active');
+				}
 			}
 		},
 
@@ -108,16 +91,14 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 		},
 
 		minScrollOffset: function() {
-			var listWidth = 151 * this.list.getChildren().length;
-			var availableWidth = domGeometry.getMarginBox(this.list.domNode).w;
-			return Math.min(Math.floor((availableWidth - listWidth) / 151), 0);
+			var listWidth = this.listItemWidth * this.listNode.childNodes.length;
+			var availableWidth = domGeometry.getMarginBox(this.listNode).w;
+			return Math.min(Math.floor((availableWidth - listWidth) / this.listItemWidth), 0);
 		},
 
 		resize: function() {
 			this.inherited(arguments);
-
 			var minOffset = this.minScrollOffset();
-
 			if (this.scrollOffset < minOffset) {
 				this.set('scrollOffset', minOffset);
 			}
@@ -126,36 +107,31 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 
 		setScrollButtonsEnabled: function() {
 			if (this.scrollOffset === this.minScrollOffset()) {
-				domAttr.set(this.scrollRightButton.domNode, 'disabled', 'disabled');
+				domAttr.set(this.scrollRightButton, 'disabled', 'disabled');
 			}
 			else {
-				domAttr.remove(this.scrollRightButton.domNode, 'disabled');
+				domAttr.remove(this.scrollRightButton, 'disabled');
 			}
 
 			if (this.scrollOffset === 0) {
-				domAttr.set(this.scrollLeftButton.domNode, 'disabled', 'disabled');
+				domAttr.set(this.scrollLeftButton, 'disabled', 'disabled');
 			}
 			else {
-				domAttr.remove(this.scrollLeftButton.domNode, 'disabled');
+				domAttr.remove(this.scrollLeftButton, 'disabled');
 			}
 		},
 
 		_setScrollOffsetAttr: function(scrollOffset) {
 
-			var vizItems = this.list.getChildren();
-
 			scrollOffset = Math.max(Math.min(scrollOffset, 0), this.minScrollOffset());
 			this._set('scrollOffset', scrollOffset);
-			var firstItem = vizItems[0];
 
 			baseFx.animateProperty({
-				'node': firstItem.domNode,
+				'node': this.listNode.childNodes[0],
 				'properties': {
-					'margin-left': scrollOffset * 151,
+					'margin-left': scrollOffset * this.listItemWidth,
 				}
 			}).play();
-
-			console.warn('scroll offset = ' + scrollOffset);
 
 			this.setScrollButtonsEnabled();
 		},
@@ -163,11 +139,11 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 		_setDatasetIdAttr: function(datasetId) {
 			this._set('datasetId', datasetId);
 
-			this.list.destroyDescendants();
+			domConstruct.empty(this.listNode);
 
 			if (datasetId) {
-				domClass.remove(this.scrollLeftButton.domNode, 'hidden');
-				domClass.remove(this.scrollRightButton.domNode, 'hidden');
+				domClass.remove(this.scrollLeftButton, 'hidden');
+				domClass.remove(this.scrollRightButton, 'hidden');
 
 				var i, navItem, li;
 
@@ -178,15 +154,14 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domGeometry, router, 
 						text: navItem.title,
 						href: '#' + navItem.route.replace(':dataset_id', this.datasetId)
 					});
-					li.placeAt(this.list);
-					li.startup();
+					li.placeAt(this.listNode);
 				}
 
 				this.setScrollButtonsEnabled();
 			}
 			else {
-				domClass.add(this.scrollLeftButton.domNode, 'hidden');
-				domClass.add(this.scrollRightButton.domNode, 'hidden');
+				domClass.add(this.scrollLeftButton, 'hidden');
+				domClass.add(this.scrollRightButton, 'hidden');
 			}
 		}
 	});
