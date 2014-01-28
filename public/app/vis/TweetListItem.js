@@ -1,9 +1,10 @@
 define(['dojo/_base/declare',
+		'dojo/_base/lang',
 		'dojo/date/locale',
 		'dojo/text!./TweetListItem.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin'
-], function(declare, locale, template, _WidgetBase, _TemplatedMixin) {
+], function(declare, lang, locale, template, _WidgetBase, _TemplatedMixin) {
 	return declare([_WidgetBase, _TemplatedMixin], {
 		templateString: template,
 
@@ -13,6 +14,10 @@ define(['dojo/_base/declare',
 			this._set('data', data);
 
 			this.actorNameNode.innerHTML = data.actor.displayName;
+			this.actorImageNode.onerror = lang.hitch(this, function() {
+				this.actorImageNode.src = '/app/resources/img/blankPerson.png';
+			});
+			this.actorImageNode.src = data.actor.image.replace(/_normal\./, '_bigger.');
 			this.actorUsernameNode.innerHTML = data.actor.preferredUsername;
 			this.actorFollowersCountNode.innerHTML = data.actor.followersCount;
 			this.actorFriendsCountNode.innerHTML = data.actor.friendsCount;
