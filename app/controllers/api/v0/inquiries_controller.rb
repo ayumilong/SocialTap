@@ -1,58 +1,56 @@
 class Api::V0::InquiriesController < ApplicationController
-  # GET /api/v0/inquiries
-  # GET /api/v0/inquiries.json
-  def index
-    @inquiries = Inquiry.all
 
-    render json: @inquiries
-  end
+	before_action :require_user
+	def require_user
+		unless signed_in?
+			render json: { error: "You must login to perform this action" }, status: :unauthorized
+		end
+	end
 
-  # GET /api/v0/inquiries/1
-  # GET /api/v0/inquiries/1.json
-  def show
-    @inquiry = Inquiry.find(params[:id])
+	# GET /api/v0/inquiries
+	# GET /api/v0/inquiries.json
+	def index
+		@inquiries = current_user.inquiries
+		render json: @inquiries
+	end
 
-    render json: @inquiry
-  end
+	# GET /api/v0/inquiries/1
+	# GET /api/v0/inquiries/1.json
+	def show
+		@inquiry = current_user.inquiries.find_by_id(params[:id])
+		render json: @inquiry
+	end
 
-  # POST /api/v0/inquiries
-  # POST /api/v0/inquiries.json
-  def create
-    @inquiry = Inquiry.new(params[:inquiry])
+	# POST /api/v0/inquiries
+	# POST /api/v0/inquiries.json
+	def create
+		@inquiry = Inquiry.new(params[:inquiry])
+		@inquiry.user = current_user
 
-    if @inquiry.save
-      render json: @inquiry, status: :created, location: [:api, :v0, @inquiry]
-    else
-      render json: @inquiry.errors, status: :unprocessable_entity
-    end
-  end
+		if @inquiry.save
+			render json: @inquiry, status: :created, location: [:api, :v0, @inquiry]
+		else
+			render json: @inquiry.errors, status: :unprocessable_entity
+		end
+	end
 
-  # PATCH/PUT /api/v0/inquiries/1
-  # PATCH/PUT /api/v0/inquiries/1.json
-  def update
-    @inquiry = Inquiry.find(params[:id])
+	# PATCH/PUT /api/v0/inquiries/1
+	# PATCH/PUT /api/v0/inquiries/1.json
+	def update
+		@inquiry = current_user.inquiries.find_by_id(params[:id])
+		if @inquiry.update(params[:inquiry])
+			head :no_content
+		else
+			render json: @inquiry.errors, status: :unprocessable_entity
+		end
+	end
 
-    if @inquiry.update(params[:inquiry])
-      head :no_content
-    else
-      render json: @inquiry.errors, status: :unprocessable_entity
-    end
-  end
+	# DELETE /api/v0/inquiries/1
+	# DELETE /api/v0/inquiries/1.json
+	def destroy
+		@inquiry = current_user.inquiries.find_by_id(params[:id])
+		@inquiry.destroy
+		head :no_content
+	end
 
-  # DELETE /api/v0/inquiries/1
-  # DELETE /api/v0/inquiries/1.json
-  def destroy
-    @inquiry = Inquiry.find(params[:id])
-    @inquiry.destroy
-
-    head :no_content
-  end
-  
-  # GET /api/v0/inquiries/1/search
-  # GET /api/v0/inquiries/1/search.json
-  def search
-    @inquiry = Inquiry.find(params[:id])
-    render json: @inquiry.search
-  end
-  
 end
