@@ -40,6 +40,8 @@ define(['dojo/_base/declare',
 		activate: function(e) {
 			this.inherited(arguments);
 
+			this.inquiryForm.set('datasetId', e.params.dataset_id);
+
 			// Remove old visualization.
 			if (this.vis) {
 				this.vis.destroy();

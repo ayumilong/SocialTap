@@ -6,19 +6,32 @@ define(['dojo/_base/declare',
 		'dojo/keys',
 		'dojo/on',
 		'dojo/query',
+		'dojo/request/xhr',
 		'dojo/text!./InquiryForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-], function(declare, lang, domAttr, domClass, Evented, keys, on, query, template, _WidgetBase, _TemplatedMixin)
+], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template, _WidgetBase, _TemplatedMixin)
 {
 	return declare([_WidgetBase, _TemplatedMixin, Evented], {
-
 
 		// advancedMode: Boolean
 		//     Whether or not to show advanced filter controls.
 		advancedMode: false,
 
 		baseClass: 'inquiryForm',
+
+		// datasetId: Integer
+		//     ID of the dataset currently being visualized.
+		datasetId: null,
+
+		// inquiry: Object
+		//     The definition of the current inquiry.
+		inquiry: null,
+
+		// savedInquiryId: Integer
+		//     The ID of the last saved inquiry displayed.
+		//     Set when an inquiry is saved (not submitted).
+		savedInquiryId: null,
 
 		templateString: template,
 
@@ -32,6 +45,8 @@ define(['dojo/_base/declare',
 			inputs.forEach(function(i) {
 				domAttr.set(i, 'value', '');
 			});
+
+			this.set('savedInquiryId', null);
 
 			this.emit('inquiry', this.get('elasticsearchQuery'));
 		},
@@ -52,7 +67,27 @@ define(['dojo/_base/declare',
 			if (e) {
 				e.preventDefault();
 			}
-			this.emit('inquiry', this.get('elasticsearchQuery'));
+
+			var inquiry = this.get('inquiry');
+
+			if (inquiry) {
+				this.emit('inquiry', this.get('elasticsearchQuery'));
+
+				xhr.post('/api/v0/inquiries', {
+					data: JSON.stringify({
+						inquiry: {
+							dataset_id: this.get('datasetId'),
+							definition: inquiry
+						}
+					}),
+					handleAs: 'json',
+					headers: { 'Content-Type': 'application/json' }
+				}).response.then(
+					null,
+					lang.hitch(this, function(err) {
+						console.error(err);
+					}));
+			}
 		},
 
 		toggleAdvancedMode: function() {
@@ -288,6 +323,10 @@ define(['dojo/_base/declare',
 						unit: unit
 					}
 				};
+			}
+
+			if (Object.keys(inquiry).length === 0) {
+				inquiry = null;
 			}
 
 			return inquiry;
