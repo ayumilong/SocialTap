@@ -11,8 +11,9 @@ class ApplicationController < ActionController::API
 	end
 
 	def current_user=(user)
-		@current_user = user
 		session[:user_id] = user.nil? ? user : user.id
+		logger.debug session
+		@current_user = user
 	end
 
 end

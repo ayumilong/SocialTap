@@ -6,6 +6,7 @@ class SessionsController < ApplicationController
 		auth = env['omniauth.auth']
 		if auth[:provider] == 'identity'
 			identity = Identity.find_by_id(auth[:uid])
+
 		else
 			identity = ProviderIdentity.where(provider: auth[:provider], uid: auth[:uid]).limit(1).first
 			if identity.nil?
@@ -14,7 +15,7 @@ class SessionsController < ApplicationController
 		end
 
 		if signed_in?
-			if identity.user.present?
+			if identity.user.present? && identity.user.id != current_user.id
 				current_user.merge(identity.user)
 			else
 				identity.user = current_user
@@ -25,11 +26,11 @@ class SessionsController < ApplicationController
 				identity.user = User.create(name: auth[:info][:name])
 				identity.save
 			end
-			session[:user_id] = identity.user.id
+			self.current_user = identity.user
 		end
 
 		if env['omniauth.auth'][:provider] == 'identity'
-			render json: true, status: :created
+			render json: session, status: :created
 		else
 			redirect_to '/'
 		end
@@ -38,7 +39,7 @@ class SessionsController < ApplicationController
 
 	# GET /sessions/destroy
 	def destroy
-		session[:user_id] = nil
+		self.current_user = nil
 		head :no_content
 	end
 
