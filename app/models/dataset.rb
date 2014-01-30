@@ -1,7 +1,6 @@
 class Dataset < ActiveRecord::Base
   has_and_belongs_to_many :users
-  has_and_belongs_to_many :viz
-  has_many :inquiries
+  has_many :inquiries, dependent: :destroy
   has_many :import_operations, dependent: :destroy
 
   validates :name, presence: true

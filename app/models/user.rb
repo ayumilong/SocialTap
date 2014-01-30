@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
 	has_and_belongs_to_many :datasets
-	has_many :inquiries
+	has_many :inquiries, dependent: :destroy
 
 	has_many :identities, dependent: :destroy
 	has_many :provider_identities, dependent: :destroy
