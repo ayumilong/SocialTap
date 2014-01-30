@@ -40,15 +40,29 @@ define(['dojo/_base/declare',
 			//     Clear form and remove filter from visualization.
 			console.warn('clear');
 
-			var inputs = [this.textQueryNode, this.dateRangeStartNode, this.dateRangeEndNode,
-				this.geoLatNode, this.geoLonNode, this.geoDistanceNode];
-			inputs.forEach(function(i) {
-				domAttr.set(i, 'value', '');
-			});
+			this.clearForm();
 
 			this.set('savedInquiryId', null);
 
 			this.emit('inquiry', this.get('elasticsearchQuery'));
+		},
+
+		clearForm: function() {
+			var inputs = [this.textQueryNode, this.dateRangeStartNode, this.dateRangeEndNode,
+				this.geoLatNode, this.geoLonNode, this.geoDistanceNode];
+			inputs.forEach(function(node) {
+				node.value = '';
+			});
+
+			inputs = query('input[type="checkbox"]', this.textQueryFieldsNode);
+			inputs.forEach(function(check, i) {
+				check.checked = (i === 0);
+			});
+
+			inputs = query('input[type="checkbox"]', this.dateFilterNode);
+			inputs.forEach(function(check) {
+				check.checked = false;
+			});
 		},
 
 		postCreate: function() {
@@ -330,6 +344,45 @@ define(['dojo/_base/declare',
 			}
 
 			return inquiry;
+		},
+
+		_setInquiryAttr: function(inquiry) {
+			this.clearForm();
+
+			if (inquiry === null) {
+				inquiry = {};
+			}
+
+			var type, part, nodes, i;
+			for (type in inquiry) {
+				if (inquiry.hasOwnProperty(type)) {
+					part = inquiry[type];
+					if (type === 'text') {
+						this.textQueryNode.value = part.value;
+						nodes = query('input[type="checkbox"]', this.textQueryFieldsNode);
+						for (i = 0; i < nodes.length; i++) {
+							nodes[i].checked = (part.fields.indexOf(nodes[i].value) !== -1);
+						}
+					}
+
+					else if (type === 'date') {
+						this.dateRangeStartNode.value = (part.range && part.range.start) ? part.range.start : '';
+						this.dateRangeEndNode.value = (part.range && part.range.end) ? part.range.end : '';
+
+						nodes = query('input[type="checkbox"]:checked', this.dateFilterNode);
+						for (i = 0; i < nodes.length; i++) {
+							nodes[i].checked = (part.days && part.days.indexOf(parseInt(nodes[i].value, 10)) !== -1);
+						}
+					}
+
+					else if (type === 'geo') {
+						this.geoDistanceNode.value = part.distance.value;
+						this.geoDistanceUnitsNode.value = part.distance.unit;
+						this.geoLatNode.value = part.lat;
+						this.geoLonNode.value = part.lon;
+					}
+				}
+			}
 		}
 
 	});
