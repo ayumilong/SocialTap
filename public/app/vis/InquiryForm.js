@@ -81,6 +81,7 @@ define(['dojo/_base/declare',
 				}
 				else {
 					domClass.add(this.descriptionContainer, 'hidden');
+					this.descriptionField.value = '';
 				}
 			}));
 		},
