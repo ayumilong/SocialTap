@@ -10,7 +10,8 @@ define(['dojo/_base/declare',
 		'dojo/text!./InquiryForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template, _WidgetBase, _TemplatedMixin)
+		'../util/ConfirmationDialog'
+], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template, _WidgetBase, _TemplatedMixin, ConfirmationDialog)
 {
 	return declare([_WidgetBase, _TemplatedMixin, Evented], {
 
@@ -84,6 +85,38 @@ define(['dojo/_base/declare',
 			}));
 		},
 
+		save: function(/*Boolean*/overwrite) {
+
+			var datasetId = this.get('datasetId');
+			var inquiry = this.get('inquiry');
+			var description = this.descriptionField.value ? this.descriptionField.value : null;
+			var saved = this.saveCheck.checked;
+
+			var method = overwrite ? xhr.put : xhr.post;
+			var endpoint = overwrite ? '/' + this.get('savedInquiryId') : '';
+
+			method('/api/v0/inquiries' + endpoint, {
+				data: JSON.stringify({
+					inquiry: {
+						dataset_id: datasetId,
+						definition: inquiry,
+						description: description,
+						saved: saved
+					}
+				}),
+				handleAs: 'json',
+				headers: { 'Content-Type': 'application/json' }
+			}).response.then(
+				lang.hitch(this, function(response) {
+					if (saved && !overwrite) {
+						this.set('savedInquiryId', response.data.id);
+					}
+				}),
+				lang.hitch(this, function(err) {
+					console.error(err);
+				}));
+		},
+
 		submit: function(e) {
 			// summary:
 			//     Set filter on visualization.
@@ -96,20 +129,25 @@ define(['dojo/_base/declare',
 			if (inquiry) {
 				this.emit('inquiry', this.get('elasticsearchQuery'));
 
-				xhr.post('/api/v0/inquiries', {
-					data: JSON.stringify({
-						inquiry: {
-							dataset_id: this.get('datasetId'),
-							definition: inquiry
-						}
-					}),
-					handleAs: 'json',
-					headers: { 'Content-Type': 'application/json' }
-				}).response.then(
-					null,
-					lang.hitch(this, function(err) {
-						console.error(err);
-					}));
+				if (this.get('savedInquiryId') === null) {
+					this.save(false);
+				}
+				else {
+					var dlg = new ConfirmationDialog({
+						blocking: true,
+						message: 'Overwrite last inquiry or create a new one?',
+						onCancel: lang.hitch(this, function() {
+							this.save(false);
+						}),
+						onConfirm: lang.hitch(this, function() {
+							this.save(true);
+						}),
+						title: 'Overwrite?'
+					});
+					dlg.cancelButton.set('label', 'Create new');
+					dlg.confirmButton.set('label', 'Overwrite');
+					dlg.show();
+				}
 			}
 		},
 
@@ -353,6 +391,11 @@ define(['dojo/_base/declare',
 			}
 
 			return inquiry;
+		},
+
+		_setDatasetIdAttr: function(datasetId) {
+			this._set('datasetId', datasetId);
+			this.set('savedInquiryId', null);
 		},
 
 		_setInquiryAttr: function(inquiry) {
