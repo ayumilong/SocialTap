@@ -73,6 +73,15 @@ define(['dojo/_base/declare',
 					this.submit();
 				}
 			}));
+
+			on(this.saveCheck, 'change', lang.hitch(this, function() {
+				if (this.saveCheck.checked) {
+					domClass.remove(this.descriptionContainer, 'hidden');
+				}
+				else {
+					domClass.add(this.descriptionContainer, 'hidden');
+				}
+			}));
 		},
 
 		submit: function(e) {

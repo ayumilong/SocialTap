@@ -51,9 +51,19 @@
 				<input type="checkbox" id="inquirySentimentFilterNegative">
 				<label for="inquirySentimentFilterNegative">Negative</label>
 			</fieldset>
+			<div class="inquiryInfo">
+				<input data-dojo-attach-point="saveCheck" id="saveInquiryCheck" type="checkbox" value="true">
+				<label for="saveInquiryCheck">Save this inquiry</label>
+				<div data-dojo-attach-point="descriptionContainer" class="hidden">
+					<label for="inquiryDescription">Description</label>
+					<textarea data-dojo-attach-point="descriptionField" id="inquiryDescription"></textarea>
+				</div>
+			</div>
 		</div>
-		<a type="submit" data-dojo-attach-event="onclick:submit" class="button submitButton">Submit</a>
-		<a type="button" data-dojo-attach-event="onclick:clear" class="button clearButton">Clear</a>
-		<a data-dojo-attach-point="advancedModeToggle" data-dojo-attach-event="onclick:toggleAdvancedMode" class="button">Advanced</a>
+		<div style="margin-top: 10px;">
+			<a type="submit" data-dojo-attach-event="onclick:submit" class="button submitButton">Submit</a>
+			<a type="button" data-dojo-attach-event="onclick:clear" class="button clearButton">Clear</a>
+			<a data-dojo-attach-point="advancedModeToggle" data-dojo-attach-event="onclick:toggleAdvancedMode" class="button">Advanced</a>
+		</div>
 	</form>
 </div>
