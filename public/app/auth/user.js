@@ -1,10 +1,11 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/Deferred',
+		'dojo/Evented',
 		'dojo/request/xhr'
-], function(declare, lang, Deferred, xhr) {
+], function(declare, lang, Deferred, Evented, xhr) {
 
-	var User = declare([], {
+	var User = declare([Evented], {
 
 		// id: Integer
 		//     ID of the current user.
@@ -29,12 +30,19 @@ define(['dojo/_base/declare',
 				lang.hitch(this, function(response) {
 					this.id = response.data.id;
 					this.name = response.data.name;
+					this.emit('login', {
+						id: this.id,
+						name: this.name
+					});
 					d.resolve(this);
 				}),
 				lang.hitch(this, function(err) {
 					if (err.response.status == 401) {
 						this.id = null;
 						this.name = null;
+						if (this.isLoggedIn()) {
+							this.emit('logout');
+						}
 						d.resolve(this);
 					}
 					else {
@@ -54,6 +62,7 @@ define(['dojo/_base/declare',
 				lang.hitch(this, function() {
 					this.id = null;
 					this.name = null;
+					this.emit('logout');
 					d.resolve(true);
 				}),
 				lang.hitch(this, function(err) {

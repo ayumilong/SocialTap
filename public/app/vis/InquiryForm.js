@@ -10,8 +10,9 @@ define(['dojo/_base/declare',
 		'dojo/text!./InquiryForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
+		'../auth/user',
 		'../util/ConfirmationDialog'
-], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template, _WidgetBase, _TemplatedMixin, ConfirmationDialog)
+], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template, _WidgetBase, _TemplatedMixin, user, ConfirmationDialog)
 {
 	return declare([_WidgetBase, _TemplatedMixin, Evented], {
 
@@ -84,6 +85,20 @@ define(['dojo/_base/declare',
 					this.descriptionField.value = '';
 				}
 			}));
+
+			if (!user.isLoggedIn()) {
+				this.saveCheck.checked = false;
+				domClass.add(this.saveContainer, 'hidden');
+			}
+
+			user.on('logout', lang.hitch(this, function() {
+				this.saveCheck.checked = false;
+				this.descriptionField.value = '';
+				domClass.add(this.saveContainer, 'hidden');
+			}));
+			user.on('login', lang.hitch(this, function() {
+				domClass.remove(this.saveContainer, 'hidden');
+			}));
 		},
 
 		save: function(/*Boolean*/overwrite) {
@@ -130,24 +145,26 @@ define(['dojo/_base/declare',
 			if (inquiry) {
 				this.emit('inquiry', this.get('elasticsearchQuery'));
 
-				if (this.get('savedInquiryId') === null) {
-					this.save(false);
-				}
-				else {
-					var dlg = new ConfirmationDialog({
-						blocking: true,
-						message: 'Overwrite last inquiry or create a new one?',
-						onCancel: lang.hitch(this, function() {
-							this.save(false);
-						}),
-						onConfirm: lang.hitch(this, function() {
-							this.save(true);
-						}),
-						title: 'Overwrite?'
-					});
-					dlg.cancelButton.set('label', 'Create new');
-					dlg.confirmButton.set('label', 'Overwrite');
-					dlg.show();
+				if (user.isLoggedIn()) {
+					if (this.get('savedInquiryId') === null) {
+						this.save(false);
+					}
+					else {
+						var dlg = new ConfirmationDialog({
+							blocking: true,
+							message: 'Overwrite last inquiry or create a new one?',
+							onCancel: lang.hitch(this, function() {
+								this.save(false);
+							}),
+							onConfirm: lang.hitch(this, function() {
+								this.save(true);
+							}),
+							title: 'Overwrite?'
+						});
+						dlg.cancelButton.set('label', 'Create new');
+						dlg.confirmButton.set('label', 'Overwrite');
+						dlg.show();
+					}
 				}
 			}
 		},

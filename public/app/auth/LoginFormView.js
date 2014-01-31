@@ -9,9 +9,10 @@ define(['dojo/_base/declare',
 		'dojo/text!./LoginForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-		'dojo-mama/views/_ModuleViewMixin'
+		'dojo-mama/views/_ModuleViewMixin',
+		'./user'
 ], function(declare, lang, domAttr, domClass, keys, on, xhr, router, template, _WidgetBase,
-	_TemplatedMixin, _ModuleViewMixin)
+	_TemplatedMixin, _ModuleViewMixin, user)
 {
 	return declare([_WidgetBase, _TemplatedMixin, _ModuleViewMixin], {
 
@@ -48,6 +49,7 @@ define(['dojo/_base/declare',
 					this.passwordField.value = '';
 					console.log(response);
 					router.go('/');
+					user.update();
 				}),
 				lang.hitch(this, function(err) {
 					domAttr.remove(this.loginButton, 'disabled');
