@@ -30,7 +30,7 @@ class SessionsController < ApplicationController
 		end
 
 		if env['omniauth.auth'][:provider] == 'identity'
-			render json: session, status: :created
+			render json: true, status: :created
 		else
 			redirect_to '/'
 		end
