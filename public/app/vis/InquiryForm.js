@@ -10,9 +10,10 @@ define(['dojo/_base/declare',
 		'dojo/text!./InquiryForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-		'../auth/user',
-		'../util/ConfirmationDialog'
-], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template, _WidgetBase, _TemplatedMixin, user, ConfirmationDialog)
+		'./InquiryStore',
+		'../auth/user'
+], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template,
+	_WidgetBase, _TemplatedMixin, InquiryStore, user)
 {
 	return declare([_WidgetBase, _TemplatedMixin, Evented], {
 
@@ -30,22 +31,17 @@ define(['dojo/_base/declare',
 		//     The definition of the current inquiry.
 		inquiry: null,
 
-		// savedInquiryId: Integer
-		//     The ID of the last saved inquiry displayed.
-		//     Set when an inquiry is saved (not submitted).
-		savedInquiryId: null,
+		// store: Object
+		//     Inquiry store.
+		store: null,
 
 		templateString: template,
 
 		clear: function() {
 			// summary:
 			//     Clear form and remove filter from visualization.
-			console.warn('clear');
-
 			this.clearForm();
-
-			this.set('savedInquiryId', null);
-
+			this.store.clearLast();
 			this.emit('inquiry', this.get('elasticsearchQuery'));
 		},
 
@@ -67,6 +63,17 @@ define(['dojo/_base/declare',
 			});
 		},
 
+		constructor: function() {
+			this.store = new InquiryStore();
+		},
+
+		load: function() {
+			this.store.load().then(
+				lang.hitch(this, function(inquiry) {
+					this.set('inquiry', inquiry);
+				}));
+		},
+
 		postCreate: function() {
 			this.inherited(arguments);
 
@@ -76,24 +83,12 @@ define(['dojo/_base/declare',
 				}
 			}));
 
-			on(this.saveCheck, 'change', lang.hitch(this, function() {
-				if (this.saveCheck.checked) {
-					domClass.remove(this.descriptionContainer, 'hidden');
-				}
-				else {
-					domClass.add(this.descriptionContainer, 'hidden');
-					this.descriptionField.value = '';
-				}
-			}));
-
-			if (!user.isLoggedIn()) {
-				this.saveCheck.checked = false;
-				domClass.add(this.saveContainer, 'hidden');
+			if (user.isLoggedIn()) {
+				domClass.remove(this.saveContainer, 'hidden');
 			}
 
+			// Only show the save/load buttons when a user is logged in.
 			user.on('logout', lang.hitch(this, function() {
-				this.saveCheck.checked = false;
-				this.descriptionField.value = '';
 				domClass.add(this.saveContainer, 'hidden');
 			}));
 			user.on('login', lang.hitch(this, function() {
@@ -101,70 +96,21 @@ define(['dojo/_base/declare',
 			}));
 		},
 
-		save: function(/*Boolean*/overwrite) {
-
-			var datasetId = this.get('datasetId');
-			var inquiry = this.get('inquiry');
-			var description = this.descriptionField.value ? this.descriptionField.value : null;
-			var saved = this.saveCheck.checked;
-
-			var method = overwrite ? xhr.put : xhr.post;
-			var endpoint = overwrite ? '/' + this.get('savedInquiryId') : '';
-
-			method('/api/v0/inquiries' + endpoint, {
-				data: JSON.stringify({
-					inquiry: {
-						dataset_id: datasetId,
-						definition: inquiry,
-						description: description,
-						saved: saved
-					}
-				}),
-				handleAs: 'json',
-				headers: { 'Content-Type': 'application/json' }
-			}).response.then(
-				lang.hitch(this, function(response) {
-					if (saved && !overwrite) {
-						this.set('savedInquiryId', response.data.id);
-					}
-				}),
-				lang.hitch(this, function(err) {
-					console.error(err);
-				}));
+		save: function() {
+			this.store.save(this.get('inquiry'), this.get('datasetId'), true, this.notesField.value || null);
 		},
 
-		submit: function(e) {
+		submit: function() {
 			// summary:
 			//     Set filter on visualization.
-			if (e) {
-				e.preventDefault();
-			}
-
 			var inquiry = this.get('inquiry');
 
 			if (inquiry) {
 				this.emit('inquiry', this.get('elasticsearchQuery'));
 
+				// Keep track of recent inquiries submitted by each user.
 				if (user.isLoggedIn()) {
-					if (this.get('savedInquiryId') === null) {
-						this.save(false);
-					}
-					else {
-						var dlg = new ConfirmationDialog({
-							blocking: true,
-							message: 'Overwrite last inquiry or create a new one?',
-							onCancel: lang.hitch(this, function() {
-								this.save(false);
-							}),
-							onConfirm: lang.hitch(this, function() {
-								this.save(true);
-							}),
-							title: 'Overwrite?'
-						});
-						dlg.cancelButton.set('label', 'Create new');
-						dlg.confirmButton.set('label', 'Overwrite');
-						dlg.show();
-					}
+					this.store.save(inquiry, this.get('datasetId'), false, this.notesField.value || null);
 				}
 			}
 		},
@@ -413,7 +359,7 @@ define(['dojo/_base/declare',
 
 		_setDatasetIdAttr: function(datasetId) {
 			this._set('datasetId', datasetId);
-			this.set('savedInquiryId', null);
+			this.store.clearLast();
 		},
 
 		_setInquiryAttr: function(inquiry) {
