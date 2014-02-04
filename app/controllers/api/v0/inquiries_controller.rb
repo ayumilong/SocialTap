@@ -11,6 +11,9 @@ class Api::V0::InquiriesController < ApplicationController
 	# GET /api/v0/inquiries.json
 	def index
 		@inquiries = current_user.inquiries
+		if params[:dataset_id]
+			@inquiries = @inquiries.where({dataset_id: params[:dataset_id]})
+		end
 		render json: @inquiries
 	end
 

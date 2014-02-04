@@ -2,8 +2,9 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/Deferred',
 		'dojo/request/xhr',
-		'../util/Dialog'
-], function(declare, lang, Deferred, xhr, Dialog) {
+		'../util/Dialog',
+		'./InquiryLoadDialog'
+], function(declare, lang, Deferred, xhr, Dialog, InquiryLoadDialog) {
 	return declare([], {
 
 		// lastInquiry: Object
@@ -21,13 +22,33 @@ define(['dojo/_base/declare',
 			this.lastInquiryId = null;
 		},
 
-		load: function() {
+		load: function(datasetId) {
 			// summary:
 			//     Prompt the user to choose from a list of saved inquiries.
+			// datasetId: Integer
+			//     The ID of the dataset to load inquiries for.
 			// returns:
 			//     Promise fulfilled with the inquiry the user chooses.
 
 			var d = new Deferred();
+
+			var dlg = new InquiryLoadDialog({
+				datasetId: datasetId
+			});
+			dlg.show().then(
+				function(inquiry) {
+					this.lastInquiry = inquiry.definition;
+					this.lastInquiryId = inquiry.id;
+					d.resolve(inquiry.definition);
+				},
+				function(err) {
+					if (err.dojoType == 'cancel') {
+						d.cancel();
+					}
+					else {
+						d.reject(err);
+					}
+				});
 
 			return d.promise;
 		},

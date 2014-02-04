@@ -68,8 +68,10 @@ define(['dojo/_base/declare',
 		},
 
 		load: function() {
-			this.store.load().then(
+			this.store.load(this.get('datasetId')).then(
 				lang.hitch(this, function(inquiry) {
+					console.warn('loaded inquiry');
+					console.warn(inquiry);
 					this.set('inquiry', inquiry);
 				}));
 		},
@@ -385,7 +387,7 @@ define(['dojo/_base/declare',
 						this.dateRangeStartNode.value = (part.range && part.range.start) ? part.range.start : '';
 						this.dateRangeEndNode.value = (part.range && part.range.end) ? part.range.end : '';
 
-						nodes = query('input[type="checkbox"]:checked', this.dateFilterNode);
+						nodes = query('input[type="checkbox"]', this.dateFilterNode);
 						for (i = 0; i < nodes.length; i++) {
 							nodes[i].checked = (part.days && part.days.indexOf(parseInt(nodes[i].value, 10)) !== -1);
 						}
