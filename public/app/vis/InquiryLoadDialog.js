@@ -50,7 +50,7 @@ define(['dojo/_base/declare',
 							continue;
 						}
 
-						var row = domConstruct.create('div', {}, this.containerNode);
+						var row = domConstruct.create('div', { 'class': 'row' }, this.containerNode);
 
 						domConstruct.create('input', {
 							id: 'loadInquiry' + inquiries[i].id,
@@ -61,7 +61,7 @@ define(['dojo/_base/declare',
 
 						domConstruct.create('label', {
 							'for': 'loadInquiry' + inquiries[i].id,
-							innerHTML: inquiries[i].toString()
+							innerHTML: inquiries[i].toString().split('\n').join('<br>')
 						}, row);
 					}
 				}

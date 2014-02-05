@@ -113,7 +113,7 @@ define(['dojo/_base/declare',
 
 			if (this.get('lastSavedInquiry')) {
 				var dlg = new Dialog();
-				dlg.containerNode.innerHTML = 'Overwrite last inquiry or create new one?';
+				dlg.containerNode.innerHTML = 'Overwrite last inquiry or create new one?<br>' + this.get('lastSavedInquiry').toString();
 				dlg.addButton('overwrite', 'Overwrite');
 				dlg.addButton('new', 'Create New');
 				dlg.addButton('cancel', 'Cancel');

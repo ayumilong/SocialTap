@@ -261,7 +261,34 @@ define(['dojo/_base/lang',
 	};
 
 	Inquiry.prototype.toString = function() {
-		return this.id;
+		var parts = [];
+
+		if (this.textFilter.value && this.textFilter.fields) {
+			parts.push('Search for "' + this.textFilter.value + '" in ' + this.textFilter.fields.join(', '));
+		}
+
+		if (this.dateFilter.range.start && this.dateFilter.range.end) {
+			parts.push('Between ' + this.dateFilter.range.start + ' and ' + this.dateFilter.range.end);
+		}
+		else if (this.dateFilter.range.start) {
+			parts.push('After ' + this.dateFilter.range.start);
+		}
+		else if (this.dateFilter.range.end) {
+			parts.push('Before ' + this.dateFilter.range.end);
+		}
+
+		var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+		if (this.dateFilter.days) {
+			parts.push(days.filter(lang.hitch(this, function(day, i) { return this.dateFilter.days.indexOf(i) !== -1; })).join(', '));
+		}
+
+		if (this.geoFilter.field && this.geoFilter.lat && this.geoFilter.lon &&
+			this.geoFilter.distance.value && this.geoFilter.distance.unit)
+		{
+			parts.push('Within ' + this.geoFilter.distance.value + ' ' + this.geoFilter.distance.unit + ' of ' + this.geoFilter.lat + ',' + this.geoFilter.lon);
+		}
+
+		return parts.join('\n');
 	};
 
 	return Inquiry;
