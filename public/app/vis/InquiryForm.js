@@ -10,10 +10,12 @@ define(['dojo/_base/declare',
 		'dojo/text!./InquiryForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-		'./InquiryStore',
-		'../auth/user'
+		'./Inquiry',
+		'./InquiryLoadDialog',
+		'../auth/user',
+		'../util/Dialog'
 ], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template,
-	_WidgetBase, _TemplatedMixin, InquiryStore, user)
+	_WidgetBase, _TemplatedMixin, Inquiry, InquiryLoadDialog, user, Dialog)
 {
 	return declare([_WidgetBase, _TemplatedMixin, Evented], {
 
@@ -27,13 +29,9 @@ define(['dojo/_base/declare',
 		//     ID of the dataset currently being visualized.
 		datasetId: null,
 
-		// inquiry: Object
-		//     The definition of the current inquiry.
-		inquiry: null,
-
-		// store: Object
-		//     Inquiry store.
-		store: null,
+		// lastSavedInquiry: Object
+		//     The last inquiry saved or loaded.
+		lastSavedInquiry: null,
 
 		templateString: template,
 
@@ -41,7 +39,7 @@ define(['dojo/_base/declare',
 			// summary:
 			//     Clear form and remove filter from visualization.
 			this.clearForm();
-			this.store.clearLast();
+			this.set('lastSavedInquiry', null);
 			this.emit('inquiry', this.get('elasticsearchQuery'));
 		},
 
@@ -63,17 +61,18 @@ define(['dojo/_base/declare',
 			});
 		},
 
-		constructor: function() {
-			this.store = new InquiryStore();
-		},
-
-		load: function() {
-			this.store.load(this.get('datasetId')).then(
-				lang.hitch(this, function(inquiry) {
-					console.warn('loaded inquiry');
-					console.warn(inquiry);
-					this.set('inquiry', inquiry);
-				}));
+		loadInquiry: function() {
+			var dlg = new InquiryLoadDialog({
+				datasetId: this.get('datasetId')
+			});
+			dlg.show().then(lang.hitch(this, function(inquiry) {
+				this.set('lastSavedInquiry', inquiry);
+				this.set('inquiry', inquiry);
+			}), function(err) {
+				if (err.dojoType != 'cancel') {
+					console.error(err);
+				}
+			});
 		},
 
 		postCreate: function() {
@@ -98,8 +97,39 @@ define(['dojo/_base/declare',
 			}));
 		},
 
-		save: function() {
-			this.store.save(this.get('inquiry'), this.get('datasetId'), true, this.notesField.value || null);
+		_saveInquiry: function(inquiry) {
+			inquiry.save().then(
+				lang.hitch(this, function(inq) {
+					this.set('lastSavedInquiry', inq);
+				}),
+				function(err) {
+					console.error(err);
+				});
+		},
+
+		saveInquiry: function() {
+			var inquiry = this.get('inquiry');
+			inquiry.keep = true;
+
+			if (this.get('lastSavedInquiry')) {
+				var dlg = new Dialog();
+				dlg.containerNode.innerHTML = 'Overwrite last inquiry or create new one?';
+				dlg.addButton('overwrite', 'Overwrite');
+				dlg.addButton('new', 'Create New');
+				dlg.addButton('cancel', 'Cancel');
+				dlg.show().then(lang.hitch(this, function(buttonId) {
+					if (buttonId == 'overwrite') {
+						inquiry.id = this.get('lastSavedInquiry').id;
+						this._saveInquiry(inquiry);
+					}
+					else if (buttonId == 'new') {
+						this._saveInquiry(inquiry);
+					}
+				}));
+			}
+			else {
+				this._saveInquiry(inquiry);
+			}
 		},
 
 		submit: function() {
@@ -108,11 +138,11 @@ define(['dojo/_base/declare',
 			var inquiry = this.get('inquiry');
 
 			if (inquiry) {
-				this.emit('inquiry', this.get('elasticsearchQuery'));
+				this.emit('inquiry', inquiry.elasticsearchQuery());
 
 				// Keep track of recent inquiries submitted by each user.
 				if (user.isLoggedIn()) {
-					this.store.save(inquiry, this.get('datasetId'), false, this.notesField.value || null);
+					inquiry.save();
 				}
 			}
 		},
@@ -136,271 +166,83 @@ define(['dojo/_base/declare',
 			}
 		},
 
-		_getElasticsearchQueryAttr: function() {
-			// summary:
-			//     Convert inquiry into Elasticsearch filtered query.
-
-			var inquiry = this.get('inquiry');
-
-			console.log('inquiry');
-			console.log(inquiry);
-
-			var filters = [];
-			var filterType, part, filter;
-			for (filterType in inquiry) {
-				if (inquiry.hasOwnProperty(filterType)) {
-
-					part = inquiry[filterType];
-					filter = {};
-
-					// Text filter
-					if (filterType == 'text') {
-						if (part.fields.length === 1) {
-							filter.terms = {};
-							filter.terms[part.fields[0]] = part.value.split(' ');
-						}
-						else {
-							filter.or = [];
-							for (var i = 0; i < part.fields.length; i++) {
-								var f = { terms: {} };
-								f.terms[part.fields[i]] = part.value.split(' ');
-								filter.or.push(f);
-							}
-						}
-					}
-
-					// Date filter
-					else if (filterType == 'date') {
-						var rangeFilter = null;
-						if (part.range) {
-							rangeFilter = { range: {} };
-							rangeFilter.range = {};
-							rangeFilter.range[part.field] = {};
-							if (part.range.start) {
-								rangeFilter.range[part.field].gte = part.range.start;
-							}
-							if (part.range.end) {
-								rangeFilter.range[part.field].lte = part.range.end;
-							}
-						}
-
-						var daysFilter = null;
-						if (part.days) {
-							var dayFilters = [];
-							for (var j = 0; j < part.days.length; j++) {
-								dayFilters.push({
-									script: {
-										script: "((doc['postedTime'].date.millis / 86400000) % 7) == day",
-										params: {
-											day: ((part.days[j] + 3) % 7)
-										}
-									}
-								});
-							}
-							if (dayFilters.length == 1) {
-								daysFilter = dayFilters[0];
-							}
-							else {
-								daysFilter = {
-									or: dayFilters
-								};
-							}
-						}
-
-						if (rangeFilter) {
-							filter = rangeFilter;
-						}
-						if (daysFilter) {
-							filter = daysFilter;
-						}
-						if (rangeFilter && daysFilter) {
-							filter = {
-								and: [
-									rangeFilter,
-									daysFilter
-								]
-							};
-						}
-					}
-
-					// Geo filter
-					else if (filterType == 'geo') {
-						filter = {
-							and: [
-								{
-									geo_distance: {
-										distance: part.distance.value + part.distance.unit
-									}
-								},
-								{
-									exists: {
-										field: part.field
-									}
-								}
-							]
-						};
-					}
-
-					// Add filter to list
-					if (Object.keys(filter).length !== 0) {
-						filters.push(filter);
-					}
-				}
-			}
-
-			// Return match all query if there were no filters.
-			var query;
-			if (filters.length > 0) {
-				if (filters.length === 1) {
-					filter = filters[0];
-				}
-				else {
-					filter = {
-						and: {
-							filters: filters
-						}
-					};
-				}
-				query = {
-					query: {
-						filtered: {
-							query: {
-								match_all: {}
-							},
-							filter: filter
-						}
-					}
-				};
-			}
-			else {
-				query = {
-					query: {
-						match_all: {}
-					}
-				};
-			}
-
-			console.log('elasticsearch query');
-			console.log(query);
-
-			return query;
-		},
-
 		_getInquiryAttr: function() {
 			// summary:
 			//     Get inquiry object from form contents.
 
-			var inquiry = {};
+			var inquiry = new Inquiry();
 
 			// Text
+			inquiry.textFilter.value = this.textQueryNode.value || null;
 			var nodes = query('input[type="checkbox"]', this.textQueryFieldsNode);
-			var fields = [];
 			for (var i = 0; i < nodes.length; i++) {
 				if (nodes[i].checked) {
-					fields.push(nodes[i].value);
+					inquiry.textFilter.fields.push(nodes[i].value);
 				}
 			}
 
-			var textQuery = domAttr.get(this.textQueryNode, 'value');
-			if (textQuery) {
-				inquiry.text = {
-					fields: fields,
-					value: textQuery
-				};
-			}
-
 			// Date
-			var rangeStart = domAttr.get(this.dateRangeStartNode, 'value');
-			var rangeEnd = domAttr.get(this.dateRangeEndNode, 'value');
+			inquiry.dateFilter.field = 'postedTime';
+			inquiry.dateFilter.range.start = this.dateRangeStartNode.value || null;
+			inquiry.dateFilter.range.end = this.dateRangeEndNode.value || null;
 			var dayNodes = query('input[type="checkbox"]:checked', this.dateFilterNode);
-			var days = [];
 			for (i = 0; i < dayNodes.length; i++) {
-				days.push(parseInt(dayNodes[i].value, 10));
-			}
-
-			if (rangeStart || rangeEnd || days.length > 0) {
-				inquiry.date = {
-					field: 'postedTime'
-				};
-			}
-			if (rangeStart) {
-				inquiry.date.range = inquiry.date.range || {};
-				inquiry.date.range.start = rangeStart;
-			}
-			if (rangeEnd) {
-				inquiry.date.range = inquiry.date.range || {};
-				inquiry.date.range.end = rangeEnd;
-			}
-			if (days.length > 0) {
-				inquiry.date.days = days;
+				inquiry.dateFilter.days.push(parseInt(dayNodes[i].value, 10));
 			}
 
 			// Geo
-			var lat = domAttr.get(this.geoLatNode, 'value');
-			var lon = domAttr.get(this.geoLonNode, 'value');
-			var distance = domAttr.get(this.geoDistanceNode, 'value');
-			var unit = domAttr.get(this.geoDistanceUnitsNode, 'value');
-			if (lat && lon && distance) {
-				inquiry.geo = {
-					field: 'socialtap.geo_coordinate',
-					lat: lat,
-					lon: lon,
-					distance: {
-						value: distance,
-						unit: unit
-					}
-				};
-			}
+			inquiry.geoFilter.field = 'socialtap.geo_coordinate';
+			inquiry.geoFilter.lat = this.geoLatNode.value || null;
+			inquiry.geoFilter.lon = this.geoLonNode.value || null;
+			inquiry.geoFilter.distance.value = this.geoDistanceNode.value || null;
+			inquiry.geoFilter.distance.unit = this.geoDistanceUnitsNode.value || null;
 
-			if (Object.keys(inquiry).length === 0) {
-				inquiry = null;
-			}
+			inquiry.description = this.descriptionField.value || null;
+
+			inquiry.datasetId = this.get('datasetId');
 
 			return inquiry;
 		},
 
 		_setDatasetIdAttr: function(datasetId) {
 			this._set('datasetId', datasetId);
-			this.store.clearLast();
+			this.clearForm();
+			this.set('lastSavedInquiry', null);
 		},
 
 		_setInquiryAttr: function(inquiry) {
 			this.clearForm();
 
 			if (inquiry === null) {
-				inquiry = {};
+				inquiry = new Inquiry();
 			}
 
-			var type, part, nodes, i;
-			for (type in inquiry) {
-				if (inquiry.hasOwnProperty(type)) {
-					part = inquiry[type];
-					if (type === 'text') {
-						this.textQueryNode.value = part.value;
-						nodes = query('input[type="checkbox"]', this.textQueryFieldsNode);
-						for (i = 0; i < nodes.length; i++) {
-							nodes[i].checked = (part.fields.indexOf(nodes[i].value) !== -1);
-						}
-					}
-
-					else if (type === 'date') {
-						this.dateRangeStartNode.value = (part.range && part.range.start) ? part.range.start : '';
-						this.dateRangeEndNode.value = (part.range && part.range.end) ? part.range.end : '';
-
-						nodes = query('input[type="checkbox"]', this.dateFilterNode);
-						for (i = 0; i < nodes.length; i++) {
-							nodes[i].checked = (part.days && part.days.indexOf(parseInt(nodes[i].value, 10)) !== -1);
-						}
-					}
-
-					else if (type === 'geo') {
-						this.geoDistanceNode.value = part.distance.value;
-						this.geoDistanceUnitsNode.value = part.distance.unit;
-						this.geoLatNode.value = part.lat;
-						this.geoLonNode.value = part.lon;
-					}
-				}
+			if (inquiry.datasetId && inquiry.datasetId != this.get('datasetId')) {
+				console.warn('Setting inquiry with wrong dataset ID');
 			}
+
+			// Text
+			this.textQueryNode.value = inquiry.textFilter.value;
+			var nodes = query('input[type="checkbox"]', this.textQueryFieldsNode);
+			for (var i = 0; i < nodes.length; i++) {
+				nodes[i].checked = (inquiry.textFilter.fields && inquiry.textFilter.fields.indexOf(nodes[i].value) !== -1);
+			}
+
+			// Date
+			this.dateRangeStartNode.value = inquiry.dateFilter.range.start || '';
+			this.dateRangeEndNode.value = inquiry.dateFilter.range.end || '';
+			nodes = query('input[type="checkbox"]', this.dateFilterNode);
+			for (var j = 0; j < nodes.length; j++) {
+				nodes[j].checked = (inquiry.dateFilter.days && inquiry.dateFilter.days.indexOf(parseInt(nodes[j].value, 10)) !== -1);
+			}
+
+			// Geo
+			this.geoDistanceNode.value = inquiry.geoFilter.distance.value;
+			this.geoDistanceUnitsNode.value = inquiry.geoFilter.distance.unit;
+			this.geoLatNode.value = inquiry.geoFilter.lat;
+			this.geoLonNode.value = inquiry.geoFilter.lon;
+
+			this.descriptionField.value = inquiry.description || null;
 		}
 
 	});

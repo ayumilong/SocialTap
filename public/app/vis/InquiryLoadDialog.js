@@ -5,8 +5,9 @@ define(['dojo/_base/declare',
 		'dojo/dom-construct',
 		'dojo/query',
 		'dojo/request/xhr',
+		'./Inquiry',
 		'../util/Dialog'
-], function(declare, lang, Deferred, domClass, domConstruct, query, xhr, Dialog) {
+], function(declare, lang, Deferred, domClass, domConstruct, query, xhr, Inquiry, Dialog) {
 	return declare([Dialog], {
 
 		'class': 'inquiryLoadDialog',
@@ -36,34 +37,39 @@ define(['dojo/_base/declare',
 
 			this.containerNode.innerHTML = 'Loading...';
 
-			xhr.get('/api/v0/inquiries?dataset_id=' + this.datasetId, {
-				handleAs: 'json'
-			}).response.then(
-				lang.hitch(this, function(response) {
-					this.inquiries = response.data;
+			Inquiry.loadAll().then(lang.hitch(this, function(inquiries) {
+				this.inquiries = inquiries;
+				if (inquiries.length === 0) {
+					this.containerNode.innerHTML = 'No inquiries available';
+				}
+				else {
 					this.containerNode.innerHTML = '';
-					for (var i = 0; i < response.data.length; i++) {
+					for (var i = 0; i < inquiries.length; i++) {
+
+						if (this.datasetId && inquiries[i].datasetId != this.datasetId) {
+							continue;
+						}
+
+						var row = domConstruct.create('div', {}, this.containerNode);
+
 						domConstruct.create('input', {
-							id: 'loadInquiry' + response.data[i].id,
+							id: 'loadInquiry' + inquiries[i].id,
 							name: 'inquiry',
 							type: 'radio',
-							value: response.data[i].id
-						}, this.containerNode);
+							value: inquiries[i].id
+						}, row);
 
 						domConstruct.create('label', {
-							'for': 'loadInquiry' + response.data[i].id,
-							innerHTML: response.data[i].id
-						}, this.containerNode);
+							'for': 'loadInquiry' + inquiries[i].id,
+							innerHTML: inquiries[i].toString()
+						}, row);
 					}
-				}),
-				function(err) {
-					console.error(err);
-				});
+				}
+			}));
 		},
 
 		postCreate: function() {
 			this.inherited(arguments);
-
 			this.addButton('load', 'Load');
 			this.addButton('cancel', 'Cancel');
 		},
@@ -72,23 +78,14 @@ define(['dojo/_base/declare',
 			this.inherited(arguments);
 
 			var d = new Deferred();
-			this.showPromise.then(
-				lang.hitch(this, function(buttonId) {
-					if (buttonId == 'load') {
-						d.resolve(this.get('selectedInquiry'));
-					}
-					else {
-						d.cancel();
-					}
-				}),
-				function(err) {
-					if (err.dojoType == 'cancel') {
-						d.cancel();
-					}
-					else {
-						d.reject(err);
-					}
-				});
+			this.showPromise.then(lang.hitch(this, function(buttonId) {
+				if (buttonId == 'load') {
+					d.resolve(this.get('selectedInquiry'));
+				}
+				else {
+					d.cancel();
+				}
+			}));
 
 			return d.promise;
 		},

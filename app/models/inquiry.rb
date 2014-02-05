@@ -13,7 +13,7 @@ class Inquiry < ActiveRecord::Base
 	def limit_recent_inquiries
 		existing_inquiries = Inquiry.where(user: self.user).order(updated_at: :desc)
 		if existing_inquiries.count > 4
-			existing_inquiries.slice(4..-1).map { |inq| inq.destroy unless inq.saved? }
+			existing_inquiries.slice(4..-1).map { |inq| inq.destroy unless inq.keep? }
 		end
 	end
 end

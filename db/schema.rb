@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(version: 20140122160557) do
     t.integer  "dataset_id"
     t.integer  "user_id"
     t.string   "description"
-    t.boolean  "saved",       default: false
+    t.boolean  "keep",        default: false
     t.text     "definition"
     t.datetime "created_at"
     t.datetime "updated_at"

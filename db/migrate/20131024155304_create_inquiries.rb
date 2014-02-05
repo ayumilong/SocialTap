@@ -5,7 +5,7 @@ class CreateInquiries < ActiveRecord::Migration
       t.belongs_to :user
 
       t.string :description
-      t.boolean :saved, default: false
+      t.boolean :keep, default: false
 
       t.text :definition
 
