@@ -22,6 +22,24 @@ define(['dojo/_base/declare',
 
 		title: 'Load Inquiry',
 
+		_buildInquiryListItem: function(inquiry) {
+			var row = domConstruct.create('div', { 'class': 'row' });
+
+			domConstruct.create('input', {
+				id: 'loadInquiry' + inquiry.id,
+				name: 'inquiry',
+				type: 'radio',
+				value: inquiry.id
+			}, row);
+
+			domConstruct.create('label', {
+				'for': 'loadInquiry' + inquiry.id,
+				innerHTML: inquiry.toString().split('\n').join('<br>')
+			}, row);
+
+			return row;
+		},
+
 		_getSelectedInquiryAttr: function() {
 			var id = query('input:checked', this.containerNode)[0].value;
 			for (var i = 0; i < this.inquiries.length; i++) {
@@ -38,31 +56,38 @@ define(['dojo/_base/declare',
 			this.containerNode.innerHTML = 'Loading...';
 
 			Inquiry.loadAll().then(lang.hitch(this, function(inquiries) {
+				console.warn(this.datasetId);
 				this.inquiries = inquiries;
 				if (inquiries.length === 0) {
 					this.containerNode.innerHTML = 'No inquiries available';
 				}
 				else {
 					this.containerNode.innerHTML = '';
-					for (var i = 0; i < inquiries.length; i++) {
 
-						if (this.datasetId && inquiries[i].datasetId != this.datasetId) {
+					var i, row;
+					domConstruct.create('h4', {
+						innerHTML: 'Recent Inquiries'
+					}, this.containerNode);
+					for (i = 0; i < 5 && i < inquiries.length; i++) {
+						console.warn(this);
+						if (this.datasetId !== null && inquiries[i].datasetId != this.datasetId) {
 							continue;
 						}
+						row = this._buildInquiryListItem(inquiries[i]);
+						domConstruct.place(row, this.containerNode);
+					}
 
-						var row = domConstruct.create('div', { 'class': 'row' }, this.containerNode);
-
-						domConstruct.create('input', {
-							id: 'loadInquiry' + inquiries[i].id,
-							name: 'inquiry',
-							type: 'radio',
-							value: inquiries[i].id
-						}, row);
-
-						domConstruct.create('label', {
-							'for': 'loadInquiry' + inquiries[i].id,
-							innerHTML: inquiries[i].toString().split('\n').join('<br>')
-						}, row);
+					if (inquiries.length > 5) {
+						domConstruct.create('h4', {
+							innerHTML: 'Other Saved Inquiries'
+						}, this.containerNode);
+						for (i = 5; i < inquiries.length; i++) {
+							if (this.datasetId !== null && inquiries[i].datasetId != this.datasetId) {
+								continue;
+							}
+							row = this._buildInquiryListItem(inquiries[i]);
+							domConstruct.place(row, this.containerNode);
+						}
 					}
 				}
 			}));
@@ -92,6 +117,7 @@ define(['dojo/_base/declare',
 
 		startup: function() {
 			this.inherited(arguments);
+			console.warn('startup');
 			this.loadInquiries();
 		}
 

@@ -12,9 +12,9 @@ class Api::V0::InquiriesController < ApplicationController
 	def index
 		@inquiries = current_user.inquiries
 		if params[:dataset_id]
-			@inquiries = @inquiries.where({dataset_id: params[:dataset_id]})
+			@inquiries = @inquiries.where({dataset_id: params[:dataset_id]}).order(updated_at: :desc)
 		end
-		render json: @inquiries
+		render json: @inquiries.order(updated_at: :desc)
 	end
 
 	# GET /api/v0/inquiries/1

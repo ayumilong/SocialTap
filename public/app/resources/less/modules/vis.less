@@ -115,16 +115,33 @@
 
 .inquiryLoadDialog {
 
+	width: 450px;
+
+	.dialogTitle {
+		margin-bottom: 0px;
+	}
+
 	.dialogContent {
+		max-height: 450px;
+		overflow-y: scroll;
 		text-align: left;
+	}
+
+	h4 {
+		font-weight: bold;
+		margin: 7px 0;
+		text-align: center;
 	}
 
 	label {
 		display: inline-block;
+		margin-left: 3px;
+		padding: 5px 0;
 	}
 
 	.row {
 		border-bottom: 1px solid white;
+		line-height: 1.25;
 		margin: 0 10px;
 
 		&:last-child {
