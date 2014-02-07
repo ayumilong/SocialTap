@@ -3,9 +3,10 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-construct',
 		'dojo/Evented',
+		'dojo/on',
 		'dojo/request/xhr',
 		'dijit/_WidgetBase',
-], function(declare, lang, domConstruct, Evented, xhr, WidgetBase) {
+], function(declare, lang, domConstruct, Evented, on, xhr, WidgetBase) {
 
 	return declare([WidgetBase, Evented], {
 		// summary:
@@ -95,6 +96,11 @@ define(['dojo/_base/declare',
 			}
 		},
 
+		postCreate: function() {
+			this.inherited(arguments);
+			on(window, 'resize', lang.hitch(this, this.resize));
+		},
+
 		redraw: function() {
 			domConstruct.empty(this.domNode);
 			this.draw(this.data);
@@ -125,6 +131,7 @@ define(['dojo/_base/declare',
 
 		resize: function() {
 			this.inherited(arguments);
+
 			if (this.redrawOnResize && this.data) {
 
 				// When resizing the window, this event will be fired many times in a row. To
