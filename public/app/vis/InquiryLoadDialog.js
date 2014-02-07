@@ -55,8 +55,7 @@ define(['dojo/_base/declare',
 
 			this.containerNode.innerHTML = 'Loading...';
 
-			Inquiry.loadAll().then(lang.hitch(this, function(inquiries) {
-				console.warn(this.datasetId);
+			Inquiry.loadAll({dataset_id: this.datasetId}).then(lang.hitch(this, function(inquiries) {
 				this.inquiries = inquiries;
 				if (inquiries.length === 0) {
 					this.containerNode.innerHTML = 'No inquiries available';
@@ -69,10 +68,6 @@ define(['dojo/_base/declare',
 						innerHTML: 'Recent Inquiries'
 					}, this.containerNode);
 					for (i = 0; i < 5 && i < inquiries.length; i++) {
-						console.warn(this);
-						if (this.datasetId !== null && inquiries[i].datasetId != this.datasetId) {
-							continue;
-						}
 						row = this._buildInquiryListItem(inquiries[i]);
 						domConstruct.place(row, this.containerNode);
 					}
@@ -82,9 +77,6 @@ define(['dojo/_base/declare',
 							innerHTML: 'Other Saved Inquiries'
 						}, this.containerNode);
 						for (i = 5; i < inquiries.length; i++) {
-							if (this.datasetId !== null && inquiries[i].datasetId != this.datasetId) {
-								continue;
-							}
 							row = this._buildInquiryListItem(inquiries[i]);
 							domConstruct.place(row, this.containerNode);
 						}

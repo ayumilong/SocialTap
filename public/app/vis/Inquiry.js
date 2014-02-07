@@ -146,10 +146,22 @@ define(['dojo/_base/lang',
 		return query;
 	};
 
-	Inquiry.loadAll = function() {
+	Inquiry.loadAll = function(params) {
 		var d = new Deferred();
 
-		xhr.get('/api/v0/inquiries', {
+		var url = '/api/v0/inquiries';
+
+		if (params) {
+			var parts = [];
+			for (var key in params) {
+				if (params.hasOwnProperty(key)) {
+					parts.push(key + '=' + params[key]);
+				}
+			}
+			url += '?' + parts.join('&');
+		}
+
+		xhr.get(url, {
 			handleAs: 'json'
 		}).response.then(
 			function(response) {
