@@ -162,7 +162,8 @@ define(['dojo/_base/lang',
 		}
 
 		xhr.get(url, {
-			handleAs: 'json'
+			handleAs: 'json',
+			headers: { 'Accept': 'application/json' }
 		}).response.then(
 			function(response) {
 				var inquiries = [];
@@ -197,7 +198,8 @@ define(['dojo/_base/lang',
 
 		else {
 			xhr.get('/api/v0/inquiries/' + this.id, {
-				handleAs: 'json'
+				handleAs: 'json',
+				headers: { 'Accept': 'application/json' }
 			}).response.then(
 				lang.hitch(this, function(response) {
 					this.datasetId = response.data.dataset_id;
@@ -243,7 +245,10 @@ define(['dojo/_base/lang',
 			xhr.put('/api/v0/inquiries/' + this.id, {
 				data: data,
 				handleAs: 'json',
-				headers: { 'Content-Type': 'application/json' }
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
 			}).response.then(
 				lang.hitch(this, function() {
 					d.resolve(this);
@@ -257,7 +262,10 @@ define(['dojo/_base/lang',
 			xhr.post('/api/v0/inquiries', {
 				data: data,
 				handleAs: 'json',
-				headers: { 'Content-Type': 'application/json' }
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
 			}).response.then(
 				lang.hitch(this, function(response) {
 					this.id = response.data.id;

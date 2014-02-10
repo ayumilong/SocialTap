@@ -27,6 +27,15 @@ class Api::V0::InquiriesController < ApplicationController
 	# POST /api/v0/inquiries
 	# POST /api/v0/inquiries.json
 	def create
+
+		# By default, Rails converts empty arrays in the JSON request to nil.
+		# This uses ActiveSupport::JSON#decode to undo that.
+		if request.format.json?
+			request.body.rewind
+			request_body = request.body.read
+			params.merge!(ActiveSupport::JSON.decode(request_body)) unless request_body.blank?
+		end
+
 		@inquiry = Inquiry.new(params[:inquiry])
 		@inquiry.user = current_user
 
