@@ -85,7 +85,7 @@ define(['dojo/_base/lang',
 			if (this.dateFilter.range.end) {
 				filter.range[this.dateFilter.field].lte = this.dateFilter.range.end;
 			}
-			filter.push(filter);
+			filters.push(filter);
 		}
 
 		if (this.dateFilter.field && this.dateFilter.days.length > 0) {
