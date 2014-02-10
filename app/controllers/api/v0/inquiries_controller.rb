@@ -24,6 +24,13 @@ class Api::V0::InquiriesController < ApplicationController
 		render json: @inquiry
 	end
 
+	# GET /api/v0/inquiries/1/elasticsearch
+	# GET /api/v0/inquiries/1/elasticsearch.json
+	def elasticsearch
+		@inquiry = current_user.inquiries.find_by_id(params[:id])
+		render json: ElasticsearchQuery.from_inquiry(@inquiry)
+	end
+
 	# POST /api/v0/inquiries
 	# POST /api/v0/inquiries.json
 	def create
