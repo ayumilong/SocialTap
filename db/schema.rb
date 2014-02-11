@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140122160557) do
+ActiveRecord::Schema.define(version: 20140210183708) do
 
   create_table "data_mappings", force: true do |t|
     t.integer  "file_dataset_id"
@@ -78,6 +78,15 @@ ActiveRecord::Schema.define(version: 20140122160557) do
 
   add_index "provider_identities", ["provider", "uid"], name: "index_provider_identities_on_provider_and_uid"
   add_index "provider_identities", ["user_id"], name: "index_provider_identities_on_user_id"
+
+  create_table "reports", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "inquiry_id"
+    t.integer  "worker_pid"
+    t.boolean  "ready",      default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", force: true do |t|
     t.string   "name"

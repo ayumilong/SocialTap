@@ -21,6 +21,7 @@ SocialTap::Application.routes.draw do
           get 'elasticsearch'
         end
       end
+      resources :reports, except: [:new, :edit]
       get 'import_files/path', to: 'import_files#path'
     end
   end
