@@ -33,6 +33,9 @@ gem 'curb'
 gem 'omniauth-twitter'
 gem 'omniauth-identity'
 
+gem 'amqp'
+gem 'bunny'
+
 # To use Jbuilder templates for JSON
 # gem 'jbuilder'
 

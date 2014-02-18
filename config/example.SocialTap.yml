@@ -4,6 +4,8 @@ defaults: &defaults
     Elasticsearch:
         hostname: localhost
         port: 9200
+    rabbitmq:
+        host: 127.0.0.1
     Gnip:
         powertrack_stream_url: YOUR STREAM URL
         powertrack_rules_url: YOUR RULES URL
