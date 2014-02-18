@@ -1,50 +1,54 @@
 class Api::V0::ReportsController < ApplicationController
-  # GET /api/v0/reports
-  # GET /api/v0/reports.json
-  def index
-    @reports = Report.all
 
-    render json: @reports
-  end
+	before_action :require_login
 
-  # GET /api/v0/reports/1
-  # GET /api/v0/reports/1.json
-  def show
-    @report = Report.find(params[:id])
+	# GET /api/v0/reports
+	# GET /api/v0/reports.json
+	def index
+		@reports = current_user.reports
 
-    render json: @report
-  end
+		render json: @reports
+	end
 
-  # POST /api/v0/reports
-  # POST /api/v0/reports.json
-  def create
-    @report = Report.new(params[:report])
+	# GET /api/v0/reports/1
+	# GET /api/v0/reports/1.json
+	def show
+		@report = current_user.reports.find_by_id(params[:id])
 
-    if @report.save
-      render json: @report, status: :created, location: @report
-    else
-      render json: @report.errors, status: :unprocessable_entity
-    end
-  end
+		render json: @report
+	end
 
-  # PATCH/PUT /api/v0/reports/1
-  # PATCH/PUT /api/v0/reports/1.json
-  def update
-    @report = Report.find(params[:id])
+	# POST /api/v0/reports
+	# POST /api/v0/reports.json
+	def create
+		@report = Report.new(params[:report])
+		@report.user = current_user
 
-    if @report.update(params[:report])
-      head :no_content
-    else
-      render json: @report.errors, status: :unprocessable_entity
-    end
-  end
+		if @report.save
+			render json: @report, status: :created, location: @report
+		else
+			render json: @report.errors, status: :unprocessable_entity
+		end
+	end
 
-  # DELETE /api/v0/reports/1
-  # DELETE /api/v0/reports/1.json
-  def destroy
-    @report = Report.find(params[:id])
-    @report.destroy
+	# PATCH/PUT /api/v0/reports/1
+	# PATCH/PUT /api/v0/reports/1.json
+	def update
+		@report = current_user.reports.find_by_id(params[:id])
 
-    head :no_content
-  end
+		if @report.update(params[:report])
+			head :no_content
+		else
+			render json: @report.errors, status: :unprocessable_entity
+		end
+	end
+
+	# DELETE /api/v0/reports/1
+	# DELETE /api/v0/reports/1.json
+	def destroy
+		@report = current_user.reports.find_by_id(params[:id])
+		@report.destroy
+
+		head :no_content
+	end
 end

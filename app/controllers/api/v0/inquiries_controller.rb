@@ -1,11 +1,6 @@
 class Api::V0::InquiriesController < ApplicationController
 
-	before_action :require_user
-	def require_user
-		unless signed_in?
-			render json: { error: "You must login to perform this action" }, status: :unauthorized
-		end
-	end
+	before_action :require_login
 
 	# GET /api/v0/inquiries
 	# GET /api/v0/inquiries.json
