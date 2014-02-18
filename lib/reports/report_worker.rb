@@ -22,7 +22,7 @@ queue.subscribe do |report_id|
 	report.save
 
 	Signal.trap('HUP') {
-		report.cancel_generation
+		report.cancel_generation!
 	}
 
 	begin
@@ -40,6 +40,8 @@ queue.subscribe do |report_id|
 	report.status = 'Ready' unless report.status == 'Failed'
 	report.worker_pid = nil
 	report.save
+
+	puts "Done generating report #{report_id}"
 
 end
 

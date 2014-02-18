@@ -7,7 +7,7 @@ class Api::V0::ReportsController < ApplicationController
 	def index
 		@reports = current_user.reports
 
-		render json: @reports
+		render json: @reports.as_json(:methods => [:output_path])
 	end
 
 	# GET /api/v0/reports/1
@@ -15,7 +15,7 @@ class Api::V0::ReportsController < ApplicationController
 	def show
 		@report = current_user.reports.find_by_id(params[:id])
 
-		render json: @report
+		render json: @report.as_json(:methods => [:output_path])
 	end
 
 	# POST /api/v0/reports
@@ -25,7 +25,7 @@ class Api::V0::ReportsController < ApplicationController
 		@report.user = current_user
 
 		if @report.save
-			render json: @report, status: :created, location: @report
+			render json: @report.as_json(:methods => [:output_path]), status: :created, location: @report
 		else
 			render json: @report.errors, status: :unprocessable_entity
 		end

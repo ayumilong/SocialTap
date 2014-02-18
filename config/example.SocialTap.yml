@@ -13,6 +13,8 @@ defaults: &defaults
         password: YOUR GNIP PASSWORD
     data_files:
         import_directory: PATH TO DIRECTORY CONTAINING DATA FILES TO IMPORT
+    reports:
+        output_directory: PATH TO DIRECTORY TO GENERATE REPORT FILES IN
     Twitter:
         consumer_key: TWITTER CONSUMER KEY
         consumer_secret: TWITTER CONSUMER SECRET
