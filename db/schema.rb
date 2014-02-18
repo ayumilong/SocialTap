@@ -82,8 +82,8 @@ ActiveRecord::Schema.define(version: 20140210183708) do
   create_table "reports", force: true do |t|
     t.integer  "user_id"
     t.integer  "inquiry_id"
+    t.string   "status",     default: "Pending"
     t.integer  "worker_pid"
-    t.boolean  "ready",      default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

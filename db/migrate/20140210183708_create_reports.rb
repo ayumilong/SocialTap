@@ -4,8 +4,8 @@ class CreateReports < ActiveRecord::Migration
 			t.belongs_to :user
 			t.belongs_to :inquiry
 
+			t.string :status, default: 'Pending'
 			t.integer :worker_pid
-			t.boolean :ready, default: false
 
 			t.timestamps
 		end
