@@ -1,8 +1,7 @@
 class ElasticsearchQuery
 
-	##
-	# Generate an Elasticsearch from an inquiry.
-
+	# Generate an Elasticsearch query from an inquiry.
+	# Returns a hash to be passed to Elasticsearch::Client#search
 	def self.from_inquiry(inquiry)
 
 		filters = []
