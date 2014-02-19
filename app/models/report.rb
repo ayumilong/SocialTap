@@ -1,12 +1,13 @@
 class Report < ActiveRecord::Base
 
+	belongs_to :dataset
 	belongs_to :user
-	belongs_to :inquiry
 
+	validates :dataset, presence: true
 	validates :user, presence: true
-	validates :inquiry, presence: true
+	validates :inquiry_definition, presence: true
 
-	accepts_nested_attributes_for :inquiry
+	serialize :inquiry_definition, JSON
 
 	validates_inclusion_of :status, in: ['Pending', 'Generating', 'Ready', 'Failed']
 
@@ -40,7 +41,7 @@ class Report < ActiveRecord::Base
 	# Return true if generated successfully, false if there is an error or the report is cancelled.
 	def generate
 
-		query = ElasticsearchQuery.from_inquiry(inquiry)
+		query = ElasticsearchQuery.from_inquiry_definition(inquiry_definition)
 		page_size = 500
 
 		File.open(output_path, 'w') do |f|
@@ -49,7 +50,7 @@ class Report < ActiveRecord::Base
 			begin
 
 				# Query Elasticsearch for page of results
-				result = inquiry.dataset.search(query.merge({
+				result = dataset.search(query.merge({
 					'from' => page_number * page_size,
 					'size' => page_size
 				}))

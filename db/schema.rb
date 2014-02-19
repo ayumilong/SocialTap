@@ -80,9 +80,10 @@ ActiveRecord::Schema.define(version: 20140210183708) do
   add_index "provider_identities", ["user_id"], name: "index_provider_identities_on_user_id"
 
   create_table "reports", force: true do |t|
+    t.integer  "dataset_id"
     t.integer  "user_id"
-    t.integer  "inquiry_id"
-    t.string   "status",     default: "Pending"
+    t.text     "inquiry_definition"
+    t.string   "status",             default: "Pending"
     t.integer  "worker_pid"
     t.datetime "created_at"
     t.datetime "updated_at"

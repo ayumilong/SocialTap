@@ -2,11 +2,11 @@ class ElasticsearchQuery
 
 	# Generate an Elasticsearch query from an inquiry.
 	# Returns a hash to be passed to Elasticsearch::Client#search
-	def self.from_inquiry(inquiry)
+	def self.from_inquiry_definition(inquiry_definition)
 
 		filters = []
 
-		textFilter = inquiry.definition['textFilter']
+		textFilter = inquiry_definition['textFilter']
 		if textFilter['value'] && textFilter['fields'].count > 0
 			textValue = textFilter['value'].split(/\s+/);
 			if textFilter['fields'].count == 1
@@ -20,7 +20,7 @@ class ElasticsearchQuery
 			end
 		end
 
-		dateFilter = inquiry.definition['dateFilter']
+		dateFilter = inquiry_definition['dateFilter']
 		if dateFilter['field'] && dateFilter['range']['start'] && dateFilter['range']['end']
 			f = {}
 			if dateFilter['range']['start']
@@ -51,7 +51,7 @@ class ElasticsearchQuery
 			end
 		end
 
-		geoFilter = inquiry.definition['geoFilter']
+		geoFilter = inquiry_definition['geoFilter']
 		if geoFilter['field'] && geoFilter['lat'] && geoFilter['lon'] && geoFilter['distance']['value'] && geoFilter['distance']['unit']
 			filters.push({
 				'and' => [
