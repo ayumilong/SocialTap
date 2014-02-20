@@ -7,7 +7,7 @@ class Api::V0::ReportsController < ApplicationController
 	def index
 		@reports = current_user.reports
 
-		render json: @reports.as_json(:include => [:dataset], :methods => [:output_path])
+		render json: @reports.order(created_at: :desc).as_json(:include => [:dataset], :methods => [:output_path])
 	end
 
 	# GET /api/v0/reports/1

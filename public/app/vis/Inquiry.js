@@ -277,35 +277,44 @@ define(['dojo/_base/lang',
 		return d.promise;
 	};
 
-	Inquiry.prototype.toString = function() {
+	Inquiry.definitionToString = function(definition) {
 		var parts = [];
 
-		if (this.definition.textFilter.value && this.definition.textFilter.fields) {
-			parts.push('Search for "' + this.definition.textFilter.value + '" in ' + this.definition.textFilter.fields.join(', '));
+		if (definition.textFilter.value && definition.textFilter.fields) {
+			parts.push('Search for "' + definition.textFilter.value + '" in ' + definition.textFilter.fields.join(', '));
 		}
 
-		if (this.definition.dateFilter.range.start && this.definition.dateFilter.range.end) {
-			parts.push('Between ' + this.definition.dateFilter.range.start + ' and ' + this.definition.dateFilter.range.end);
+		if (definition.dateFilter.range.start && definition.dateFilter.range.end) {
+			parts.push('Between ' + definition.dateFilter.range.start + ' and ' + definition.dateFilter.range.end);
 		}
-		else if (this.definition.dateFilter.range.start) {
-			parts.push('After ' + this.definition.dateFilter.range.start);
+		else if (definition.dateFilter.range.start) {
+			parts.push('After ' + definition.dateFilter.range.start);
 		}
-		else if (this.definition.dateFilter.range.end) {
-			parts.push('Before ' + this.definition.dateFilter.range.end);
+		else if (definition.dateFilter.range.end) {
+			parts.push('Before ' + definition.dateFilter.range.end);
 		}
 
 		var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-		if (this.definition.dateFilter.days) {
-			parts.push(days.filter(lang.hitch(this, function(day, i) { return this.definition.dateFilter.days.indexOf(i) !== -1; })).join(', '));
+		if (definition.dateFilter.days && definition.dateFilter.days.length > 0) {
+			parts.push(days.filter(lang.hitch(this, function(day, i) { return definition.dateFilter.days.indexOf(i) !== -1; })).join(', '));
 		}
 
-		if (this.definition.geoFilter.field && this.definition.geoFilter.lat && this.definition.geoFilter.lon &&
-			this.definition.geoFilter.distance.value && this.definition.geoFilter.distance.unit)
+		if (definition.geoFilter.field && definition.geoFilter.lat && definition.geoFilter.lon &&
+			definition.geoFilter.distance.value && definition.geoFilter.distance.unit)
 		{
-			parts.push('Within ' + this.definition.geoFilter.distance.value + ' ' + this.definition.geoFilter.distance.unit + ' of ' + this.definition.geoFilter.lat + ',' + this.definition.geoFilter.lon);
+			parts.push('Within ' + definition.geoFilter.distance.value + ' ' + definition.geoFilter.distance.unit + ' of ' + definition.geoFilter.lat + ',' + definition.geoFilter.lon);
 		}
 
-		return parts.join('\n');
+		if (parts.length > 0) {
+			return parts.join('\n');
+		}
+		else {
+			return 'Match all';
+		}
+	};
+
+	Inquiry.prototype.toString = function() {
+		return Inquiry.definitionToString(this.definition);
 	};
 
 	return Inquiry;
