@@ -2,8 +2,6 @@ class Inquiry < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :dataset
 
-	has_many :reports, dependent: :destroy
-
 	validates :user, presence: true
 	validates :dataset, presence: true
 	validates :definition, presence: true
