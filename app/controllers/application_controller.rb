@@ -1,5 +1,11 @@
 class ApplicationController < ActionController::API
 
+	def require_login
+		unless signed_in?
+			render json: { error: "You must login to perform this action" }, status: :unauthorized
+		end
+	end
+
 	private
 
 	def current_user

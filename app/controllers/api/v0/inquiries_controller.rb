@@ -1,11 +1,6 @@
 class Api::V0::InquiriesController < ApplicationController
 
-	before_action :require_user
-	def require_user
-		unless signed_in?
-			render json: { error: "You must login to perform this action" }, status: :unauthorized
-		end
-	end
+	before_action :require_login
 
 	# GET /api/v0/inquiries
 	# GET /api/v0/inquiries.json
@@ -24,9 +19,25 @@ class Api::V0::InquiriesController < ApplicationController
 		render json: @inquiry
 	end
 
+	# GET /api/v0/inquiries/1/elasticsearch
+	# GET /api/v0/inquiries/1/elasticsearch.json
+	def elasticsearch
+		@inquiry = current_user.inquiries.find_by_id(params[:id])
+		render json: ElasticsearchQuery.from_inquiry_definition(@inquiry.definition)
+	end
+
 	# POST /api/v0/inquiries
 	# POST /api/v0/inquiries.json
 	def create
+
+		# By default, Rails converts empty arrays in the JSON request to nil.
+		# This uses ActiveSupport::JSON#decode to undo that.
+		if request.format.json?
+			request.body.rewind
+			request_body = request.body.read
+			params.merge!(ActiveSupport::JSON.decode(request_body)) unless request_body.blank?
+		end
+
 		@inquiry = Inquiry.new(params[:inquiry])
 		@inquiry.user = current_user
 

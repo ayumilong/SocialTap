@@ -9,11 +9,13 @@ define({
 		auth: {
 			moduleId: 'app/auth/Module'
 		},
-
-		/* Secondary */
 		datasets: {
 			title: 'Datasets',
 			moduleId: 'app/datasets/Module'
+		},
+		reports: {
+			title: 'Reports',
+			moduleId: 'app/reports/Module'
 		},
 		vis: {
 			title: 'Visualizations',

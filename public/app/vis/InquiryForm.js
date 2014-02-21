@@ -7,6 +7,7 @@ define(['dojo/_base/declare',
 		'dojo/on',
 		'dojo/query',
 		'dojo/request/xhr',
+		'dojo/router',
 		'dojo/text!./InquiryForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
@@ -14,7 +15,7 @@ define(['dojo/_base/declare',
 		'./InquiryLoadDialog',
 		'../auth/user',
 		'../util/Dialog'
-], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, template,
+], function(declare, lang, domAttr, domClass, Evented, keys, on, query, xhr, router, template,
 	_WidgetBase, _TemplatedMixin, Inquiry, InquiryLoadDialog, user, Dialog)
 {
 	return declare([_WidgetBase, _TemplatedMixin, Evented], {
@@ -59,6 +60,47 @@ define(['dojo/_base/declare',
 			inputs.forEach(function(check) {
 				check.checked = false;
 			});
+		},
+
+		generateReport: function() {
+			domAttr.set(this.exportButton, 'disabled', 'disabled');
+			xhr.post('/api/v0/reports', {
+				data: JSON.stringify({
+					report: {
+						dataset_id: this.get('datasetId'),
+						inquiry_definition: this.get('inquiry').definition
+					}
+				}),
+				handleAs: 'json',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			}).response.then(
+				lang.hitch(this, function() {
+					domAttr.remove(this.exportButton, 'disabled');
+					var dlg = new Dialog({
+						title: 'Generating Report'
+					});
+					dlg.addButton('ok', 'OK');
+					dlg.addButton('view', 'View My Reports');
+					dlg.show().then(function(buttonId) {
+						if (buttonId == 'view') {
+							router.go('/reports');
+						}
+					});
+				}),
+				lang.hitch(this, function(err) {
+					domAttr.remove(this.exportButton, 'disabled');
+					if (err.dojoType != 'cancel') {
+						console.error(err);
+						var dlg = new Dialog({
+							title: 'Error'
+						});
+						dlg.containerNode.innerHTML = 'Unable to generate report';
+						dlg.show();
+					}
+				}));
 		},
 
 		loadInquiry: function() {
@@ -173,29 +215,29 @@ define(['dojo/_base/declare',
 			var inquiry = new Inquiry();
 
 			// Text
-			inquiry.textFilter.value = this.textQueryNode.value || null;
+			inquiry.definition.textFilter.value = this.textQueryNode.value || null;
 			var nodes = query('input[type="checkbox"]', this.textQueryFieldsNode);
 			for (var i = 0; i < nodes.length; i++) {
 				if (nodes[i].checked) {
-					inquiry.textFilter.fields.push(nodes[i].value);
+					inquiry.definition.textFilter.fields.push(nodes[i].value);
 				}
 			}
 
 			// Date
-			inquiry.dateFilter.field = 'postedTime';
-			inquiry.dateFilter.range.start = this.dateRangeStartNode.value || null;
-			inquiry.dateFilter.range.end = this.dateRangeEndNode.value || null;
+			inquiry.definition.dateFilter.field = 'postedTime';
+			inquiry.definition.dateFilter.range.start = this.dateRangeStartNode.value || null;
+			inquiry.definition.dateFilter.range.end = this.dateRangeEndNode.value || null;
 			var dayNodes = query('input[type="checkbox"]:checked', this.dateFilterNode);
 			for (i = 0; i < dayNodes.length; i++) {
-				inquiry.dateFilter.days.push(parseInt(dayNodes[i].value, 10));
+				inquiry.definition.dateFilter.days.push(parseInt(dayNodes[i].value, 10));
 			}
 
 			// Geo
-			inquiry.geoFilter.field = 'socialtap.geo_coordinate';
-			inquiry.geoFilter.lat = this.geoLatNode.value || null;
-			inquiry.geoFilter.lon = this.geoLonNode.value || null;
-			inquiry.geoFilter.distance.value = this.geoDistanceNode.value || null;
-			inquiry.geoFilter.distance.unit = this.geoDistanceUnitsNode.value || null;
+			inquiry.definition.geoFilter.field = 'socialtap.geo_coordinate';
+			inquiry.definition.geoFilter.lat = this.geoLatNode.value || null;
+			inquiry.definition.geoFilter.lon = this.geoLonNode.value || null;
+			inquiry.definition.geoFilter.distance.value = this.geoDistanceNode.value || null;
+			inquiry.definition.geoFilter.distance.unit = this.geoDistanceUnitsNode.value || null;
 
 			inquiry.description = this.descriptionField.value || null;
 
@@ -222,25 +264,25 @@ define(['dojo/_base/declare',
 			}
 
 			// Text
-			this.textQueryNode.value = inquiry.textFilter.value;
+			this.textQueryNode.value = inquiry.definition.textFilter.value;
 			var nodes = query('input[type="checkbox"]', this.textQueryFieldsNode);
 			for (var i = 0; i < nodes.length; i++) {
-				nodes[i].checked = (inquiry.textFilter.fields && inquiry.textFilter.fields.indexOf(nodes[i].value) !== -1);
+				nodes[i].checked = (inquiry.definition.textFilter.fields && inquiry.definition.textFilter.fields.indexOf(nodes[i].value) !== -1);
 			}
 
 			// Date
-			this.dateRangeStartNode.value = inquiry.dateFilter.range.start || '';
-			this.dateRangeEndNode.value = inquiry.dateFilter.range.end || '';
+			this.dateRangeStartNode.value = inquiry.definition.dateFilter.range.start || '';
+			this.dateRangeEndNode.value = inquiry.definition.dateFilter.range.end || '';
 			nodes = query('input[type="checkbox"]', this.dateFilterNode);
 			for (var j = 0; j < nodes.length; j++) {
-				nodes[j].checked = (inquiry.dateFilter.days && inquiry.dateFilter.days.indexOf(parseInt(nodes[j].value, 10)) !== -1);
+				nodes[j].checked = (inquiry.definition.dateFilter.days && inquiry.definition.dateFilter.days.indexOf(parseInt(nodes[j].value, 10)) !== -1);
 			}
 
 			// Geo
-			this.geoDistanceNode.value = inquiry.geoFilter.distance.value;
-			this.geoDistanceUnitsNode.value = inquiry.geoFilter.distance.unit;
-			this.geoLatNode.value = inquiry.geoFilter.lat;
-			this.geoLonNode.value = inquiry.geoFilter.lon;
+			this.geoDistanceNode.value = inquiry.definition.geoFilter.distance.value;
+			this.geoDistanceUnitsNode.value = inquiry.definition.geoFilter.distance.unit;
+			this.geoLatNode.value = inquiry.definition.geoFilter.lat;
+			this.geoLonNode.value = inquiry.definition.geoFilter.lon;
 
 			this.descriptionField.value = inquiry.description || null;
 		}
