@@ -42,6 +42,10 @@ define({
 		{
 			route: '/vis/:dataset_id/line_graph',
 			title: 'Line Graph'
+		},
+		{
+			route: '/vis/:dataset_id/hashtag_popularity',
+			title: 'Popular Hashtags'
 		}
 	]
 });
