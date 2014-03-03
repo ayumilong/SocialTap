@@ -113,35 +113,16 @@ module Gnip
 
       response_data = JSON[response.body_str]
       all_urls = response_data["urlList"]
-      # files_downloaded = 0
-      # pp response_data["urlList"]
-      # multi_download = Curl::Multi.new
-      # downloads = {}
-      # response_data["urlList"].each do |url|
-      #   puts "Downloading URL: #{url}"
-      #   downloads[url] = Curl::Easy.download url
-      #   multi_download.add downloads[url]
-      #   if downloads.size >= MAX_CONCURRENT_DOWNLOADS
-      #     sleep 0.5
-      #     downloads.each do |download|
-      #       if 
-      #     end
-      #   end
-      #   break if files_downloaded > 5 
-      # end
-      # puts "Files downloaded: #{files_downloaded}"
       easy_options = {}
       multi_options = {
         'max_connects' => MAX_CONCURRENT_DOWNLOADS
       }
       all_urls.each_slice(MAX_OPEN_FILES).each do |urls|
-        download_paths = urls.collect { |url|
+        download_paths = urls.collect do |url|
           filename = url.split(/\?/).first.split(/#{@account_id}\/\d{4}\/\d{2}\/\d{2}\//).last.sub(/\//, '-').gsub(/\//, '_')
           "#{data_directory}/#{filename}"
-        }
-
+        end
         multi_download = Curl::Multi.download urls, easy_options, multi_options, download_paths
-        # multi_download.perform
       end
       job_status
       #pp response_data
@@ -166,7 +147,7 @@ private
         "response" => response_data}]
       log_object["request"] = request_data unless request_data.nil?
       File.open("./log/gnip_historical.log", "a") do |job_log|
-        job_log.write log_object
+        job_log.write log_object + "\n"
       end
     end
 

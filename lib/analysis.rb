@@ -45,7 +45,9 @@ module SocialTap
         # read Analyzer class names from module
         # start configured number of workers for each Analyzer
       @analyzers = []
-      @analyzers << SocialTap::Analyzers::Sentiment140.new
+      one_analyzer = fork SocialTap::Sentiment140.new(12345)
+      @analyzers << one_analyzer
+      self.create_analyzer_worker
     end
 
     # instatiate a single analyzer process
@@ -96,6 +98,7 @@ module SocialTap
         # check for posts to process
         posts_to_process = self.select_posts
         posts_to_process.each do |post|
+          puts "publishing post: #{post}"
           @input_exchange.publish post
         end
         # for each analyzer type,
@@ -122,67 +125,6 @@ module SocialTap
     end
   end
 
-  # parent class for Analyzers
-  class Analyzer
-
-    # setup new Analyzer
-  	def initialize analyzer_name, id
-      # subclasses may implement this, but should call super
-      @name = analyzer_name
-      @id = id
-      self.setup_queues
-      self.start
-  	end
-
-    # creates the communication queue for sending results to parent process
-    def setup_queues
-      @rabbitmq = Bunny.new
-      @rabbitmq.start
-      @channel = @rabbitmq.create_channel
-      @input_exchange = @channel.fanout("analysis.new_documents")
-      @results_exchange = @channel.topic("analysis.results")
-      # connect to input queue
-      @input_queue = @channel.queue("input#{i}").bind(input_exchange)
-      @input_queue.subscribe do |delivery_info, properties, payload|
-        self.new_document delivery_info, properties, payload
-      end
-    end
-
-    def new_document delivery_info, properties, payload
-    end
-
-    # initiate main data analysis process loop
-    def start
-      @running = true
-      self.run
-    end
-
-    # end main data analysis process loop
-    def stop
-      @running = false
-    end
-
-    # loop until further notice
-    def run
-      while @running
-        self.step
-      end
-    end
-
-    def step
-    end
-
-    # perform analysis on documents handled by main loop
-    # subclasses should implement this
-  	def analyze documents
-  	end
-
-    def store_output documents
-      documents.each do |document|
-        @results_exchange.publish document, routing_key: "analysis.results.#{@name}.#{@id}"
-      end
-    end
-  end
 
 end
 
