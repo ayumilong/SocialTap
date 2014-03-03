@@ -25,10 +25,10 @@ module SocialTap
     end
 
     def new_document delivery_info, properties, payload
-      document = JSON[payload]
+      document = JSON.parse(payload)["_source"]
       document["SocialTap"] ||= {}
       document["SocialTap"]["Sentiment140"] = "analyzed"
-      self.store_output document
+      self.store_output document.to_s
     end
 
     def analyze documents

@@ -45,7 +45,7 @@ module SocialTap
         # read Analyzer class names from module
         # start configured number of workers for each Analyzer
       @analyzers = []
-      one_analyzer = fork SocialTap::Sentiment140.new(12345)
+      one_analyzer = fork { SocialTap::Sentiment140.new(12345) }
       @analyzers << one_analyzer
       self.create_analyzer_worker
     end
@@ -72,34 +72,44 @@ module SocialTap
       # build query for new documents. documents with no SocialTap object
       # haven't been analyzed yet
       missing_docs_query = {
-        "filtered" => {
-          "query" => {
-            "match_all" => {}
-          },
-          "filter" => {
-            "missing" => {
-              "field" => "SocialTap",
-              "existence" => true
+        "query" => {
+          "filtered" => {
+            "filter" => {
+              "missing" => {
+                "field" => "SocialTap",
+                "existence" => true
+              }
             }
           }
         }
       }
       # get results from ES
-      missing_docs = @es_client.search query: missing_docs_query
-      # TODO: get posts that have been flagged for reprocessing
-      #docs_to_reprocess = {}
-      missing_docs
+      begin
+        missing_docs = @es_client.search body: missing_docs_query
+        # TODO: get posts that have been flagged for reprocessing
+        #docs_to_reprocess = {}
+        # json_missing_docs = JSON[missing_docs]
+        puts "found missing docs: #{missing_docs}"
+      rescue Exception => e
+        puts "Error selecting unanalyzed posts: #{e}"
+        @analyzers.each do |pid|
+          Process.kill 9, pid
+        end
+      end
+      missing_docs["hits"]["hits"]
     end
 
     # main loop to keep checking for things to process
   	def start
+      puts "main analysis loop"
       @running = true
       while @running
         # check for posts to process
         posts_to_process = self.select_posts
+
         posts_to_process.each do |post|
           puts "publishing post: #{post}"
-          @input_exchange.publish post
+          @input_exchange.publish JSON[post]
         end
         # for each analyzer type,
           # while there are more posts to send this analyzer
@@ -124,7 +134,6 @@ module SocialTap
       pp document
     end
   end
-
 
 end
 
