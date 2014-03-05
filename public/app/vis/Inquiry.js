@@ -9,32 +9,36 @@ define(['dojo/_base/lang',
 		//     The ID of the dataset this inquiry is associated with.
 		this.datasetId = null;
 
-		// dateFilter: Object
-		//     Filter by date range or day of the week.
-		this.dateFilter = {
-			field: null,
-			range: {
-				start: null,
-				end: null
+		this.definition = {
+			// Filter by date range or day of the week.
+			dateFilter: {
+				field: null,
+				range: {
+					start: null,
+					end: null
+				},
+				days: []
 			},
-			days: []
+			// Filter by distance from a location.
+			geoFilter: {
+				field: null,
+				lat: null,
+				lon: null,
+				distance: {
+					value: null,
+					unit: null
+				}
+			},
+			// Filter by the presence of term(s) in one or more fields.
+			textFilter: {
+				value: null,
+				fields: []
+			}
 		};
 
 		// description: String
 		//     User supplied description of this inquiry.
 		this.description = null;
-
-		// geoFilter: Object
-		//     Filter by distance from a location.
-		this.geoFilter = {
-			field: null,
-			lat: null,
-			lon: null,
-			distance: {
-				value: null,
-				unit: null
-			}
-		};
 
 		// id: Integer
 		//     Resource ID of this inquiry.
@@ -43,13 +47,6 @@ define(['dojo/_base/lang',
 		// keep: Boolean
 		//     Whether or not this inquiry is permanently saved.
 		this.keep = false;
-
-		// textFilter: Object
-		//     Filter by the presence of term(s) in one or more fields.
-		this.textFilter = {
-			value: null,
-			fields: []
-		};
 	};
 
 	Inquiry.prototype.elasticsearchQuery = function() {
@@ -59,43 +56,43 @@ define(['dojo/_base/lang',
 		var i;
 
 		// Text filter
-		if (this.textFilter.fields.length > 0 && this.textFilter.value) {
+		if (this.definition.textFilter.fields.length > 0 && this.definition.textFilter.value) {
 			filter = {};
-			if (this.textFilter.fields.length === 1) {
+			if (this.definition.textFilter.fields.length === 1) {
 				filter.terms = {};
-				filter.terms[this.textFilter.fields[0]] = this.textFilter.value.split(' ');
+				filter.terms[this.definition.textFilter.fields[0]] = this.definition.textFilter.value.split(' ');
 			}
 			else {
 				filter.or = [];
-				for (i = 0; i < this.textFilter.fields.length; i++) {
+				for (i = 0; i < this.definition.textFilter.fields.length; i++) {
 					var f = { terms: {} };
-					f.terms[this.textFilter.fields[i]] = this.textFilter.value.split(' ');
+					f.terms[this.definition.textFilter.fields[i]] = this.definition.textFilter.value.split(' ');
 					filter.or.push(f);
 				}
 			}
 			filters.push(filter);
 		}
 
-		if (this.dateFilter.field && this.dateFilter.range.start || this.dateFilter.range.end) {
+		if (this.definition.dateFilter.field && this.definition.dateFilter.range.start || this.definition.dateFilter.range.end) {
 			filter = { range: {} };
-			filter.range[this.dateFilter.field] = {};
-			if (this.dateFilter.range.start) {
-				filter.range[this.dateFilter.field].gte = this.dateFilter.range.start;
+			filter.range[this.definition.dateFilter.field] = {};
+			if (this.definition.dateFilter.range.start) {
+				filter.range[this.definition.dateFilter.field].gte = this.definition.dateFilter.range.start;
 			}
-			if (this.dateFilter.range.end) {
-				filter.range[this.dateFilter.field].lte = this.dateFilter.range.end;
+			if (this.definition.dateFilter.range.end) {
+				filter.range[this.definition.dateFilter.field].lte = this.definition.dateFilter.range.end;
 			}
 			filters.push(filter);
 		}
 
-		if (this.dateFilter.field && this.dateFilter.days.length > 0) {
+		if (this.definition.dateFilter.field && this.definition.dateFilter.days.length > 0) {
 			var dayFilters = [];
-			for (i = 0; i < this.dateFilter.days.length; i++) {
+			for (i = 0; i < this.definition.dateFilter.days.length; i++) {
 				dayFilters.push({
 					script: {
 						script: "((doc['postedTime'].date.millis / 86400000) % 7) == day",
 						params: {
-							day: ((this.dateFilter.days[i] + 3) % 7)
+							day: ((this.definition.dateFilter.days[i] + 3) % 7)
 						}
 					}
 				});
@@ -109,19 +106,19 @@ define(['dojo/_base/lang',
 			filters.push(filter);
 		}
 
-		if (this.geoFilter.field && this.geoFilter.lat && this.geoFilter.lon &&
-			this.geoFilter.distance.value && this.geoFilter.distance.unit)
+		if (this.definition.geoFilter.field && this.definition.geoFilter.lat && this.definition.geoFilter.lon &&
+			this.definition.geoFilter.distance.value && this.definition.geoFilter.distance.unit)
 		{
 			filter = {
 				and: [
 					{
 						geo_distance: {
-							distance: this.geoFilter.distance.value + this.geoFilter.distance.unit
+							distance: this.definition.geoFilter.distance.value + this.definition.geoFilter.distance.unit
 						}
 					},
 					{
 						exists: {
-							field: this.geoFilter.field
+							field: this.definition.geoFilter.field
 						}
 					}
 				]
@@ -175,7 +172,7 @@ define(['dojo/_base/lang',
 					inquiry.keep = response.data[i].keep;
 					for (var key in response.data[i].definition) {
 						if (response.data[i].definition.hasOwnProperty(key)) {
-							inquiry[key] = response.data[i].definition[key];
+							inquiry.definition[key] = response.data[i].definition[key];
 						}
 					}
 					inquiries.push(inquiry);
@@ -207,7 +204,7 @@ define(['dojo/_base/lang',
 					this.keep = response.data.keep;
 					for (var key in response.data.definition) {
 						if (response.data.definition.hasOwnProperty(key)) {
-							this[key] = response.data.definition[key];
+							this.definition[key] = response.data.definition[key];
 						}
 					}
 					d.resolve(this);
@@ -226,9 +223,9 @@ define(['dojo/_base/lang',
 		var d = new Deferred();
 
 		var definition = {};
-		for (var key in this) {
-			if (this.hasOwnProperty(key) && key.indexOf('Filter') !== -1) {
-				definition[key] = this[key];
+		for (var key in this.definition) {
+			if (this.definition.hasOwnProperty(key)) {
+				definition[key] = this.definition[key];
 			}
 		}
 
@@ -280,35 +277,44 @@ define(['dojo/_base/lang',
 		return d.promise;
 	};
 
-	Inquiry.prototype.toString = function() {
+	Inquiry.definitionToString = function(definition) {
 		var parts = [];
 
-		if (this.textFilter.value && this.textFilter.fields) {
-			parts.push('Search for "' + this.textFilter.value + '" in ' + this.textFilter.fields.join(', '));
+		if (definition.textFilter.value && definition.textFilter.fields) {
+			parts.push('Search for "' + definition.textFilter.value + '" in ' + definition.textFilter.fields.join(', '));
 		}
 
-		if (this.dateFilter.range.start && this.dateFilter.range.end) {
-			parts.push('Between ' + this.dateFilter.range.start + ' and ' + this.dateFilter.range.end);
+		if (definition.dateFilter.range.start && definition.dateFilter.range.end) {
+			parts.push('Between ' + definition.dateFilter.range.start + ' and ' + definition.dateFilter.range.end);
 		}
-		else if (this.dateFilter.range.start) {
-			parts.push('After ' + this.dateFilter.range.start);
+		else if (definition.dateFilter.range.start) {
+			parts.push('After ' + definition.dateFilter.range.start);
 		}
-		else if (this.dateFilter.range.end) {
-			parts.push('Before ' + this.dateFilter.range.end);
+		else if (definition.dateFilter.range.end) {
+			parts.push('Before ' + definition.dateFilter.range.end);
 		}
 
 		var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-		if (this.dateFilter.days) {
-			parts.push(days.filter(lang.hitch(this, function(day, i) { return this.dateFilter.days.indexOf(i) !== -1; })).join(', '));
+		if (definition.dateFilter.days && definition.dateFilter.days.length > 0) {
+			parts.push(days.filter(lang.hitch(this, function(day, i) { return definition.dateFilter.days.indexOf(i) !== -1; })).join(', '));
 		}
 
-		if (this.geoFilter.field && this.geoFilter.lat && this.geoFilter.lon &&
-			this.geoFilter.distance.value && this.geoFilter.distance.unit)
+		if (definition.geoFilter.field && definition.geoFilter.lat && definition.geoFilter.lon &&
+			definition.geoFilter.distance.value && definition.geoFilter.distance.unit)
 		{
-			parts.push('Within ' + this.geoFilter.distance.value + ' ' + this.geoFilter.distance.unit + ' of ' + this.geoFilter.lat + ',' + this.geoFilter.lon);
+			parts.push('Within ' + definition.geoFilter.distance.value + ' ' + definition.geoFilter.distance.unit + ' of ' + definition.geoFilter.lat + ',' + definition.geoFilter.lon);
 		}
 
-		return parts.join('\n');
+		if (parts.length > 0) {
+			return parts.join('\n');
+		}
+		else {
+			return 'Match all';
+		}
+	};
+
+	Inquiry.prototype.toString = function() {
+		return Inquiry.definitionToString(this.definition);
 	};
 
 	return Inquiry;

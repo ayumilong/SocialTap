@@ -16,4 +16,5 @@ class Inquiry < ActiveRecord::Base
 			existing_inquiries.slice(4..-1).map { |inq| inq.destroy unless inq.keep? }
 		end
 	end
+
 end

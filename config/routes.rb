@@ -16,7 +16,12 @@ SocialTap::Application.routes.draw do
           post 'search'
         end
       end
-      resources :inquiries, except: [:new, :edit]
+      resources :inquiries, except: [:new, :edit] do
+        member do
+          get 'elasticsearch'
+        end
+      end
+      resources :reports, except: [:new, :edit]
       get 'import_files/path', to: 'import_files#path'
     end
   end

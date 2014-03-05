@@ -1,32 +1,34 @@
 #!/usr/bin/rails runner
 
-require './lib/analysis'
+require './lib/analyzer'
 require './lib/sentiment140'
 
 ### SocialTap Analysis Framework Options ###
 # The class(es) defined by this module
-ANALYZER_CLASSES = ["OpenClemson::Sentiment140"]
 
 # analyzer for sentiment140.com sentiment tagging
+
 BULK_SENTIMENT_QTY = 2000
 
-module OpenClemson
+module SocialTap
   class Sentiment140 < SocialTap::Analyzer
 
-    def initialize
-      @s140_client = Sentiment140::QueryAPI.new APP_CONFIG['Sentiment140']['app_id']
+    def initialize worker_id
+      @s140_client = ::Sentiment140::QueryAPI.new APP_CONFIG['Sentiment140']['app_id']
       @document_cache = []
-      super # thanks for asking
+      super "sentiment140", worker_id
     end
 
-    def run
-      # main loop for this process
-      while @running
-        # check communication queue for new documents
-          # put new documents in the wait list
-        # check queue size - if BULK_SENTIMENT_QTY is reached 
-          # analyze all waiting documents
-      end
+    def step
+      sleep 3
+      puts "this might be useful eventually"
+    end
+
+    def new_document delivery_info, properties, payload
+      document = JSON.parse(payload)["_source"]
+      document["SocialTap"] ||= {}
+      document["SocialTap"]["Sentiment140"] = "analyzed"
+      self.store_output document.to_s
     end
 
     def analyze documents
@@ -40,6 +42,5 @@ module OpenClemson
         # store by Elasticsearch document id
       # store document analysis data by calling store_output
     end
-
   end
 end

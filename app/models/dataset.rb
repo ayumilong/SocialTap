@@ -3,6 +3,8 @@ class Dataset < ActiveRecord::Base
   has_many :inquiries, dependent: :destroy
   has_many :import_operations, dependent: :destroy
 
+  has_many :reports, dependent: :destroy
+
   validates :name, presence: true
   validates :source, presence: true
 

@@ -9,11 +9,13 @@ define({
 		auth: {
 			moduleId: 'app/auth/Module'
 		},
-
-		/* Secondary */
 		datasets: {
 			title: 'Datasets',
 			moduleId: 'app/datasets/Module'
+		},
+		reports: {
+			title: 'Reports',
+			moduleId: 'app/reports/Module'
 		},
 		vis: {
 			title: 'Visualizations',
@@ -44,6 +46,10 @@ define({
 		{
 			route: '/vis/:dataset_id/tree',
 			title: 'Tree'
+		},
+		{
+			route: '/vis/:dataset_id/hashtag_popularity',
+			title: 'Popular Hashtags'
 		}
 	]
 });

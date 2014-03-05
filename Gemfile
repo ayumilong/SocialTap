@@ -33,6 +33,9 @@ gem 'curb'
 gem 'omniauth-twitter'
 gem 'omniauth-identity'
 
+# Message queueing system for interprocess communication (Analysis framework)
+gem 'bunny'
+
 # To use Jbuilder templates for JSON
 # gem 'jbuilder'
 

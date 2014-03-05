@@ -6,6 +6,7 @@ define(['dojo/_base/declare',
 		'dojo/on',
 		'dojo/request/xhr',
 		'dijit/_WidgetBase',
+		'../util/staticjs!static/d3.js'
 ], function(declare, lang, domConstruct, Evented, on, xhr, WidgetBase) {
 
 	return declare([WidgetBase, Evented], {
@@ -116,11 +117,9 @@ define(['dojo/_base/declare',
 				this.dataPromise.cancel();
 			}
 
-			console.warn(this.buildElasticsearchQuery(this.baseQuery));
-
 			this.set('data', null);
 			this.dataPromise = xhr.post('/api/v0/datasets/' + this.datasetId + '/search', {
-				data: JSON.stringify({elasticsearch: this.buildElasticsearchQuery(this.baseQuery)}),
+				data: JSON.stringify({elasticsearch: this.buildElasticsearchQuery(lang.clone(this.baseQuery))}),
 				handleAs: 'json',
 				headers: {
 					'Content-Type': 'application/json'

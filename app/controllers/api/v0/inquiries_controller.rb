@@ -1,11 +1,6 @@
 class Api::V0::InquiriesController < ApplicationController
 
-	before_action :require_user
-	def require_user
-		unless signed_in?
-			render json: { error: "You must login to perform this action" }, status: :unauthorized
-		end
-	end
+	before_action :require_login
 
 	# GET /api/v0/inquiries
 	# GET /api/v0/inquiries.json
@@ -22,6 +17,13 @@ class Api::V0::InquiriesController < ApplicationController
 	def show
 		@inquiry = current_user.inquiries.find_by_id(params[:id])
 		render json: @inquiry
+	end
+
+	# GET /api/v0/inquiries/1/elasticsearch
+	# GET /api/v0/inquiries/1/elasticsearch.json
+	def elasticsearch
+		@inquiry = current_user.inquiries.find_by_id(params[:id])
+		render json: ElasticsearchQuery.from_inquiry_definition(@inquiry.definition)
 	end
 
 	# POST /api/v0/inquiries
