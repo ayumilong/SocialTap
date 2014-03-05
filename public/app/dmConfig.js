@@ -40,6 +40,10 @@ define({
 		{
 			route: '/vis/:dataset_id/line_graph',
 			title: 'Line Graph'
+		},
+		{
+			route: '/vis/:dataset_id/tree',
+			title: 'Tree'
 		}
 	]
 });

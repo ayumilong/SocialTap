@@ -11,27 +11,29 @@ define(['dojo/_base/declare',
 		nodes: null,
 		node: null,
 		tree: null,
-		facet: 'hashtag',
+		facet: 'hashtag',	// Default facet set to hashtags
+		numChildren: 5,		// Default number of children is 5
 		facetMap: {
-		"hashtag" : "twitter_entities.hashtags.text",
-		"author" : "twitter_entities.user_mentions.screen_name",
-		"body" : "body"
+			"hashtag" : "twitter_entities.hashtags.text",				// Hashtags Facet
+			"author" : "twitter_entities.user_mentions.screen_name",	// Mentions Facet
+			"body" : "body"												// Anything in body Facet
 		},
 
 		buildElasticsearchQuery: function(baseQuery) {
+			// Adds the currently selected Facet to the query
 			var query = lang.mixin(baseQuery,	{"facets" : {
-												"words" : {
-													"terms": {
-														"field" : this.facetMap[this.facet]
-													}
-												}	
-											}});
-			console.log("I happen");
+													"words" : {
+														"terms": {
+															"field" : this.facetMap[this.facet]
+														}
+													}	
+												}});
 			console.log(JSON.stringify(query));
 			return query;
 		},
 		constructor: function() {
 			this.options = [
+				// Gives you the option to change the field that will be queried upon clicking
 				{
 					name: 'facet',
 					label: 'Facet',
@@ -40,16 +42,34 @@ define(['dojo/_base/declare',
 						{ label: 'Author', value: 'author' },
 						{ label: 'Body', value: 'body' }
 					]
+				},
+				// Gives you the option to change how many children will be added upon clicking
+				{
+					name: 'numChildren',
+					label: 'Children',
+					allowedValues: [
+						{ label: '1', value: 1 },
+						{ label: '2', value: 2 },
+						{ label: '3', value: 3 },
+						{ label: '4', value: 4 },
+						{ label: '5', value: 5 },
+						{ label: '6', value: 6 },
+						{ label: '7', value: 7 },
+						{ label: '8', value: 8 },
+						{ label: '9', value: 9 },
+						{ label: '10', value: 10 }
+					]
 				}
 			];
 		},
 
 
 		draw: function(data) {
+			// Sets up the initial SVG and D3 image
 			data = this.mapData(data, 1);
-			var m = [20, 120, 20, 120],
-				w = 1280 - m[1] - m[3],
-				h = 800 - m[0] - m[2];
+			var m = [20, 120, 20, 120],	// Margins of SVG
+				w = 1280 - m[1] - m[3], // Width and Height of SVG. Could be set to use
+				h = 800 - m[0] - m[2];  //   with and height of div instead of being hardcoded.
 			this.i = 0;
 
 			this.tree = d3.layout.tree()
@@ -70,12 +90,13 @@ define(['dojo/_base/declare',
 			that.root.x0 = h / 2;
 			that.root.y0 = 0;
 
+			// Initially sets all nodes to be closed
 			function toggleAll(d) {
 				if (d.children) {
 					d.children.forEach(toggleAll);
 					lang.hitch(that, that.toggle(d));
 				}
-			}	
+			}
 			lang.hitch(that, that.update(that.root));
 		},
 		update: function(source) {
@@ -163,26 +184,64 @@ define(['dojo/_base/declare',
 			});
 		},
 
-
+		// Toggles a single node.		
 		toggle: function(d) {
 			if (d.children) {
+				// If it already has children they will be retracted of expanded,
+				//	 and vice versa.
 				d._children = d.children;
 				d.children = null;
 				lang.hitch(this, this.update(d));
 			} else {
+				// If it hasn't gotten its children yet, they will be queried for.
 				lang.hitch(this, this.queryNewData(d));
 			}			
 		},
 
+		// Queries new data based on the name of the node clicked and facet
+		queryNewData: function(node) {
+			var query = {
+				"query" : {
+					"filtered" : {
+			            "query" : {
+			                "match_all" : {}
+			            },
+			            "filter" : {
+			               "term" : {
+			                    "body" : node.name  // Text from clicked node
+			                }
+			            }
+			        }
+			    },
+			    "facets" : {
+					"words" : {
+						"terms" : {
+							"field" : this.facetMap[this.facet]  // Selected facet
+						}
+					}
+				}
+			};
+			xhr.post('/api/v0/datasets/' + this.datasetId + '/search', {
+				data: JSON.stringify({elasticsearch: query}),
+				handleAs: 'json',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).response
+			.then(lang.hitch(this, function(response) { this.addData(response, node); }));
+		},
+
 		addData: function(data, node) {
-			var newNodes = this.mapData(data.data, 5);
-			var i = 0;
+			var newNodes = this.mapData(data.data, this.numChildren + 1);	// Adds 1 because parent name will
+			var i = 0;														//   taken out.
 			node.children = node._children;
 			node._children = null;
 			if (!node.children) {
 				node.children = [];
 				for(i = 0; i < newNodes.length; i = i + 1) {
+					// Ensures parent node won't be added as a child of itself
 					if (node.name != newNodes[i].name) {
+						// Pushes new nodes onto clicked node's children array
 						node.children.push(newNodes[i]);
 					}
 				}
@@ -190,6 +249,8 @@ define(['dojo/_base/declare',
 			lang.hitch(this, this.update(node));
 		},
 
+		// Maps the data from the returned Elasticsearch object to the
+		//  structure used by the tree. 
 		mapData: function(data, amount) {
 			var nodes;
 			var i = 0;
@@ -204,38 +265,6 @@ define(['dojo/_base/declare',
 				}
 			}
 			return nodes;
-		},
-
-		queryNewData: function(node) {
-			var query = {
-				"query" : {
-					"filtered" : {
-			            "query" : {
-			                "match_all" : {}
-			            },
-			            "filter" : {
-			               "term" : {
-			                    "body" : node.name
-			                }
-			            }
-			        }
-			    },
-			    "facets" : {
-					"words" : {
-						"terms" : {
-							"field" : this.facetMap[this.facet]
-						}
-					}
-				}
-			};
-			xhr.post('/api/v0/datasets/' + this.datasetId + '/search', {
-				data: JSON.stringify({elasticsearch: query}),
-				handleAs: 'json',
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}).response
-			.then(lang.hitch(this, function(response) { this.addData(response, node); }));
 		}
 	});
 });
