@@ -50,6 +50,10 @@ define({
 		{
 			route: '/vis/:dataset_id/hashtag_popularity',
 			title: 'Popular Hashtags'
+		},
+		{
+			route: '/vis/:dataset_id/calendar',
+			title: 'Calendar'
 		}
 	]
 });

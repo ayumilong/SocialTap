@@ -151,9 +151,11 @@ define(['dojo/_base/declare',
 				baseQuery = {
 					query: {
 						match_all: {}
-					}
+					},
 				};
 			}
+
+			baseQuery.size = 0;
 
 			this._set('baseQuery', baseQuery);
 		},
