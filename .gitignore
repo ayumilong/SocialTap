@@ -45,6 +45,7 @@ pickle-email-*.html
 .project
 *~
 *.swp
+.DS_Store
 
 # Ignore profiles built from base.profile.js
 /config/dojo_profiles/app-*.profile.js

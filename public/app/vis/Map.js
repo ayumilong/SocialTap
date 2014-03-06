@@ -81,51 +81,6 @@ define(['dojo/_base/declare',
 				.attr('stroke-width', 1.8);
 		},
 
-
-		/*queryWord: function(word) {
-			var query = { "elasticsearch" :
-				{
-					"facets" : {
-						"top_countries" : {
-							"terms" : {
-								"size" : "100",
-								"field" : "location.displayName"
-							}
-						},
-						"top_states" : {
-							"terms" : {
-								"field" : "place.state",
-								"size" : "100"
-							}
-						}
-					},
-					"size": "100",
-					"query": {
-						"match": {"body": word}
-					}
-				}
-			};
-			this.es(query, this.colorCountries);
-		},
-
-		queryAuthor: function(author) {
-		    var query = {
-		        "facets" : {
-		            "top_countries" : {
-		                "terms" : { "field": "place.country"}
-		            },
-					"top_states" : {
-						"terms" : { "field": "place.state"}
-					}
-				},
-				"query": {
-					"match": {"actor.preferredUsername": author}
-		        }
-		    };
-			this.es(query, this.colorCountries);
-		},*/
-
-
 		colorCountries: function(data) {
 			var countryData = data.facets.top_countries.terms;
 			//var stateData = data.facets.top_states.terms;

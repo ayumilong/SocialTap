@@ -8,10 +8,10 @@ class Dataset < ActiveRecord::Base
   validates :name, presence: true
   validates :source, presence: true
 
-  after_create :create_elasticsearch_index
+  #after_create :create_elasticsearch_index
 
   # Immediately start importing data after creation
-  after_create :start_import
+  #after_create :start_import
 
   before_destroy :stop_import, :if => :import_in_progress
 

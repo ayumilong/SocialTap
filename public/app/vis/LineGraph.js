@@ -3,13 +3,12 @@ define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-geometry',
 		'./Base',
-		'../util/staticjs!static/d3.js',
-		'../util/staticjs!static/d3.layout.cloud.js'
+		'../util/staticjs!static/d3.js'
 ], function(declare, lang, domGeom, BaseVis) {
 	return declare([BaseVis], {
 
-		xaxis: "year",
-		axisMap: {	"day" : "1h",
+		xaxis: "day",
+		axisMap: {	"day" : "minute",
 					"week" : "day",
 					"month" : "day",
 					"year" : "day",
@@ -21,7 +20,8 @@ define(['dojo/_base/declare',
 												"histo1" : {
 													"date_histogram" : {
 														"field" : "postedTime",
-														"interval" : this.axisMap[this.xaxis]
+														"interval" : this.axisMap[this.xaxis],
+														"time_zone" : "-05:00"
 													}
 												}
 											}
@@ -55,9 +55,6 @@ define(['dojo/_base/declare',
 
 			var width = parseInt(d3.select(this.domNode).style("width").split("px")[0], 10) - margin.left - margin.right;
 			var height = parseInt(d3.select(this.domNode).style("height").split("px")[0], 10) - margin.top - margin.bottom - 30;
-
-			console.log("width: " + width);
-
 
 			var x = d3.time.scale()
 			    .range([0, width]);
@@ -102,7 +99,6 @@ define(['dojo/_base/declare',
 					case "week":
 						key = date.getUTCDay() + 1;
 						key = key + "-1-12";
-						console.log(key);
 						break;
 					case "month":
 						key = date.getUTCDate();
@@ -115,7 +111,6 @@ define(['dojo/_base/declare',
 						key = date.getUTCDate() + "-" + date.getUTCMonth() + "-" + date.getUTCFullYear();
 						break;
 				}
-				console.log(sample[i]);
 				if (map[key] == null) {
 					map[key] = {};
 					map[key].date = this.parseDate(key.toString());
@@ -154,9 +149,7 @@ define(['dojo/_base/declare',
 					xDomain = d3.extent(data, function(d) { return d.date; });
 					break;
 			}
-			console.log(xDomain);
 			data.sort(function(a,b) {return a.date - b.date;});
-			console.log(data);
 
 			var svg = d3.select(this.domNode).append("svg")
 			    .attr("width", width + 100)
