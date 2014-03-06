@@ -5,16 +5,20 @@
 
 # should be used with Rails runner to get Rails environment
 
+DEBUG = true
+
 require 'json'
 require 'elasticsearch'
 require 'bunny'
 require './lib/analyzers/sentiment140_analyzer.rb'
+require 'pp' if DEBUG
 
 
 module SocialTap
   class Analysis
 
   	def initialize
+      @counter = 0
   	  @analyzer_pool = []
   	  @es_client = Elasticsearch::Client.new(
         host: APP_CONFIG["Elasticsearch"]["hostname"],
@@ -28,7 +32,7 @@ module SocialTap
   	  self.start
   	end
 
-    # connect to RabbitMQ, and create I/O queues for workers
+    # connect to RabbitMQ, and create I/O exchanges for workers
     def setup_queues
       @rabbitmq = Bunny.new
       @rabbitmq.start
@@ -53,9 +57,11 @@ module SocialTap
     # instatiate a single analyzer process
     def create_analyzer_worker
       # subscribe to results messaging queue 
-      output_queue = @channel.queue("analysis.results").bind(@results_exchange, routing_key: "analysis.results.#.#")
-      output_queue.subscribe do |delivery_info, properties, payload|
-        self.store_output delivery_info, properties, payload
+      response_queue = @channel.queue("analysis.results").bind(
+        @results_exchange,
+        routing_key: "analysis.results.#.#")
+      response_queue.subscribe do |delivery_info, properties, payload|
+        self.process_analyzer_message delivery_info, properties, payload
       end
       # start new process
         # instantiate new object
@@ -63,7 +69,7 @@ module SocialTap
     end
 
     # find all the documents in Elasticsearch which need analysis
-    def select_posts limit=nil
+    def select_posts analyzer = nil, limit = nil
       # get list of indices to search 
       indices = []
       Dataset.find(:all).each do |dataset|
@@ -72,66 +78,73 @@ module SocialTap
       # build query for new documents. documents with no SocialTap object
       # haven't been analyzed yet
       missing_docs_query = {
-        "query" => {
-          "filtered" => {
-            "filter" => {
-              "missing" => {
+        "query" => { "filtered" => {
+            "filter" => { "missing" => {
                 "field" => "SocialTap",
                 "existence" => true
-              }
-            }
-          }
-        }
-      }
+      } } } } }
       # get results from ES
       begin
         missing_docs = @es_client.search body: missing_docs_query
         # TODO: get posts that have been flagged for reprocessing
         #docs_to_reprocess = {}
         # json_missing_docs = JSON[missing_docs]
-        puts "found missing docs: #{missing_docs}"
+        puts "Selected #{missing_docs["hits"]["total"]} posts for analysis." if DEBUG
       rescue Exception => e
-        puts "Error selecting unanalyzed posts: #{e}"
-        @analyzers.each do |pid|
-          Process.kill 9, pid
-        end
+        puts "Error selecting posts for analysis: #{e}"
+        self.stop
       end
       missing_docs["hits"]["hits"]
     end
 
+    def send_workers_message msg_type, post_id = nil
+      msg_data = {"type" => msg_type}
+      if msg_type == "analyze"
+        msg_data["id"] = post_id
+      else
+        puts "Unknown message type to send worker: #{msg_type}"
+        self.stop
+      end
+      pp "Sending workers message:", msg_data if DEBUG
+      @input_exchange.publish JSON[msg_data]
+    end
+
     # main loop to keep checking for things to process
   	def start
-      puts "main analysis loop"
       @running = true
       while @running
         # check for posts to process
-        posts_to_process = self.select_posts
+        posts_to_process = self.select_posts if @counter <= 3
 
         posts_to_process.each do |post|
-          puts "publishing post: #{post}"
-          @input_exchange.publish JSON[post]
+          if @counter <= 3
+            index_type_id = "#{post["_index"]}/#{post["_type"]}/#{post["_id"]}"
+            self.send_workers_message "analyze", index_type_id
+          end
+          @counter += 1
         end
         # for each analyzer type,
           # while there are more posts to send this analyzer
             # for each worker,
               # check the queue - count
       end
+      self.stop
   	end
 
     # end all analysis
   	def stop
-      # for each child process,
-        # tell child to stop
-      # wait for all children to quit
+      # the kids must die
+      @analyzers.each do |child_pid|
+        Process.kill 9, child_pid
+      end
       # stop main loop
       @running = false
   	end 
-    
-    def store_output delivery_info, properties, payload
-      # lookup document by ID in ES10
-      document = JSON[payload]
-      puts "received a store output message:"
-      pp document
+
+    def process_analyzer_message delivery_info, properties, payload
+      response = JSON[payload]
+      pp "Received analyzer message: #{response['type']}", delivery_info, properties if DEBUG
+      # process the message
     end
   end
 

@@ -1,12 +1,10 @@
 #!/usr/bin/rails runner
 
+# analyzer for sentiment140.com sentiment tagging
+
 require './lib/analyzer'
 require './lib/sentiment140'
-
-### SocialTap Analysis Framework Options ###
-# The class(es) defined by this module
-
-# analyzer for sentiment140.com sentiment tagging
+require 'pp' if DEBUG
 
 BULK_SENTIMENT_QTY = 2000
 
@@ -14,6 +12,7 @@ module SocialTap
   class Sentiment140 < SocialTap::Analyzer
 
     def initialize worker_id
+      @steps_to_death = 0
       @s140_client = ::Sentiment140::QueryAPI.new APP_CONFIG['Sentiment140']['app_id']
       @document_cache = []
       super "sentiment140", worker_id
@@ -21,17 +20,17 @@ module SocialTap
 
     def step
       sleep 3
-      puts "this might be useful eventually"
+      @steps_to_death += 1
+      puts "#{@name}.#{@id}: I'm not dead yet!" if DEBUG
+      self.stop if @steps_to_death > 3
     end
 
-    def new_document delivery_info, properties, payload
-      document = JSON.parse(payload)["_source"]
-      document["SocialTap"] ||= {}
-      document["SocialTap"]["Sentiment140"] = "analyzed"
-      self.store_output document.to_s
+    def analyze document
+      # pp "#{@name}.#{@id}: Time to analyze a document.", document if DEBUG
+      self.send_message "analyzed", document["_id"]
     end
 
-    def analyze documents
+    def bulk_analyze
       # collect query data for Sentiment140
       # for each document,
         # build Sentiment140 query data
