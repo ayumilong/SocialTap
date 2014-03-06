@@ -19,10 +19,10 @@ module SocialTap
     end
 
     def step
-      sleep 3
+      sleep 1
       @steps_to_death += 1
       puts "#{@name}.#{@id}: I'm not dead yet!" if DEBUG
-      self.stop if @steps_to_death > 3
+      self.stop if @steps_to_death > 6
     end
 
     def analyze document

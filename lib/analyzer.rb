@@ -4,7 +4,7 @@
 
 # should be used with Rails runner to get Rails environment
 
-DEBUG_ANALYZER = true
+DEBUG_ANALYZER = false
 
 require 'json'
 require 'elasticsearch'

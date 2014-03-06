@@ -18,8 +18,8 @@ module SocialTap
   class Analysis
 
   	def initialize
+      @posts_in_queue = []
       @counter = 0
-  	  @analyzer_pool = []
   	  @es_client = Elasticsearch::Client.new(
         host: APP_CONFIG["Elasticsearch"]["hostname"],
         port: APP_CONFIG["Elasticsearch"]["port"],
@@ -43,19 +43,17 @@ module SocialTap
 
     # load all the analyzers present and create a pool of worker processes
     def create_analyzer_pool
+      @analyzers = {}
       # get glob of filenames in post processing dir
       # for each file,
         # ruby-require file
         # read Analyzer class names from module
         # start configured number of workers for each Analyzer
-      @analyzers = []
-      one_analyzer = fork { SocialTap::Sentiment140.new(12345) }
-      @analyzers << one_analyzer
-      self.create_analyzer_worker
+      self.create_analyzer_worker "sentiment140"
     end
 
     # instatiate a single analyzer process
-    def create_analyzer_worker
+    def create_analyzer_worker type
       # subscribe to results messaging queue 
       response_queue = @channel.queue("analysis.results").bind(
         @results_exchange,
@@ -64,8 +62,10 @@ module SocialTap
         self.process_analyzer_message delivery_info, properties, payload
       end
       # start new process
-        # instantiate new object
+      next_id = 12345
+      child_pid = fork { SocialTap::Sentiment140.new(next_id) }
       # store pid of new worker's process, analyzer name, messaging queue
+      @analyzers["sentiment140"] = {next_id => child_pid}
     end
 
     # find all the documents in Elasticsearch which need analysis
@@ -77,7 +77,10 @@ module SocialTap
       end
       # build query for new documents. documents with no SocialTap object
       # haven't been analyzed yet
+      field_name = "SocialTap"
+      field_name += ".#{analyzer}" if analyzer
       missing_docs_query = {
+        # "_source" => false, # only available in Elasticsearch >= 1.0
         "query" => { "filtered" => {
             "filter" => { "missing" => {
                 "field" => "SocialTap",
@@ -120,6 +123,7 @@ module SocialTap
           if @counter <= 3
             index_type_id = "#{post["_index"]}/#{post["_type"]}/#{post["_id"]}"
             self.send_workers_message "analyze", index_type_id
+            @posts_in_queue << index_type_id
           end
           @counter += 1
         end
@@ -134,17 +138,22 @@ module SocialTap
     # end all analysis
   	def stop
       # the kids must die
-      @analyzers.each do |child_pid|
-        Process.kill 9, child_pid
+      @analyzers.keys.each do |analyzer_type|
+        analyzer_type.values.each do |child_pid|
+          Process.kill 9, child_pid
+        end
       end
       # stop main loop
       @running = false
   	end 
 
     def process_analyzer_message delivery_info, properties, payload
-      response = JSON[payload]
-      pp "Received analyzer message: #{response['type']}", delivery_info, properties if DEBUG
       # process the message
+      pattern = /#{delivery_info[:exchange]}\.(?<type>.*)\.(?<id>.*)/
+      analyzer_info = pattern.match delivery_info[:routing_key]
+      response = JSON[payload]
+      puts "Received analyzer message: #{response['type']} from #{analyzer_info['type']}.#{analyzer_info['id']}" if DEBUG
+
     end
   end
 
