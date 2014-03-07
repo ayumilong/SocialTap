@@ -38,6 +38,10 @@ define(['dojo/_base/declare',
 		//     Data received from API for current dataset/inquiry.
 		data: null,
 
+		// isLoading: Boolean
+		//     Whether or not this visualization is in the process of loading data.
+		isLoading: false,
+
 		// options: Array
 		//     Array of options for a visualization.
 		//     [
@@ -77,29 +81,43 @@ define(['dojo/_base/declare',
 		},
 
 		draw: function(data) {
-			/*jslint unparam: true*/
+			/*jshint unused:false*/
 			// summary:
 			//     Subclasses should override this method to draw the visualization.
 			// data:
-			//     Reponse from Elasticsearch.
+			//     Data returned from loadData promise.
 		},
 
-		handleData: function(response) {
-			this.dataPromise = null;
-			this.emit('display_info', 'Inquiry matched ' + response.data.hits.total + ' items');
-			this.set('data', response.data);
-		},
-
-		handleError: function(err) {
-			this.dataPromise = null;
+		handleLoadError: function(err) {
+			// summary:
+			//     Handle errors loading data.
 			if (err.dojoType !== 'cancel') {
 				console.error(err);
 			}
 		},
 
+		loadData: function(baseQuery) {
+			// summary:
+			//     Load data necessary for drawing. Return a promise resolved with the data which
+			//     will be passed to draw.
+			// baseQuery:
+			//     Base query from inquiry.
+			return this.queryDataset(this.buildElasticsearchQuery(baseQuery));
+		},
+
 		postCreate: function() {
 			this.inherited(arguments);
 			on(window, 'resize', lang.hitch(this, this.resize));
+		},
+
+		queryDataset: function(query) {
+			return xhr.post('/api/v0/datasets/' + this.datasetId + '/search', {
+				data: JSON.stringify({elasticsearch: query}),
+				handleAs: 'json',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
 		},
 
 		redraw: function() {
@@ -113,19 +131,20 @@ define(['dojo/_base/declare',
 				return;
 			}
 
-			if (this.dataPromise !== null) {
+			if (this.dataPromise) {
 				this.dataPromise.cancel();
 			}
 
 			this.set('data', null);
-			this.dataPromise = xhr.post('/api/v0/datasets/' + this.datasetId + '/search', {
-				data: JSON.stringify({elasticsearch: this.buildElasticsearchQuery(lang.clone(this.baseQuery))}),
-				handleAs: 'json',
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}).response
-			.then(lang.hitch(this, this.handleData), lang.hitch(this, this.handleError));
+			this.dataPromise = this.loadData(lang.clone(this.baseQuery));
+			this.dataPromise
+				.then(lang.hitch(this, function(data) {
+					this.dataPromise = null;
+					this.set('data', data);
+				}), lang.hitch(this, function(err) {
+					this.dataPromise = null;
+					this.handleLoadError(err);
+				}));
 		},
 
 		resize: function() {

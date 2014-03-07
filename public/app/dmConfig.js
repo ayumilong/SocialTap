@@ -54,6 +54,10 @@ define({
 		{
 			route: '/vis/:dataset_id/calendar',
 			title: 'Calendar'
+		},
+		{
+			route: '/vis/:dataset_id/hashtag_sentiment',
+			title: 'Hashtag Sentiment'
 		}
 	]
 });
