@@ -13,6 +13,33 @@ define(['dojo/_base/declare',
 		//     Number of most popular hashtags to load.
 		numHashtags: 25,
 
+		// sortKey: String
+		//     Type of sentiment to order graph by.
+		sortKey: 'total',
+
+		constructor: function() {
+			this.options = [
+				{
+					name: 'sortKey',
+					label: 'Sort',
+					allowedValues: [
+						{
+							label: 'By Popularity',
+							value: 'total',
+						},
+						{
+							label: 'Most Positive',
+							value: 'positive'
+						},
+						{
+							label: 'Most Negative',
+							value: 'negative'
+						}
+					]
+				}
+			];
+		},
+
 		loadData: function(baseQuery) {
 			return this.queryDataset(lang.mixin(lang.clone(baseQuery), {
 				facets: {
@@ -40,23 +67,36 @@ define(['dojo/_base/declare',
 					};
 				});
 
-				return this.queryDataset(query).then(lang.hitch(this, function(data) {
+				return this.queryDataset(query).then(lang.hitch(this, function(sentimentData) {
 
 					var sentMap = { 0: 'negative', 2: 'neutral', 4: 'positive' };
 
-					return hashtags.map(function(ht) {
+					var data = hashtags.map(function(ht) {
 						var d = {
 							text: ht,
 							total: 0
 						};
 
-						data.facets[ht].entries.forEach(function(e) {
+						sentimentData.facets[ht].entries.forEach(function(e) {
 							d[sentMap[e.key]] = e.count;
 							d.total += e.count;
 						});
 
 						return d;
 					});
+
+					data.forEach(function(d) {
+						var y0 = 0;
+						d.sentiments = ['negative', 'neutral', 'positive'].map(function(s) {
+							return {
+								type: s,
+								y0: y0,
+								y1: y0 += (d[s] / d.total)
+							};
+						});
+					});
+
+					return data;
 				}));
 
 			}));
@@ -64,20 +104,14 @@ define(['dojo/_base/declare',
 
 		draw: function(data) {
 
-			var sentiments = ['negative', 'neutral', 'positive'];
-
-			data.forEach(function(d) {
-				var y0 = 0;
-				d.sentiments = sentiments.map(function(s) {
-					return {
-						type: s,
-						y0: y0,
-						y1: y0 += (d[s] / d.total)
-					};
-				});
-			});
-
-			data.sort(function(a, b) { return b.total - a.total; });
+			data.sort(lang.hitch(this, function(a, b) {
+				if (this.sortKey == 'total') {
+					return b.total - a.total;
+				}
+				else {
+					return b[this.sortKey] / b.total - a[this.sortKey] / a.total;
+				}
+			}));
 
 			var box = domGeom.getContentBox(this.domNode);
 
@@ -93,7 +127,7 @@ define(['dojo/_base/declare',
 				.rangeRound([height, 0]);
 
 			var color = d3.scale.ordinal()
-				.domain(sentiments)
+				.domain(['negative', 'neutral', 'positive'])
 				.range(["#d9534f", "#6b486b", "#98abc5"]);
 
 			var xAxis = d3.svg.axis()
@@ -123,11 +157,24 @@ define(['dojo/_base/declare',
 				.attr("class", "y axis")
 				.call(yAxis);
 
+			var percent = d3.format(".02%");
+
 			var tag = svg.selectAll(".tag")
 				.data(data)
 				.enter().append("g")
 					.attr("class", "tag")
-					.attr("transform", function(d) { return "translate(" + x(d.text) + ",0)"; });
+					.attr("transform", function(d) { return "translate(" + x(d.text) + ",0)"; })
+					.on("mouseover", lang.hitch(this, function(d) {
+						var message = '<span>Total tweets: ' + d.total + '<br>' +
+							d.sentiments.map(function(s) {
+							return '<span style="color: ' + color(s.type) + '">' +
+								s.type.charAt(0).toUpperCase() + s.type.slice(1) + ': ' +
+								percent(d[s.type] / d.total) +
+								' (' + d[s.type] + ' tweets)' +
+								'</span>';
+						}).join('<br>');
+						this.emit('display_info', message);
+					}));
 
 			tag.selectAll("rect")
 				.data(function(d) { return d.sentiments; })
@@ -136,6 +183,7 @@ define(['dojo/_base/declare',
 					.attr("y", function(d) { return y(d.y1); })
 					.attr("height", function(d) { return y(d.y0) - y(d.y1); })
 					.style("fill", function(d) { return color(d.type); });
+
 
 			var legend = svg.select(".tag:last-child").selectAll(".legend")
 				.data(function(d) { return d.sentiments; })
@@ -152,6 +200,11 @@ define(['dojo/_base/declare',
 				.attr("x", x.rangeBand() / 2 + 10)
 				.attr("dy", ".35em")
 				.text(function(d) { return d.type; });
+		},
+
+		_setSortKeyAttr: function(/*String*/sortKey) {
+			this._set('sortKey', sortKey);
+			this.redraw();
 		}
 
 	});
