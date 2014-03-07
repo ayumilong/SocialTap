@@ -17,8 +17,13 @@ define(['dojo/_base/declare',
 					facets: {
 						top_countries: {
 							terms: {
-								size: 100,
-								field: "location.displayName"
+								field: "location.country_code",
+								size: 100
+							},
+							facet_filter: {
+								exists: {
+									field: "location.country_code"
+								}
 							}
 						}
 					}
