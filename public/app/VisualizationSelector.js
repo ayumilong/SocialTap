@@ -92,7 +92,7 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domConstruct, domGeom
 
 		minScrollOffset: function() {
 			var listWidth = this.listItemWidth * this.listNode.childNodes.length;
-			var availableWidth = domGeometry.getMarginBox(this.listNode).w;
+			var availableWidth = domGeometry.getMarginBox(this.viewportNode).w;
 			return Math.min(Math.floor((availableWidth - listWidth) / this.listItemWidth), 0);
 		},
 
@@ -127,9 +127,9 @@ function(declare, baseFx, kernel, lang, domAttr, domClass, domConstruct, domGeom
 			this._set('scrollOffset', scrollOffset);
 
 			baseFx.animateProperty({
-				'node': this.listNode.childNodes[0],
+				'node': this.listNode,
 				'properties': {
-					'margin-left': scrollOffset * this.listItemWidth,
+					left: scrollOffset * this.listItemWidth
 				}
 			}).play();
 

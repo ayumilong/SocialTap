@@ -1,5 +1,7 @@
 <div class="${baseClass}">
 	<button data-dojo-attach-point="scrollLeftButton" data-dojo-attach-event="onclick:scrollLeft" class="scrollLeft fa fa-chevron-left hidden"></button>
-	<ul data-dojo-attach-point="listNode"></ul>
+	<div data-dojo-attach-point="viewportNode" class="viewport">
+		<ul data-dojo-attach-point="listNode"></ul>
+	</div>
 	<button data-dojo-attach-point="scrollRightButton" data-dojo-attach-event="onclick:scrollRight" class="scrollRight fa fa-chevron-right hidden"></button>
 </div>
