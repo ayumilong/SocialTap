@@ -88,7 +88,6 @@ define(['dojo/_base/declare',
 
 			this.visOptionsPane.on('option_set', lang.hitch(this, function(opt) {
 				this.vis.set(opt.name, opt.value);
-				this.vis.reload();
 			}));
 		}
 

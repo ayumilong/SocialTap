@@ -184,6 +184,11 @@ define(['dojo/_base/declare',
 				.style("stroke", "steelblue")
 				.style("stroke-width", "1.5px");
 
+		},
+
+		_setXaxisAttr: function(xaxis) {
+			this._set('xaxis', xaxis);
+			this.reload();
 		}
 
 
