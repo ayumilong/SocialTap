@@ -121,8 +121,10 @@ define(['dojo/_base/declare',
 		},
 
 		redraw: function() {
-			domConstruct.empty(this.domNode);
-			this.draw(this.data);
+			if (this.data) {
+				domConstruct.empty(this.domNode);
+				this.draw(this.data);
+			}
 		},
 
 		reload: function() {
