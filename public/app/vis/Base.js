@@ -128,6 +128,8 @@ define(['dojo/_base/declare',
 		},
 
 		reload: function() {
+			this.emit('display_info', '');
+
 			if (!this.datasetId) {
 				console.error('Cannot load data without a dataset ID');
 				return;
