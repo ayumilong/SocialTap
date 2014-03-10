@@ -58,6 +58,10 @@ define({
 		{
 			route: '/vis/:dataset_id/hashtag_sentiment',
 			title: 'Hashtag Sentiment'
+		},
+		{
+			route: '/vis/:dataset_id/geo_map',
+			title: 'Geo Map'
 		}
 	]
 });
