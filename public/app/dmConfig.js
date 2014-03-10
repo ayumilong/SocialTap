@@ -62,6 +62,10 @@ define({
 		{
 			route: '/vis/:dataset_id/geo_map',
 			title: 'Geo Map'
+		},
+		{
+			route: '/vis/:dataset_id/sentiment_streamgraph',
+			title: 'Sentiment Stream'
 		}
 	]
 });
