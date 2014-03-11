@@ -71,6 +71,8 @@ define(['dojo/_base/declare',
 
 					var sentMap = { 0: 'negative', 2: 'neutral', 4: 'positive' };
 
+					var totalTweets = sentimentData.hits.total;
+
 					var data = hashtags.map(function(ht) {
 						var d = {
 							text: ht,
@@ -86,6 +88,9 @@ define(['dojo/_base/declare',
 					});
 
 					data.forEach(function(d) {
+
+						d.portion = d.total / totalTweets;
+
 						var y0 = 0;
 						d.sentiments = ['negative', 'neutral', 'positive'].map(function(s) {
 							return {
@@ -167,7 +172,7 @@ define(['dojo/_base/declare',
 					.attr("transform", function(d) { return "translate(" + x(d.text) + ",0)"; })
 					.on("mouseover", lang.hitch(this, function(d) {
 						var message = '<span>#' + d.text + '<br>' +
-							'Total tweets: ' + d.total + '<br>' +
+							'Total tweets: ' + d.total + ' (' + percent(d.portion) + ' of tweets matching inquiry)<br>' +
 							d.sentiments.map(function(s) {
 							return '<span style="color: ' + color(s.type) + '">' +
 								s.type.charAt(0).toUpperCase() + s.type.slice(1) + ': ' +
