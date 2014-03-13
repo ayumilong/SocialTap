@@ -66,6 +66,10 @@ define({
 		{
 			route: '/vis/:dataset_id/sentiment_streamgraph',
 			title: 'Sentiment Stream'
+		},
+		{
+			route: '/vis/:dataset_id/time_map',
+			title: 'Map by Time'
 		}
 	]
 });
