@@ -190,12 +190,38 @@ define(['dojo/_base/declare',
 				.style('fill', '#060')
 				.style('fill-opacity', 0.6);
 
+			var refreshProgressIndicator = tweetsGroup.append('line')
+				.attr('x1', 0)
+				.attr('y1', 0)
+				.attr('x1', x(360))
+				.attr('y2', 0)
+				.style('stroke-width', 3)
+				.style('stroke-opacity', 0);
+
 			var transitionToInterval = function(index) {
 				//different color/direction when moving forward and backword in time
 				var movingUp = index > selectedInterval;
 				selectedInterval = index;
+
+				selectedIntervalIndicator.transition()
+					.duration(600)
+					.ease(d3.ease('elastic', 1, 0.45))
+					.attr('x', timeScale(new Date(data.times[selectedInterval].start)))
+					.attr('width', timeScale(new Date(data.times[selectedInterval].end)) - timeScale(new Date(data.times[selectedInterval].start)));
+
+				refreshProgressIndicator
+					.attr('y1', movingUp ? y(0) : y(180))
+					.attr('y2', movingUp ? y(0) : y(180))
+					.style('stroke', movingUp ? '#060' : 'steelblue')
+					.style('stroke-opacity', 0.2);
+
+				refreshProgressIndicator.transition().delay(750).duration(4200).ease(d3.ease('linear'))
+					.attr('y1', movingUp ? y(180) : y(0))
+					.attr('y2', movingUp ? y(180) : y(0))
+					.each('end', function() { d3.select(this).style('stroke-opacity', 0); });
+
 				lonGroups.data(data.times[index].tweets).each(function(longData, longitudeNum) {
-					var delay = 20 * (movingUp ? longitudeNum : 180 - longitudeNum) + 500;
+					var delay = 20 * (movingUp ? longitudeNum : 180 - longitudeNum) + 750;
 					d3.select(this).select('.area')
 						.datum(longData)
 						.transition().duration(600).delay(delay)
@@ -211,21 +237,12 @@ define(['dojo/_base/declare',
 						.style('fill', 'black');
 				});
 
-				timeGroup.selectAll('rect.interval')
-					.classed('selected', function(d, i) { return i == selectedInterval; });
-
-				selectedIntervalIndicator.transition()
-					.duration(500)
-					.ease(d3.ease('elastic', 1, 0.45))
-					.attr('x', timeScale(new Date(data.times[selectedInterval].start)))
-					.attr('width', timeScale(new Date(data.times[selectedInterval].end)) - timeScale(new Date(data.times[selectedInterval].start)));
 			};
 
 			intervalsGroup.selectAll('rect.interval')
 				.data(data.times).enter()
 					.append('rect')
 						.classed('interval', true)
-						.classed('selected', function(d, i) { return i == selectedInterval; })
 						.attr('x', function(d) { return timeScale(new Date(d.start)); })
 						.attr('y', -21)
 						.attr('width', function(d) { return timeScale(new Date(d.end)) - timeScale(new Date(d.start)); })
