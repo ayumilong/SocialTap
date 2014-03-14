@@ -40,8 +40,8 @@ define({
 			title: 'Map'
 		},
 		{
-			route: '/vis/:dataset_id/line_graph',
-			title: 'Line Graph'
+			route: '/vis/:dataset_id/bar_chart',
+			title: 'Time Chart'
 		},
 		{
 			route: '/vis/:dataset_id/tree',
