@@ -22,6 +22,7 @@ module SocialTap
         @workers = {}
         @analyzer_defs = {}
         @job_manager = false
+        @contacted_jm = nil
         self.load_config
         self.setup_queues
         self.start
@@ -45,6 +46,7 @@ module SocialTap
         @workers_exchange = @channel.topic "analysis.workers"
         # connect to input queue
         @workers_queue = @channel.queue("workers").bind(@workers_exchange)
+        @workers_queue.subscribe do |delivery_info, properties, payload|
           self.receive_message delivery_info, properties, payload
         end
       end
@@ -54,10 +56,21 @@ module SocialTap
         while @running
           # have we got a job manager?
           if not @job_manager
-            break
             # have we already tried to reach the job manager?
-            # TODO: check message queue for job manager to see if we sent it
-            # 
+            if not @contacted_jm
+              self.send_message "register"
+              @contacted_jm = Time.now
+            else
+              time_since_contact = Time.now - @contacted_jm
+              if time_since_contact % 5.0 < 0.00001
+                puts "nodemanager: Waiting to hear back from jobmanager..." if DEBUG
+              end
+              if time_since_contact > 60
+                puts "nodemanager: It's been 60 seconds since we contacted the job manager. JM may be offline. Trying again." if DEBUG
+                self.send_message "register"
+                @contacted_jm = Time.now
+              end
+            end
           end
         end
         self.stop
@@ -65,11 +78,12 @@ module SocialTap
 
       def stop
         # the kids must die
-        @analyzers.keys.each do |analyzer_type|
-          analyzer_type.values.each do |child_pid|
-            Process.kill 9, child_pid
+        @workers.each do |type, processes|
+          processes.each do |id, worker|
+            Process.kill 9, worker[:pid]
           end
         end
+        @workers = {}
         # stop main loop
         @running = false
       end
@@ -110,6 +124,7 @@ module SocialTap
         elsif message["type"] == "registered"
           # we have been registered with the job manager
           @job_manager = true
+          @contacted_jm = nil
         elsif message["type"] == "quit"
           # die now
           self.stop
@@ -125,18 +140,17 @@ module SocialTap
         raise if not @analyzer_defs.has_key? type
         filename = @analyzer_defs[type][:filename]
         # load the code - require should only load it once
-        require Rails.root.join('lib', 'analysis', 'analyzers', filename)
+        require Rails.root.join('lib', 'analysis', 'analyzers', filename).to_s
         # get class for new analyzer from type
         # start new process
         child_pid = fork { SocialTap::Analysis::Sentiment140.new id }
-        # store pid of new worker's process, analyzer type, messaging queue
-        @workers[id] = {"pid" => child_pid, "type" => type}
+        # store new worker's process id, analyzer type, messaging queue
+        @workers[id] = {pid: child_pid, type: type}
       end
 
     end
 
   end
 end
-
 
 SocialTap::Analysis::NodeManager.new

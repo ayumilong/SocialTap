@@ -41,15 +41,22 @@ module SocialTap
         @rabbitmq = Bunny.new
         @rabbitmq.start
         @channel = @rabbitmq.create_channel
-        @workers_exchange = @channel.fanout("analysis.workers")
-        @nodes_exchange = @channel.topic("analysis.nodes")
-        @results_exchange = @channel.topic("analysis.results")
-        # subscribe to results messaging queue 
-        response_queue = @channel.queue("analysis.workers").bind(
-          @results_exchange,
-          routing_key: "analysis.results.#.#")
-        response_queue.subscribe do |delivery_info, properties, payload|
-          self.process_analyzer_message delivery_info, properties, payload
+        # exchange for communication between JobManager and workers
+        @workers_exchange = @channel.topic "analysis.workers"
+        # exchange for communication between Job Manager and NodeManagers
+        @nodes_exchange = @channel.topic "analysis.nodes"
+        # workers queue is the one that the Job Manager will receive results on from workers
+        workers_queue = @channel.queue("worker_to_jobmanager").bind(
+          @workers_exchange,
+          routing_key: "analysis.workers.#.#")
+        workers_queue.subscribe do |delivery_info, properties, payload|
+          self.process_worker_message delivery_info, properties, payload
+        end
+        nodes_queue = @channel.queue("node_to_jobmanager").bind(
+          @nodes_exchange,
+          routing_key: "analysis.nodes.#")
+        nodes_queue.subscribe do |delivery_info, properties, payload|
+          self.process_node_message delivery_info, properties, payload
         end
       end
 
@@ -66,7 +73,7 @@ module SocialTap
       def create_analyzer_worker type
         # start new process
         next_id = 12345
-        child_pid = fork { SocialTap::Sentiment140.new(next_id) }
+        child_pid = fork { SocialTap::Sentiment140.new next_id }
         # store pid of new worker's process, analyzer name, messaging queue
         @analyzers["sentiment140"] = {next_id => child_pid}
       end
@@ -112,7 +119,7 @@ module SocialTap
           self.stop
         end
         pp "Sending workers message:", msg_data if DEBUG
-        @input_exchange.publish JSON[msg_data]
+        @workers_exchange.publish JSON[msg_data]
       end
 
       # main loop to keep checking for things to process
@@ -150,12 +157,18 @@ module SocialTap
         @running = false
     	end 
 
-      def process_analyzer_message delivery_info, properties, payload
-        # process the message
+      def process_worker_message delivery_info, properties, payload
         pattern = /#{delivery_info[:exchange]}\.(?<type>.*)\.(?<id>.*)/
-        analyzer_info = pattern.match delivery_info[:routing_key]
+        worker_info = pattern.match delivery_info[:routing_key]
         response = JSON[payload]
-        puts "Received analyzer message: #{response['type']} from #{analyzer_info['type']}.#{analyzer_info['id']}" if DEBUG
+        puts "Received worker message: #{response['type']} from #{worker_info['type']}.#{worker_info['id']}" if DEBUG
+      end
+
+      def process_node_message delivery_info, properties, payload
+        pattern = /#{delivery_info[:exchange]}\.(?<hostname>.*)/
+        node_info = pattern.match delivery_info[:routing_key]
+        response = JSON[payload]
+        puts "Received node message: #{response['type']} from #{node_info['hostname']}" if DEBUG
       end
 
     end
