@@ -44,10 +44,6 @@ define({
 			title: 'Time Chart'
 		},
 		{
-			route: '/vis/:dataset_id/tree',
-			title: 'Tree'
-		},
-		{
 			route: '/vis/:dataset_id/hashtag_popularity',
 			title: 'Popular Hashtags'
 		},
@@ -70,6 +66,10 @@ define({
 		{
 			route: '/vis/:dataset_id/time_map',
 			title: 'Map by Time'
+		},
+		{
+			route: '/vis/:dataset_id/retweet_chord',
+			title: 'Most Retweeted'
 		}
 	]
 });
