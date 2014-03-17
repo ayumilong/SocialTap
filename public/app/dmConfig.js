@@ -66,6 +66,10 @@ define({
 		{
 			route: '/vis/:dataset_id/time_map',
 			title: 'Map by Time'
+		},
+		{
+			route: '/vis/:dataset_id/retweet_chord',
+			title: 'Most Retweeted'
 		}
 	]
 });
