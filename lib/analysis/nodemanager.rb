@@ -54,6 +54,7 @@ module SocialTap
         while @running
           # have we got a job manager?
           if not @job_manager
+            break
             # have we already tried to reach the job manager?
             # TODO: check message queue for job manager to see if we sent it
             # 
@@ -122,8 +123,9 @@ module SocialTap
       def create_worker type, id
         # make sure type is in definitions
         raise if not @analyzer_defs.has_key? type
+        filename = @analyzer_defs[type][:filename]
         # load the code - require should only load it once
-        require Rails.root.join 'lib', 'analysis', 'analyzers', @analyzer_defs[type][:filename]
+        require Rails.root.join('lib', 'analysis', 'analyzers', filename)
         # get class for new analyzer from type
         # start new process
         child_pid = fork { SocialTap::Analysis::Sentiment140.new id }
