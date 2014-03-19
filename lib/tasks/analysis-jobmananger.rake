@@ -1,6 +1,4 @@
-# These rake tasks control a subprocess, tracked via a pidfile, which consumes
-# Twitter data from a Gnip PowerTrack stream. When received, the tweets are
-# indexed in Elasticsearch and
+# These rake tasks control a subprocess, tracked via a pidfile, which 
 
 namespace 'analysis-jobmanager' do
   desc "Start up an Analysis Job Manager process."
@@ -16,8 +14,8 @@ namespace 'analysis-jobmanager' do
       :out => [Rails.root.join('log', 'analysis-jobmanager.log'), 'a'],
       :err => [Rails.root.join('log', 'analysis-jobmanager.err'), 'a']
     })
-    puts "Started new Gnip PowerTrack stream consumption process #{child_pid} => #{pid_filename}"
-    File.open(pid_filename, 'w') { |file| file.write(child_pid) }
+    puts "Started new Analysis Job Manager process #{child_pid} => #{jm_pid_filename}"
+    File.open(jm_pid_filename, 'w') { |file| file.write(child_pid) }
     Process.detach(child_pid)
   end
 
@@ -65,23 +63,23 @@ namespace 'analysis-jobmanager' do
   end
 
   def get_pid
-    return nil if not File.exists? pid_filename
+    return nil if not File.exists? jm_pid_filename
     begin
-      pid_file = File.open(pid_filename, 'r')
+      pid_file = File.open(jm_pid_filename, 'r')
       pid = pid_file.read.to_i
       pid_file.close
     rescue StandardError => e
-      puts "Error opening/reading pidfile #{pid_filename}: #{e}"
+      puts "Error opening/reading pidfile #{jm_pid_filename}: #{e}"
       return nil
     end
     pid
   end
 
   def remove_pidfile
-    File.delete(pid_filename) if File.exists? pid_filename
+    File.delete(jm_pid_filename) if File.exists? jm_pid_filename
   end
 
-  def pid_filename
+  def jm_pid_filename
     Rails.root.join('tmp', 'pids', 'analysis-jobmanager.pid')
   end
 end

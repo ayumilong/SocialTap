@@ -23,9 +23,14 @@ module SocialTap
         @analyzer_defs = {}
         @job_manager = false
         @contacted_jm = nil
+        self.get_hostname
         self.load_config
         self.setup_queues
         self.start
+      end
+
+      def get_hostname
+        @hostname = 'localhost'
       end
 
       def load_config
@@ -43,10 +48,12 @@ module SocialTap
         @rabbitmq = Bunny.new
         @rabbitmq.start
         @channel = @rabbitmq.create_channel
-        @workers_exchange = @channel.topic "analysis.workers"
+        @nodes_exchange = @channel.topic "analysis.nodes"
         # connect to input queue
-        @workers_queue = @channel.queue("workers").bind(@workers_exchange)
-        @workers_queue.subscribe do |delivery_info, properties, payload|
+        jobmanager_queue = @channel.queue("jobmanager_to_nodes").bind(
+          @nodes_exchange,
+          routing_key: "analysis.nodes.#{@hostname}")
+        jobmanager_queue.subscribe do |delivery_info, properties, payload|
           self.receive_message delivery_info, properties, payload
         end
       end
@@ -106,7 +113,7 @@ module SocialTap
         end
 
         pp "nodemanager: Sending message to job manager:", msg_data if DEBUG
-        @workers_exchange.publish JSON[msg_data], routing_key: "workers.#{@hostname}"
+        @nodes_exchange.publish JSON[msg_data], routing_key: "analysis.nodemanager.#{@hostname}"
       end
 
       def receive_message delivery_info, properties, payload

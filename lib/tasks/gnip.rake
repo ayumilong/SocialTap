@@ -16,8 +16,8 @@ namespace 'index-powertrack' do
       :out => [Rails.root.join('log', 'index-powertrack.log'), 'a'],
       :err => [Rails.root.join('log', 'index-powertrack.err'), 'a']
     })
-    puts "Started new Gnip PowerTrack stream consumption process #{child_pid} => #{pid_filename}"
-    File.open(pid_filename, 'w') { |file| file.write(child_pid) }
+    puts "Started new Gnip PowerTrack stream consumption process #{child_pid} => #{pt_pid_filename}"
+    File.open(pt_pid_filename, 'w') { |file| file.write(child_pid) }
     Process.detach(child_pid)
   end
 
@@ -65,23 +65,23 @@ namespace 'index-powertrack' do
   end
 
   def get_pid
-    return nil if not File.exists? pid_filename
+    return nil if not File.exists? pt_pid_filename
     begin
-      pid_file = File.open(pid_filename, 'r')
+      pid_file = File.open(pt_pid_filename, 'r')
       pid = pid_file.read.to_i
       pid_file.close
     rescue StandardError => e
-      puts "Error opening/reading pidfile #{pid_filename}: #{e}"
+      puts "Error opening/reading pidfile #{pt_pid_filename}: #{e}"
       return nil
     end
     pid
   end
 
   def remove_pidfile
-    File.delete(pid_filename) if File.exists? pid_filename
+    File.delete(pt_pid_filename) if File.exists? pt_pid_filename
   end
 
-  def pid_filename
+  def pt_pid_filename
     Rails.root.join('tmp', 'pids', 'index-powertrack.pid')
   end
 end

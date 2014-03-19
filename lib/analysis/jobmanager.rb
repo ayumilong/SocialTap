@@ -10,7 +10,6 @@ DEBUG = true
 require 'json'
 require 'elasticsearch'
 require 'bunny'
-require './lib/analyzers/sentiment140_analyzer.rb'
 require 'pp' if DEBUG
 
 
@@ -72,10 +71,10 @@ module SocialTap
       # instatiate a single analyzer process
       def create_analyzer_worker type
         # start new process
-        next_id = 12345
-        child_pid = fork { SocialTap::Sentiment140.new next_id }
+        # next_id = 12345
+        # child_pid = fork { SocialTap::Sentiment140.new next_id }
         # store pid of new worker's process, analyzer name, messaging queue
-        @analyzers["sentiment140"] = {next_id => child_pid}
+        # @analyzers["sentiment140"] = {next_id => child_pid}
       end
 
       # find all the documents in Elasticsearch which need analysis
@@ -110,7 +109,19 @@ module SocialTap
         missing_docs["hits"]["hits"]
       end
 
-      def send_workers_message msg_type, post_id = nil
+      def send_worker_message msg_type, post_id = nil
+        msg_data = {"type" => msg_type}
+        if msg_type == "analyze"
+          msg_data["id"] = post_id
+        else
+          puts "Unknown message type to send worker: #{msg_type}"
+          self.stop
+        end
+        pp "Sending workers message:", msg_data if DEBUG
+        @workers_exchange.publish JSON[msg_data]
+      end
+
+      def send_node_message msg_type, post_id = nil
         msg_data = {"type" => msg_type}
         if msg_type == "analyze"
           msg_data["id"] = post_id
@@ -126,33 +137,44 @@ module SocialTap
     	def start
         @running = true
         while @running
-          # check for posts to process
-          posts_to_process = self.select_posts if @counter <= 3
-
-          posts_to_process.each do |post|
-            if @counter <= 3
-              index_type_id = "#{post["_index"]}/#{post["_type"]}/#{post["_id"]}"
-              self.send_workers_message "analyze", index_type_id
-              @posts_in_queue << index_type_id
-            end
-            @counter += 1
-          end
-          # for each analyzer type,
-            # while there are more posts to send this analyzer
-              # for each worker,
-                # check the queue - count
+          self.test_step
         end
         self.stop
     	end
 
+      def test_step
+        # check for posts to process
+        posts_to_process = []
+        posts_to_process = self.select_posts if @counter <= 3
+
+        posts_to_process.each do |post|
+          if @counter <= 3
+            index_type_id = "#{post["_index"]}/#{post["_type"]}/#{post["_id"]}"
+            self.send_worker_message "analyze", index_type_id
+            @posts_in_queue << index_type_id
+          end
+          @counter += 1
+        end
+      end
+
+      def step
+        # how many posts do we have to process? query sum of posts missing each analyzer type
+        # when over the chunk limit, switch to bulk processing mode
+        # bulk processing: select chunk of posts for each analyzer type
+        # individual doc mode: chunk size is 1
+
+        # for each analyzer type,
+          # check how many posts need to be analyzed for this type
+          # while there are more posts to send this analyzer
+            # for each worker,
+              # check the queue - count
+      end
+
       # end all analysis
     	def stop
-        # the kids must die
-        @analyzers.keys.each do |analyzer_type|
-          analyzer_type.values.each do |child_pid|
-            Process.kill 9, child_pid
-          end
-        end
+        # TODO tell all the nodes to stop
+        # for each node,
+          # send stop message
         # stop main loop
         @running = false
     	end 
