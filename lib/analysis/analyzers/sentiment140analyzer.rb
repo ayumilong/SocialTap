@@ -2,7 +2,7 @@
 
 # analyzer for sentiment140.com sentiment tagging
 
-require './lib/analyzer'
+require './lib/analysis/analyzer'
 require './lib/sentiment140'
 require 'pp' if DEBUG
 

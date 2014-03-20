@@ -2,8 +2,6 @@
 
 # Analyzer base class for processes in a worker pool 
 
-# should be used with Rails runner to get Rails environment
-
 DEBUG_ANALYZER = false
 
 require 'json'
@@ -20,7 +18,7 @@ module SocialTap
       # setup new Analyzer
       def initialize analyzer_name, id
         # subclasses may implement this, but should call super
-        @name = analyzer_name
+        @type = analyzer_name
         @id = id
         @es_client = Elasticsearch::Client.new(
           host: APP_CONFIG["Elasticsearch"]["hostname"],
@@ -35,18 +33,19 @@ module SocialTap
         @rabbitmq = Bunny.new
         @rabbitmq.start
         @channel = @rabbitmq.create_channel
-        @input_exchange = @channel.fanout "analysis.new_documents"
-        @results_exchange = @channel.topic "analysis.results"
-        # connect to input queue
-        @input_queue = @channel.queue("input").bind(@input_exchange)
-        @input_queue.subscribe do |delivery_info, properties, payload|
+        @workers_exchange = @channel.topic "socialtap.analysis.workers"
+        # connect to commands queue
+        input_queue = @channel.queue("jobmanager_to_workers").bind(
+          @workers_exchange,
+          routing_key: "socialtap.analysis.workers.#.commands")
+        input_queue.subscribe do |delivery_info, properties, payload|
           self.receive_message delivery_info, properties, payload
         end
       end
 
       def receive_message delivery_info, properties, payload
         message = JSON[payload]
-        pp "#{@name}.#{@id}: Got a new message:", message if DEBUG_ANALYZER
+        pp "#{@type}.#{@id}: Got a new message:", message if DEBUG_ANALYZER
         if message["type"] == "analyze"
           id_parts = message["id"].split '/'
           index = id_parts[0]
@@ -55,19 +54,34 @@ module SocialTap
           document = self.get_document index, type, id
           self.analyze document
         else
-          puts "#{@name}.#{@id}: Unknown message type: #{message['type']}"
+          puts "#{@type}.#{@id}: Unknown message type: #{message['type']}"
           self.stop
         end
+      end
+
+      def send_message msg_type, post_id = nil
+        unless %w(analyzed quit).include? msg_type
+          puts "Unknown message type to send worker: #{msg_type}"
+          self.stop
+        end
+
+        msg_data = {"type" => msg_type}
+        if msg_type == "analyzed"
+          msg_data["id"] = post_id
+        end
+
+        pp "Sending analyzer message:", msg_data if DEBUG_ANALYZER
+        @workers_exchange.publish JSON[msg_data], routing_key: "socialtap.analysis.workers.#{@id}.responses"
       end
 
       def get_document index, type, id
         begin
           document = @es_client.get index: index, type: type, id: id 
         rescue Exception => e
-          puts "#{@name}.#{@id}: Error getting document for analysis: #{e}"
+          puts "#{@type}.#{@id}: Error getting document for analysis: #{e}"
           self.stop
         end
-        pp "#{@name}.#{@id}: Fetched document #{id} from ES." if DEBUG_ANALYZER
+        pp "#{@type}.#{@id}: Fetched document #{id} from ES." if DEBUG_ANALYZER
         document
       end
 
@@ -103,20 +117,6 @@ module SocialTap
         @es_client.index index: index, type: type, id: id, body: document
       end
 
-      def send_message msg_type, post_id = nil
-        unless %w(analyzed quit).include? msg_type
-          puts "Unknown message type to send worker: #{msg_type}"
-          self.stop
-        end
-
-        msg_data = {"type" => msg_type}
-        if msg_type == "analyzed"
-          msg_data["id"] = post_id
-        end
-
-        pp "Sending analyzer message:", msg_data if DEBUG_ANALYZER
-        @results_exchange.publish JSON[msg_data], routing_key: "analysis.results.#{@name}.#{@id}"
-      end
     end
   end
 end

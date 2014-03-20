@@ -1,15 +1,17 @@
-#!/usr/bin/rails runner
+#/usr/bin/rails runner
 
-# Analysis framework for consuming data from Elasticsearch and starting
-# Analyzer processes in a worker pool 
+# SocialTap Analysis Framework
 
-# should be used with Rails runner to get Rails environment
+# The Node Manager starts worker processes (Analyzers), and reports back to the
+# Job Manager.
 
 DEBUG = true
 
 require 'json'
 require 'elasticsearch'
 require 'bunny'
+require './lib/analysis/analyzers/sentiment140analyzer'
+# require Rails.root.join('lib', 'analysis', 'analyzers', 'sentiment140_analyzer.rb')
 require 'pp' if DEBUG
 
 
@@ -26,6 +28,13 @@ module SocialTap
         self.get_hostname
         self.load_config
         self.setup_queues
+        # brace for a killing blow
+        Signal.trap('INT') { 
+          self.stop 
+        }
+        Signal.trap('TERM') { 
+          self.stop 
+        }
         self.start
       end
 
@@ -35,7 +44,7 @@ module SocialTap
 
       def load_config
         APP_CONFIG["Analysis"].keys.each do |conf_section|
-          section_name = conf_section.match /(.*)_analyzer/
+          section_name = /(.*)analyzer/.match conf_section
           if section_name
             type = section_name[1]
             @analyzer_defs[type] = APP_CONFIG["Analysis"][conf_section]
@@ -48,11 +57,11 @@ module SocialTap
         @rabbitmq = Bunny.new
         @rabbitmq.start
         @channel = @rabbitmq.create_channel
-        @nodes_exchange = @channel.topic "analysis.nodes"
+        @nodes_exchange = @channel.topic "socialtap.analysis.nodes"
         # connect to input queue
         jobmanager_queue = @channel.queue("jobmanager_to_nodes").bind(
           @nodes_exchange,
-          routing_key: "analysis.nodes.#{@hostname}")
+          routing_key: "socialtap.analysis.nodes.#.commands")
         jobmanager_queue.subscribe do |delivery_info, properties, payload|
           self.receive_message delivery_info, properties, payload
         end
@@ -67,16 +76,16 @@ module SocialTap
             if not @contacted_jm
               self.send_message "register"
               @contacted_jm = Time.now
-            else
-              time_since_contact = Time.now - @contacted_jm
-              if time_since_contact % 5.0 < 0.00001
-                puts "nodemanager: Waiting to hear back from jobmanager..." if DEBUG
-              end
-              if time_since_contact > 60
-                puts "nodemanager: It's been 60 seconds since we contacted the job manager. JM may be offline. Trying again." if DEBUG
-                self.send_message "register"
-                @contacted_jm = Time.now
-              end
+            # else
+            #   time_since_contact = @contacted_jm ? Time.now - @contacted_jm : 0.0
+            #   if time_since_contact % 5.0 < 0.00001
+            #     puts "nodemanager: Waiting to hear back from jobmanager..." if DEBUG
+            #   end
+            #   if time_since_contact > 60
+            #     puts "nodemanager: It's been 60 seconds since we contacted the job manager. JM may be offline. Trying again." if DEBUG
+            #     self.send_message "register"
+            #     @contacted_jm = Time.now
+            #   end
             end
           end
         end
@@ -100,20 +109,19 @@ module SocialTap
           puts "Unknown message type to send worker: #{msg_type}"
           self.stop
         end
-
         msg_data = {"type" => msg_type}
         if msg_type == "register"
           msg_data["hostname"] = "localhost"
         elsif msg_type == "started_worker"
           msg_data["worker_id"] = worker_id
+          msg_data["analyzer_type"] = @workers[worker_id][:type]
         elsif msg_type == "stopped_worker"
           msg_data["worker_id"] = worker_id
         elsif msg_type == "quit"
           msg_data["hostname"] = "localhost"
         end
-
         pp "nodemanager: Sending message to job manager:", msg_data if DEBUG
-        @nodes_exchange.publish JSON[msg_data], routing_key: "analysis.nodemanager.#{@hostname}"
+        @nodes_exchange.publish JSON[msg_data], routing_key: "socialtap.analysis.nodes.#{@hostname}.responses"
       end
 
       def receive_message delivery_info, properties, payload
@@ -121,7 +129,8 @@ module SocialTap
         pp "nodemanager: Got a new message:", message if DEBUG
         if message["type"] == "start_worker"
           # we need to start up a new worker
-          analyzer_type = message["analyzer"]
+          analyzer_type = message["analyzer_type"]
+          puts ""
           worker_id = message["id"]
           # TODO: Sanity checks
           # start up new analyzer process
@@ -144,10 +153,10 @@ module SocialTap
       # instatiate a single analyzer process
       def create_worker type, id
         # make sure type is in definitions
-        raise if not @analyzer_defs.has_key? type
+        # raise if not @analyzer_defs.has_key? type
         filename = @analyzer_defs[type][:filename]
         # load the code - require should only load it once
-        require Rails.root.join('lib', 'analysis', 'analyzers', filename).to_s
+        # require Rails.root.join('lib', 'analysis', 'analyzers', filename).to_s
         # get class for new analyzer from type
         # start new process
         child_pid = fork { SocialTap::Analysis::Sentiment140.new id }

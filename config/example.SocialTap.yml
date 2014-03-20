@@ -22,8 +22,8 @@ defaults: &defaults
         app_id: YOUR SENTIMENT140 APP ID
     Analysis:
         default_workers: 4
-        jobmananger_hostname: localhost
-        sentiment140_analyzer:
+        job_mananger_hostname: localhost
+        sentiment140analyzer:
             workers: 1
 
 development:

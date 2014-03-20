@@ -1,9 +1,10 @@
 #!/usr/bin/rails runner
 
-# Analysis framework for consuming data from Elasticsearch and starting
-# Analyzer processes in a worker pool 
+# SocialTap Analysis Framework
 
-# should be used with Rails runner to get Rails environment
+# The Job Manager starts worker processes (Analyzers) on different nodes, 
+# queries Elasticsearch for posts needing analysis, and assigns posts to
+# workers.
 
 DEBUG = true
 
@@ -19,6 +20,7 @@ module SocialTap
     class JobManager
 
     	def initialize
+        @next_worker_id = 1
         @posts_in_queue = []
         @counter = 0
     	  @es_client = Elasticsearch::Client.new(
@@ -29,52 +31,54 @@ module SocialTap
         self.setup_queues
         # load all the analyzers present
         self.load_config
-        # temporary - manually create worker proc for testing
-        self.create_analyzer_worker "sentiment140"
+        # brace for a killing blow
+        Signal.trap('INT') { 
+          self.stop 
+        }
+        Signal.trap('TERM') { 
+          self.stop 
+        }
         # start main loop
     	  self.start
     	end
 
-      # connect to RabbitMQ, and create I/O exchanges for workers
+      # connect to RabbitMQ, and create I/O exchanges for workers and nodes
       def setup_queues
         @rabbitmq = Bunny.new
         @rabbitmq.start
         @channel = @rabbitmq.create_channel
-        # exchange for communication between JobManager and workers
-        @workers_exchange = @channel.topic "analysis.workers"
         # exchange for communication between Job Manager and NodeManagers
-        @nodes_exchange = @channel.topic "analysis.nodes"
-        # workers queue is the one that the Job Manager will receive results on from workers
-        workers_queue = @channel.queue("worker_to_jobmanager").bind(
-          @workers_exchange,
-          routing_key: "analysis.workers.#.#")
-        workers_queue.subscribe do |delivery_info, properties, payload|
-          self.process_worker_message delivery_info, properties, payload
-        end
+        @nodes_exchange = @channel.topic "socialtap.analysis.nodes"
+        # queue for responses from nodes
         nodes_queue = @channel.queue("node_to_jobmanager").bind(
           @nodes_exchange,
-          routing_key: "analysis.nodes.#")
+          routing_key: "socialtap.analysis.nodes.#.responses")
         nodes_queue.subscribe do |delivery_info, properties, payload|
           self.process_node_message delivery_info, properties, payload
+        end
+        # exchange for communication between JobManager and workers
+        @workers_exchange = @channel.topic "socialtap.analysis.workers"
+        # queue for responses from workers
+        workers_queue = @channel.queue("worker_to_jobmanager").bind(
+          @workers_exchange,
+          routing_key: "socialtap.analysis.workers.#.responses")
+        workers_queue.subscribe do |delivery_info, properties, payload|
+          self.process_worker_message delivery_info, properties, payload
         end
       end
 
       # load all the analyzers present and create a pool of worker processes
       def load_config
         @analyzers = {}
-        # read config file
-        # for each defined analyzer,
-          # register it as available
-          # how many workers?
-      end
-
-      # instatiate a single analyzer process
-      def create_analyzer_worker type
-        # start new process
-        # next_id = 12345
-        # child_pid = fork { SocialTap::Sentiment140.new next_id }
-        # store pid of new worker's process, analyzer name, messaging queue
-        # @analyzers["sentiment140"] = {next_id => child_pid}
+        @nodes = {}
+        APP_CONFIG["Analysis"].keys.each do |conf_section|
+          section_name = /(.*)analyzer/.match conf_section
+          if section_name
+            type = section_name[1]
+            @analyzers[type] = APP_CONFIG["Analysis"][conf_section]
+            @analyzers[type][:filename] = section_name
+          end
+        end
       end
 
       # find all the documents in Elasticsearch which need analysis
@@ -109,19 +113,40 @@ module SocialTap
         missing_docs["hits"]["hits"]
       end
 
-      def send_worker_message msg_type, post_id = nil
+      def send_node_message msg_type, hostname, analyzer_type = nil, worker_id = nil
         msg_data = {"type" => msg_type}
-        if msg_type == "analyze"
-          msg_data["id"] = post_id
+        if msg_type == "registered"
+          # no special stuff for this message type
+        elsif msg_type == "start_worker"
+          msg_data['analyzer_type'] = analyzer_type
+          msg_data['id'] = worker_id
+        elsif msg_type == "quit"
+          # no special stuff for this message type
         else
-          puts "Unknown message type to send worker: #{msg_type}"
+          puts "Unknown message type to send node: #{msg_type}"
           self.stop
         end
-        pp "Sending workers message:", msg_data if DEBUG
-        @workers_exchange.publish JSON[msg_data]
+        pp "Sending node message:", msg_data if DEBUG
+        @nodes_exchange.publish JSON[msg_data], routing_key: "socialtap.analysis.nodes.#{hostname}.commands"
       end
 
-      def send_node_message msg_type, post_id = nil
+      def process_node_message delivery_info, properties, payload
+        pattern = /#{delivery_info[:exchange]}\.(?<hostname>.*)\.response/
+        node_info = pattern.match delivery_info[:routing_key]
+        response = JSON[payload]
+        puts "Received node message: #{response['type']} from #{node_info['hostname']}" if DEBUG
+        if response["type"] == "register"
+          @nodes[node_info['hostname']] = {}
+          self.send_node_message "registered", node_info['hostname']
+        elsif response["type"] == "started_worker"
+          @nodes[node_info['hostname']][response['analyzer_type']] ||= []
+          @nodes[node_info['hostname']][response['analyzer_type']] << response['worker_id']
+        else
+          puts "Unknown node message type #{response['type']}"
+        end
+      end
+
+      def send_worker_message msg_type, worker_id, post_id = nil
         msg_data = {"type" => msg_type}
         if msg_type == "analyze"
           msg_data["id"] = post_id
@@ -130,17 +155,47 @@ module SocialTap
           self.stop
         end
         pp "Sending workers message:", msg_data if DEBUG
-        @workers_exchange.publish JSON[msg_data]
+        @workers_exchange.publish JSON[msg_data], routing_key: "socialtap.analysis.workers.#{worker_id}.commands"
+      end
+
+      def process_worker_message delivery_info, properties, payload
+        pattern = /#{delivery_info[:exchange]}\.(?<id>.*)\.response/
+        worker_info = pattern.match delivery_info[:routing_key]
+        response = JSON[payload]
+        puts "Received worker message: #{response['type']} from #{worker_info['id']}" if DEBUG
       end
 
       # main loop to keep checking for things to process
     	def start
         @running = true
         while @running
-          self.test_step
+          # self.step
+          self.step
         end
         self.stop
     	end
+
+      # end all analysis
+      def stop
+        # tell all the nodes (and thus workers) to stop
+        if not @nodes.empty?
+          @nodes.keys.each do |hostname|
+            self.send_node_message "quit", hostname
+          end
+          @nodes.clear
+        end
+        # delete message exchanges
+        if @workers_exchange
+          @workers_exchange.delete
+          @workers_exchange = nil
+        end
+        if @nodes_exchange
+          @nodes_exchange.delete 
+          @nodes_exchange = nil
+        end
+        # stop main loop
+        @running = false
+      end
 
       def test_step
         # check for posts to process
@@ -158,6 +213,10 @@ module SocialTap
       end
 
       def step
+        # do we have any nodes even?
+        return if @nodes.empty?
+        # make sure there are enough workers 
+        self.start_workers
         # how many posts do we have to process? query sum of posts missing each analyzer type
         # when over the chunk limit, switch to bulk processing mode
         # bulk processing: select chunk of posts for each analyzer type
@@ -170,27 +229,19 @@ module SocialTap
               # check the queue - count
       end
 
-      # end all analysis
-    	def stop
-        # TODO tell all the nodes to stop
-        # for each node,
-          # send stop message
-        # stop main loop
-        @running = false
-    	end 
-
-      def process_worker_message delivery_info, properties, payload
-        pattern = /#{delivery_info[:exchange]}\.(?<type>.*)\.(?<id>.*)/
-        worker_info = pattern.match delivery_info[:routing_key]
-        response = JSON[payload]
-        puts "Received worker message: #{response['type']} from #{worker_info['type']}.#{worker_info['id']}" if DEBUG
-      end
-
-      def process_node_message delivery_info, properties, payload
-        pattern = /#{delivery_info[:exchange]}\.(?<hostname>.*)/
-        node_info = pattern.match delivery_info[:routing_key]
-        response = JSON[payload]
-        puts "Received node message: #{response['type']} from #{node_info['hostname']}" if DEBUG
+      def start_workers
+        # puts "starting workers" if DEBUG
+        @analyzers.each do |type, analyzer|
+          # puts "analyzer #{type} needs #{analyzer["workers"]} workers." if DEBUG
+          @nodes.each do |hostname, node_analyzers|
+            if not node_analyzers.has_key? type
+              puts "node #{hostname} doesn't have a #{type} worker, sending start message" if DEBUG
+              send_node_message "start_worker", hostname, type, @next_worker_id
+              @nodes[hostname][type] ||= []
+              @next_worker_id += 1
+            end
+          end
+        end
       end
 
     end
