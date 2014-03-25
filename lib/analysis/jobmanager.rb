@@ -136,6 +136,7 @@ module SocialTap
         response = JSON[payload]
         puts "Received node message: #{response['type']} from #{node_info['hostname']}" if DEBUG
         if response["type"] == "register"
+          puts "problems looking up hostname?" if DEBUG
           @nodes[node_info['hostname']] = {}
           self.send_node_message "registered", node_info['hostname']
         elsif response["type"] == "started_worker"
@@ -222,11 +223,22 @@ module SocialTap
         # bulk processing: select chunk of posts for each analyzer type
         # individual doc mode: chunk size is 1
 
-        # for each analyzer type,
-          # check how many posts need to be analyzed for this type
-          # while there are more posts to send this analyzer
-            # for each worker,
-              # check the queue - count
+        # # for each analyzer type,
+        # @analyzers.each do |type, analyzer|
+        #   # check how many posts need to be analyzed for this type
+        #   posts_to_process = self.select_posts type
+        #   # while there are more posts to send this analyzer
+        #   posts_to_process.each do |post|
+        #     # for each worker,
+        #       # check the queue - count
+        #     if @counter <= 3
+        #       index_type_id = "#{post["_index"]}/#{post["_type"]}/#{post["_id"]}"
+        #       self.send_worker_message "analyze", index_type_id
+        #       @posts_in_queue << index_type_id
+        #     end
+        #     @counter += 1
+        #   end
+        # end
       end
 
       def start_workers

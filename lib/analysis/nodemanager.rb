@@ -10,7 +10,7 @@ DEBUG = true
 require 'json'
 require 'elasticsearch'
 require 'bunny'
-require './lib/analysis/analyzers/sentiment140analyzer'
+# require './lib/analysis/analyzers/sentiment140analyzer'
 # require Rails.root.join('lib', 'analysis', 'analyzers', 'sentiment140_analyzer.rb')
 require 'pp' if DEBUG
 
@@ -48,7 +48,7 @@ module SocialTap
           if section_name
             type = section_name[1]
             @analyzer_defs[type] = APP_CONFIG["Analysis"][conf_section]
-            @analyzer_defs[type][:filename] = section_name
+            @analyzer_defs[type][:filename] = section_name[0]
           end
         end
       end
@@ -94,12 +94,10 @@ module SocialTap
 
       def stop
         # the kids must die
-        @workers.each do |type, processes|
-          processes.each do |id, worker|
-            Process.kill 9, worker[:pid]
-          end
+        @workers.each do |id, worker|
+          Process.kill 9, worker[:pid]
         end
-        @workers = {}
+        @workers.clear
         # stop main loop
         @running = false
       end
@@ -156,10 +154,11 @@ module SocialTap
         # raise if not @analyzer_defs.has_key? type
         filename = @analyzer_defs[type][:filename]
         # load the code - require should only load it once
-        # require Rails.root.join('lib', 'analysis', 'analyzers', filename).to_s
+        require Rails.root.join('lib', 'analysis', 'analyzers', filename)
         # get class for new analyzer from type
+        analyzer_class = "SocialTap::Analysis::#{type.camelize}".constantize 
         # start new process
-        child_pid = fork { SocialTap::Analysis::Sentiment140.new id }
+        child_pid = fork { analyzer_class.new id }
         # store new worker's process id, analyzer type, messaging queue
         @workers[id] = {pid: child_pid, type: type}
       end
