@@ -13,19 +13,11 @@
 
 ActiveRecord::Schema.define(version: 20140210183708) do
 
-  create_table "data_mappings", force: true do |t|
-    t.integer  "file_dataset_id"
-    t.string   "type"
-    t.string   "options"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "datasets", force: true do |t|
     t.string   "name"
     t.text     "description"
-    t.string   "type"
-    t.string   "source"
+    t.string   "es_index"
+    t.string   "es_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -50,10 +42,13 @@ ActiveRecord::Schema.define(version: 20140210183708) do
 
   create_table "import_operations", force: true do |t|
     t.integer  "dataset_id"
+    t.string   "source_type"
+    t.text     "source_spec"
     t.datetime "time_started"
     t.datetime "time_stopped"
     t.string   "error_message"
-    t.integer  "pid"
+    t.string   "worker_hostname"
+    t.integer  "worker_pid"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

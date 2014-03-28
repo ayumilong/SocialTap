@@ -1,71 +1,127 @@
 class Dataset < ActiveRecord::Base
-  has_and_belongs_to_many :users
-  has_many :inquiries, dependent: :destroy
-  has_many :import_operations, dependent: :destroy
+	include EnforceReadonlyAttributes
 
-  has_many :reports, dependent: :destroy
+	# @!attribute name
+	#   The name of the dataset
+	#   @return [String]
+	validates :name, { presence: true, uniqueness: { case_sensitive: false } }
 
-  validates :name, presence: true
-  validates :source, presence: true
+	# @!attribute description
+	#   Description of dataset
+	#   @return [String]
 
-  #after_create :create_elasticsearch_index
+	# @!attribute es_index
+	#   Elasticsearch index containing this dataset's documents.
+	#   @return [String]
+	attr_readonly :es_index
+	validates :es_index, { presence: true, uniqueness: { case_sensitive: false } }
 
-  # Immediately start importing data after creation
-  #after_create :start_import
+	# @!attribute es_type
+	#   Elasticsearch type to use for this dataset's documents.
+	#   @return [String]
+	attr_readonly :es_type
+	validates :es_type, { presence: true }
 
-  before_destroy :stop_import, :if => :import_in_progress
+	# @!attribute inquiries
+	#   Saved inquiries targeting this dataset.
+	#   @return [Array]
+	has_many :inquiries, dependent: :destroy
 
-  before_destroy :delete_from_elasticsearch
+	# @!attribute import_operations
+	#   Data imports into this dataset.
+	#   @return [Array]
+	has_many :import_operations, dependent: :destroy
 
-  def es_index
-    self.id && "socialtap:dataset:#{self.id}"
-  end
+	# @!attribute reports
+	#   Reports generated from this dataset.
+	#   @return [Array]
+	has_many :reports, dependent: :destroy
 
-  def es_mapping
-    "data"
-  end
+	# @!attribute users
+	#   Users with access to this dataset.
+	#   @return [Array]
+	has_and_belongs_to_many :users
 
-  def connect_to_es
-    @es ||= Elasticsearch::Client.new({
-      log: false,
-      host: APP_CONFIG["Elasticsearch"]["hostname"],
-      port: APP_CONFIG["Elasticsearch"]["port"]
-    })
-  end
+	# Default Elasticsearch index and type.
+	after_initialize do
+		if es_index.nil?
+			if name? # Generate default Elasticsearch index base on name.
+				self.es_index = "socialtap:#{name.parameterize}"
+			else # Generate random unique Elasticsearch index.
+				begin
+					self.es_index = "socialtap:#{SecureRandom.uuid}"
+				end while Dataset.find_by_es_index(es_index)
+			end
+		end
+		self.es_type ||= "data"
+	end
 
-  def create_elasticsearch_index
-    self.connect_to_es
-    @es.indices.create index: self.es_index
-  end
+	after_commit :ensure_es_index_exists, on: :create
 
-  def import_in_progress
-    !self.import_operations.select { |io| io.in_progress } .empty?
-  end
+	# Establish a connection to Elasticsearch.
+	def connect_to_es
+		@es ||= Elasticsearch::Client.new({
+			log: false,
+			host: APP_CONFIG["Elasticsearch"]["hostname"],
+			port: APP_CONFIG["Elasticsearch"]["port"]
+		})
+	end
 
-  def current_import_operation
-    self.import_operations.select { |io| io.in_progress } .first
-  end
+	# Create this dataset's Elasticsearch index if it does not already exist.
+	def ensure_es_index_exists
+		self.connect_to_es
+		@es.indices.create({ index: self.es_index }) unless @es.indices.exists({ index: self.es_index })
+	end
 
-  def last_import_operation
-    self.import_operations.sort_by(&:time_started).reverse.first
-  end
+	# Remove this dataset's documents from Elasticsearch by deleting its index.
+	def delete_data!
+		self.connect_to_es
+		@es.indices.delete({ index: self.es_index })
+	end
 
-  def start_import
-    raise NotImplementedError
-  end
+	# Run a query against this dataset.
+	# @param [Hash] query The Elasticsearch query to run.
+	# @return [Hash] The query results.
+	def search(query = { query: { match_all: true }})
+		self.connect_to_es
+		@es.search({ index: self.es_index, type: self.es_mapping, body: query })
+	end
 
-  def stop_import
-    raise NotImplementedError
-  end
+	# === Data import ===
 
-  def delete_from_elasticsearch
-    self.connect_to_es
-    @es.indices.delete index: self.es_index
-  end
+	# @return [Boolean] True if there are any import operations in progress for this dataset.
+	#   False if there's not.
+	def import_in_progress?
+		self.import_operations.select { |op| op.in_progress? } .count > 0
+	end
 
-  def search params
-    self.connect_to_es
-    @es.search index: self.es_index, type: self.es_mapping, body: params
-  end
+	# @return [ImportOperation] The import operation that is in progress for this dataset.
+	def current_import_operation
+		self.import_operations.select { |op| op.in_progress? } .first
+	end
+
+	# @return [ImportOperation] The last import operation started for this dataset.
+	def last_import_operation
+		self.import_operations.sort_by(&:time_started).reverse.first
+	end
+
+	# Start an import into this dataset.
+	# @param [String] source_type The type of source to import from.
+	# @param [Hash] source_spec The specification for the source.
+	def start_import(source_type, source_spec)
+		return false if import_in_progress?
+
+		import_op = ImportOperation.create({
+			dataset: self,
+			source_type: source_type,
+			source_spec: source_spec
+		})
+		import_op.enqueue
+	end
+
+	# Stop any ongoing import operations for this dataset.
+	def stop_imports!
+		import_operations.select { |op| op.in_progress? } .map(&:cancel!)
+	end
 
 end
