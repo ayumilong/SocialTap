@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require 'socket'
+
+def run!
+
+	if ARGV.count < 1
+		$stderr.puts "Usage: import_worker.rb type"
+		exit(false)
+	end
+	type = ARGV[0]
+
+	log_directory = File.join(File.dirname(__FILE__), "../../../log/import/#{type}")
+	FileUtils.mkdir_p(log_directory) unless File.exist?(log_directory)
+
+	$stdout.reopen(File.join(log_directory, "#{Socket.gethostname}-#{Process.pid}.log"), "w")
+	$stderr.reopen(File.join(log_directory, "#{Socket.gethostname}-#{Process.pid}.err"), "w")
+
+	# Load Rails environment
+	require "#{File.expand_path(File.dirname(__FILE__))}/../../../config/environment"
+
+	puts Process.pid
+
+	worker_class = Object.const_get("Import::Worker::#{type.capitalize}Worker")
+	worker = worker_class.new
+
+	stop_queue = Queue.new
+
+	# worker.shutdown cannot be called from a signal trap context. So instead, have the signal
+	# handlers notify a background thread to call shutdown.
+
+	Thread.new do
+		stop_queue.pop # Blocks until an interrupt signal is received.
+		worker.shutdown
+	end
+
+	["HUP", "INT", "TERM"].each do |signal|
+		Signal.trap(signal) {
+			stop_queue.push(true)
+		}
+	end
+
+	worker.startup
+
+end
+
+run! if __FILE__ == $0
+
