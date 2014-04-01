@@ -73,10 +73,14 @@ class Dataset < ActiveRecord::Base
 		@es.indices.create({ index: self.es_index }) unless @es.indices.exists({ index: self.es_index })
 	end
 
-	# Remove this dataset's documents from Elasticsearch by deleting its index.
+	# Remove all documents in this dataset from Elasticsearch.
 	def delete_data!
 		self.connect_to_es
+
+		# The fastest way to do this is delete and recreate the index.
 		@es.indices.delete({ index: self.es_index })
+		@es.indices.create({ index: self.es_index })
+		@es.indices.refresh({ index: self.es_index })
 	end
 
 	# Run a query against this dataset.
