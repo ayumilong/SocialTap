@@ -7,6 +7,10 @@ module Worker
 
 class BaseWorker
 
+	def initialize
+		@shutdown_queue = Queue.new
+	end
+
 	# Type of imports handled by this worker
 	def import_type
 		# Assumes worker classes are named "Import::Worker::#{import_type}Worker"
@@ -22,6 +26,9 @@ class BaseWorker
 
 		subscribe_to_stop_messages
 		subscribe_to_start_messages
+
+		# Block until a shutdown signal is received.
+		@shutdown_queue.pop
 	end
 
 	# Shutdown the worker. Stop any imports in progress.
@@ -35,6 +42,8 @@ class BaseWorker
 		log "All imports stopped"
 		@worker_thread.kill
 		@mq_connection.stop
+
+		@shutdown_queue.push(true)
 	end
 
 private
@@ -120,7 +129,7 @@ private
 			@stop_message_queue = @stop_channel.queue("", { auto_delete: true, block: true })
 			@stop_exchange = @stop_channel.fanout("socialtap.import.stop")
 			@stop_message_queue.bind(@stop_exchange)
-			@stop_message_queue.subscribe do |delivery_info, metadata, payload|
+			@stop_message_queue.subscribe({ block: true }) do |delivery_info, metadata, payload|
 				op_id = payload.to_i
 				log "Received order to stop import op: #{op_id}"
 				if handling_import?(op_id)

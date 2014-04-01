@@ -14,8 +14,6 @@ class GnipWorker < BaseWorker
 	# stop time not valid.
 
 	def startup
-		super
-
 		@activity_queue = Queue.new
 
 		log "Starting Gnip connection"
@@ -62,9 +60,8 @@ class GnipWorker < BaseWorker
 			end
 		end
 
-		# Wait for a shutdown command.
-		@shutdown_queue = Queue.new
-		@shutdown_queue.pop
+		# Blocks until a shutdown signal is received.
+		super
 
 		# Close Gnip connection
 		log "Disconnecting from Gnip stream"
@@ -82,12 +79,6 @@ class GnipWorker < BaseWorker
 
 		log "Shutdown complete"
 
-	end
-
-	def shutdown
-		super
-		# Signal to close connection and consumer threads.
-		@shutdown_queue.push(true)
 	end
 
 private
