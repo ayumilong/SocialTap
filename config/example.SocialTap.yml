@@ -7,8 +7,7 @@ defaults: &defaults
     rabbitmq:
         host: 127.0.0.1
     Gnip:
-        powertrack_stream_url: YOUR STREAM URL
-        powertrack_rules_url: YOUR RULES URL
+        account_name: YOUR GNIP ACCOUNT NAME
         username: YOUR GNIP USERNAME
         password: YOUR GNIP PASSWORD
     data_files:
