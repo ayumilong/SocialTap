@@ -78,11 +78,6 @@ class WorkerManager
 		worker_pid = Process.spawn(worker_script, type)
 		Process.detach(worker_pid)
 
-		# Store worker PID and type
-		File.open(pid_file(worker_pid), "w") do |f|
-			f.puts type
-		end
-
 		worker_pid
 	end
 
@@ -92,8 +87,7 @@ class WorkerManager
 		pids.each do |pid|
 			begin
 				Process.kill("INT", pid) rescue nil
-				File.delete(pid_file(pid))
-				puts "Stopped #{pid}"
+				puts "Sent stop signal to #{pid}."
 			rescue Errno::ESRCH
 				puts "Process #{pid} is not running. Removing PID file."
 				File.delete(pid_file(pid))
