@@ -15,6 +15,8 @@ class BaseWorker
 
 	# Startup the worker and start running queued import operations.
 	def startup
+		log "Starting up"
+
 		@mq_connection = Bunny.new(APP_CONFIG['rabbitmq'])
 		@mq_connection.start
 
@@ -24,19 +26,23 @@ class BaseWorker
 
 	# Shutdown the worker. Stop any imports in progress.
 	def shutdown
-		puts "Shutting down..."
+		log "Shutting down..."
 		@listener_thread.kill
 		imports_in_progress.each do |op_id|
 			stop_import!(op_id)
 			import_stopped(ImportOperation.find_by_id(op_id), "Worker shut down")
 		end
-		puts "All imports stopped"
+		log "All imports stopped"
 		@worker_thread.kill
 		@mq_connection.stop
-		puts "Done"
 	end
 
 private
+
+	# Output with timestamp.
+	def log(message)
+		puts "[#{DateTime.now}] #{message}"
+	end
 
 	# Set an operation's time stopped and clear worker information.
 	# Called by Base after a stop_import! command returns
@@ -82,12 +88,12 @@ private
 			@start_message_queue = @start_channel.queue("socialtap.import.start.#{import_type}", { auto_delete: false, durable: true})
 			@start_message_queue.subscribe({ block: true }) do |delivery_info, properties, payload|
 				op_id = payload.to_i
-				puts "Received order to run import operation: #{op_id}"
+				log "Received order to run import operation: #{op_id}"
 
 				import_op = ImportOperation.find_by_id(op_id)
 
 				if import_op.nil?
-					$stderr.puts "Unable to find import operation with ID: #{op_id}"
+					log "Unable to find import operation with ID: #{op_id}"
 					next
 				end
 
@@ -96,10 +102,16 @@ private
 				import_op.worker_pid = Process.pid
 				import_op.save
 
-				start_import(import_op)
+				begin
+					start_import(import_op)
+				rescue StandardError => e
+					log "Failed to start import #{op_id}"
+					log e.message
+					log e.backtrace.join("\n")
+					import_stopped(import_op, e.message)
+				end
 			end
 		end
-		@worker_thread.join
 	end
 
 	def subscribe_to_stop_messages
@@ -110,17 +122,16 @@ private
 			@stop_message_queue.bind(@stop_exchange)
 			@stop_message_queue.subscribe do |delivery_info, metadata, payload|
 				op_id = payload.to_i
-				puts "Received order to stop import op: #{op_id}"
+				log "Received order to stop import op: #{op_id}"
 				if handling_import?(op_id)
-					puts "Stopping import"
+					log "Stopping import #{op_id}"
 					stop_import!(op_id)
 					import_stopped(ImportOperation.find_by_id(op_id))
 				else
-					puts "Ignoring"
+					log "Ignoring"
 				end
 			end
 		end
-		@listener_thread.join
 	end
 
 end
