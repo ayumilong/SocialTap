@@ -1,0 +1,199 @@
+button, label, input, textarea {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	font-size: 14px;
+	line-height: 1.4;
+	margin: 0;
+	width: 100%;
+}
+
+button {
+	border: 0;
+	color: white;
+	display: block;
+	padding: 6px 0;
+
+	&:active {
+		outline: 0;
+	}
+
+	&.primary {
+		background-color: #3bafda;
+		&:hover {
+			background-color: #4fc1e9;
+		}
+		&:active, &:disabled {
+			background-color: darken(#3bafda, 15%);
+		}
+	}
+
+	&.danger {
+		background-color: #da4453;
+		&:hover {
+			background-color: #ed5565;
+		}
+		&:active, &:disabled {
+			background-color: #d9534f;
+		}
+
+	}
+}
+
+button, input, textarea {
+	border-radius: 4px;
+	margin-bottom: 12px;
+}
+
+label, input, textarea {
+	color: #434a54;
+	display: block;
+}
+
+label {
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 4px;
+}
+
+input, textarea {
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	border: 1px solid #aab2bd;
+	box-shadow: none;
+	padding: 6px 12px;
+	-webkit-transition: border-color ease-in-out 0.15s;
+	transition: border-color ease-in-out 0.15s;
+
+	&:focus {
+		border-color: #3bafda;
+		outline: 0;
+	}
+
+	&.error {
+		border-color: #da4453
+	}
+}
+
+.alert {
+	border-radius: 4px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	color: #a94442;
+	margin: 0 0 10px;
+	padding: 10px 15px;
+
+	&.error {
+		background-color: #f2838f;
+	}
+}
+
+ul.alert {
+	padding-left: 30px;
+}
+
+.progressBar {
+	background-color: #3bafda;
+	border-radius: 4px;
+	height: 12px;
+	margin: 8px 0;
+	width: 100%;
+}
+
+.progressBar > span {
+	display: block;
+	height: 100%;
+	position: relative;
+	width: 100%;
+}
+
+@-webkit-keyframes move {
+	0% {
+		background-position: 0 0;
+	}
+	100% {
+		background-position: 50px 50px;
+	}
+}
+
+.progressBar > span > span {
+	-webkit-animation: move 2s linear infinite;
+	content: "";
+	position: absolute;
+	top: 0; left: 0; bottom: 0; right: 0;
+	background-image:
+	   -webkit-gradient(linear, 0 0, 100% 100%,
+	      color-stop(.25, rgba(255, 255, 255, .2)),
+	      color-stop(.25, transparent), color-stop(.5, transparent),
+	      color-stop(.5, rgba(255, 255, 255, .2)),
+	      color-stop(.75, rgba(255, 255, 255, .2)),
+	      color-stop(.75, transparent), to(transparent)
+	   );
+	background-image:
+		-webkit-linear-gradient(
+		  -45deg,
+	      rgba(255, 255, 255, .2) 25%,
+	      transparent 25%,
+	      transparent 50%,
+	      rgba(255, 255, 255, .2) 50%,
+	      rgba(255, 255, 255, .2) 75%,
+	      transparent 75%,
+	      transparent
+	   );
+	background-image:
+		-moz-linear-gradient(
+		  -45deg,
+	      rgba(255, 255, 255, .2) 25%,
+	      transparent 25%,
+	      transparent 50%,
+	      rgba(255, 255, 255, .2) 50%,
+	      rgba(255, 255, 255, .2) 75%,
+	      transparent 75%,
+	      transparent
+	   );
+	background-image:
+		-ms-linear-gradient(
+		  -45deg,
+	      rgba(255, 255, 255, .2) 25%,
+	      transparent 25%,
+	      transparent 50%,
+	      rgba(255, 255, 255, .2) 50%,
+	      rgba(255, 255, 255, .2) 75%,
+	      transparent 75%,
+	      transparent
+	   );
+	background-image:
+		-o-linear-gradient(
+		  -45deg,
+	      rgba(255, 255, 255, .2) 25%,
+	      transparent 25%,
+	      transparent 50%,
+	      rgba(255, 255, 255, .2) 50%,
+	      rgba(255, 255, 255, .2) 75%,
+	      transparent 75%,
+	      transparent
+	   );
+	z-index: 1;
+	-webkit-background-size: 50px 50px;
+	-moz-background-size:    50px 50px;
+	background-size:         50px 50px;
+	-webkit-animation: move 2s linear infinite;
+	   -webkit-border-top-right-radius: 8px;
+	-webkit-border-bottom-right-radius: 8px;
+	       -moz-border-radius-topright: 8px;
+	    -moz-border-radius-bottomright: 8px;
+	           border-top-right-radius: 8px;
+	        border-bottom-right-radius: 8px;
+	    -webkit-border-top-left-radius: 20px;
+	 -webkit-border-bottom-left-radius: 20px;
+	        -moz-border-radius-topleft: 20px;
+	     -moz-border-radius-bottomleft: 20px;
+	            border-top-left-radius: 20px;
+	         border-bottom-left-radius: 20px;
+	overflow: hidden;
+}
+
+form .fa-spinner {
+
+}
