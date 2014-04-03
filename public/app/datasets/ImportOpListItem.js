@@ -1,40 +1,71 @@
 define(['dojo/_base/declare',
 		'dojo/date/locale',
-		'dojo-mama/util/BaseListItem'],
-function(declare, locale, BaseListItem) {
-	return declare([BaseListItem], {
+		'dojo/dom-class',
+		'dojo/text!./ImportOpListItem.html',
+		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin'
+], function(declare, locale, domClass, template, _WidgetBase, _TemplatedMixin) {
+	return declare([_WidgetBase, _TemplatedMixin], {
 
 		'class': 'importOpListItem',
 
 		importOp: null,
 
+		templateString: template,
+
 		_setImportOpAttr: function(importOp) {
 			this._set('importOp', importOp);
 
-			var startTime = new Date(Date.parse(importOp.time_started));
-			var stopTime = (importOp.time_stopped !== null) ? new Date(Date.parse(importOp.time_stopped)) : null;
+			this.typeNode.innerHTML = importOp.source_type.capitalize();
+
+			if (importOp.source_type === 'file') {
+				this.specNode.innerHTML = importOp.source_spec.path;
+			}
+			else if (importOp.source_type === 'gnip') {
+				this.specNode.innerHTML = '"' + importOp.source_spec.rule + '"';
+			}
 
 			var fmt = {
 				datePattern: 'EEE M/d/yyy',
 				timePattern: 'h:mm:ss a z'
 			};
 
-			var text = '';
-			text += '<span class="startTime">Started ' + locale.format(startTime, fmt) + '</span>';
-			text += '<br>';
-			if (importOp.in_progress) {
-				text += '<span class="status"><span style="color: green;">In Progress</span></span>';
-			}
-			else {
-				var stopMessage = (importOp.failed) ? 'Stopped ' : 'Completed ';
-				stopMessage += locale.format(stopTime, fmt);
-				if (importOp.failed) {
-					stopMessage = '<span style="color: red;">' + stopMessage + ' (' + importOp.error_message + ')</span>';
-				}
-				text += '<span class="status">' + stopMessage + '</span>';
+			var stopTime = null;
+			if (importOp.time_stopped !== null) {
+				stopTime = new Date(Date.parse(importOp.time_stopped));
 			}
 
-			this.set('text', text);
+			if (importOp.time_started !== null) {
+				domClass.remove(this.startTimeNode, 'hidden');
+				this.startTimeNode.innerHTML = 'Started ' + locale.format(new Date(Date.parse(importOp.time_started)), fmt);
+			}
+			else {
+				domClass.add(this.startTimeNode, 'hidden');
+			}
+
+			if (importOp.time_stopped !== null) {
+				domClass.remove(this.stopTimeNode, 'hidden');
+				this.stopTimeNode.innerHTML = 'Stopped ' + locale.format(new Date(Date.parse(importOp.time_stopped)), fmt);
+			}
+			else {
+				domClass.add(this.stopTimeNode, 'hidden');
+			}
+
+			if (importOp.status === 'in_progress') {
+				this.statusNode.style.color = '#3bafda';
+				this.statusNode.innerHTML = 'In progress (' + importOp.worker_hostname + ' PID ' + importOp.worker_pid + ')';
+			}
+			else if (importOp.status == 'failed') {
+				this.statusNode.style.color = '#da4453';
+				this.statusNode.innerHTML = 'Failed (' + importOp.error_message + ')';
+			}
+			else {
+				this.statusNode.style.color = '';
+				if (importOp.status === 'completed') {
+					this.statusNode.style.color = '#8cc152';
+				}
+				this.statusNode.innerHTML = importOp.status.capitalize();
+			}
 		}
 	});
 });

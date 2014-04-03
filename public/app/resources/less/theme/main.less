@@ -1,6 +1,7 @@
 @import "./icons.less";
 @import "./accordion.less";
 @import "./buttons.less";
+@import "./forms.less";
 @import "./lists.less";
 @import "./searchbar.less";
 @import "./dialog.less";
@@ -10,7 +11,7 @@
 @import "./viz_selector.less";
 
 .font-mixin {
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 html, body {
@@ -25,6 +26,23 @@ html, body {
 	-webkit-overflow-scrolling: touch;
 	/* Do not show gray boxes when long pressing on an element in iOS */
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+h1 {
+	font-size: 22px;
+	margin: 20px 20px 5px;
+	padding: 0;
+}
+
+h2 {
+	font-size: 18px;
+	margin: 10px 20px 5px;
+	padding: 0;
+}
+
+.scrollable {
+	height: 100%;
+	overflow: auto;
 }
 
 .topBar {
