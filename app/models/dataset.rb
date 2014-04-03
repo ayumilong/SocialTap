@@ -85,10 +85,10 @@ class Dataset < ActiveRecord::Base
 
 	# Run a query against this dataset.
 	# @param [Hash] query The Elasticsearch query to run.
-	# @return [Hash] The query results.
+	# @return [Hash] The response from Elasticsearch.
 	def search(query = { query: { match_all: true }})
 		self.connect_to_es
-		@es.search({ index: self.es_index, type: self.es_mapping, body: query })
+		@es.search({ index: self.es_index, type: self.es_type, body: query })
 	end
 
 	# === Data import ===
