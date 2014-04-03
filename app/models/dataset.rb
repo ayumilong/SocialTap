@@ -91,41 +91,4 @@ class Dataset < ActiveRecord::Base
 		@es.search({ index: self.es_index, type: self.es_type, body: query })
 	end
 
-	# === Data import ===
-
-	# @return [Boolean] True if there are any import operations in progress for this dataset.
-	#   False if there's not.
-	def import_in_progress?
-		self.import_operations.select { |op| op.in_progress? } .count > 0
-	end
-
-	# @return [ImportOperation] The import operation that is in progress for this dataset.
-	def current_import_operation
-		self.import_operations.select { |op| op.in_progress? } .first
-	end
-
-	# @return [ImportOperation] The last import operation started for this dataset.
-	def last_import_operation
-		self.import_operations.sort_by(&:time_started).reverse.first
-	end
-
-	# Start an import into this dataset.
-	# @param [String] source_type The type of source to import from.
-	# @param [Hash] source_spec The specification for the source.
-	def start_import(source_type, source_spec)
-		return false if import_in_progress?
-
-		import_op = ImportOperation.create({
-			dataset: self,
-			source_type: source_type,
-			source_spec: source_spec
-		})
-		import_op.enqueue
-	end
-
-	# Stop any ongoing import operations for this dataset.
-	def stop_imports!
-		import_operations.select { |op| op.in_progress? } .map(&:cancel!)
-	end
-
 end

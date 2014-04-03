@@ -40,9 +40,7 @@ class ImportOperation < ActiveRecord::Base
 
 	# @!attribute worker_pid
 	#   PID of the this operation's worker process.
-	#   @return [Fixnum]
-
-	after_commit :enqueue, on: :create
+	#   @return [Integer]
 
 	# Establish a connection to the RabbitMQ server.
 	def connect_to_mq
@@ -52,7 +50,7 @@ class ImportOperation < ActiveRecord::Base
 
 	# Notify a worker process to handle this operation.
 	def enqueue
-		if id?
+		if persisted?
 			connect_to_mq
 			channel = @mq_connection.create_channel
 			start_queue = channel.queue("socialtap.import.start.#{source_type}", { auto_delete: false, durable: true })
@@ -60,17 +58,17 @@ class ImportOperation < ActiveRecord::Base
 		end
 	end
 
-	# @return [String] Status of this operation.
+	# @return [Symbol] Status of this operation.
 	def status
 		if time_started.nil?
-			"Pending"
+			:pending
 		else
 			if in_progress?
-				"In progress"
+				:in_progress
 			elsif failed?
-				"Failed"
+				:failed
 			else
-				"Completed"
+				:completed
 			end
 		end
 	end
