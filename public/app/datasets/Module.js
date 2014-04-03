@@ -1,8 +1,9 @@
 define(['dojo/_base/declare',
 		'dojo-mama/Module',
 		'app/datasets/CreateDatasetView',
-		'app/datasets/DatasetView'
-], function(declare, Module, CreateDatasetView, DatasetView) {
+		'app/datasets/DatasetView',
+		'app/datasets/StartImportView'
+], function(declare, Module, CreateDatasetView, DatasetView, StartImportView) {
 	return declare([Module],{
 		'class': 'datasetsModule',
 
@@ -14,6 +15,9 @@ define(['dojo/_base/declare',
 
 			var cdv = new CreateDatasetView();
 			this.registerView(cdv);
+
+			var siv = new StartImportView();
+			this.registerView(siv);
 		}
 	});
 });

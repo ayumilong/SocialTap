@@ -13,10 +13,10 @@ class Api::V0::ImportsController < ApplicationController
 
 		if  @import_op.save
 			begin
-				import_op.enqueue
-				head :created
+				@import_op.enqueue
+				render json: @import_op, status: :created
 			rescue StandardError => e
-				import_op.destroy
+				@import_op.destroy
 				render json: { error: e.message }, status: :internal_server_error
 			end
 		else
@@ -39,7 +39,7 @@ class Api::V0::ImportsController < ApplicationController
 private
 
 	def import_params
-		params.require(:import).permit(:source_type, :source_spec)
+		params.require(:import_operation).permit(:source_type, { :source_spec => [:path, :rule] })
 	end
 
 	def load_dataset

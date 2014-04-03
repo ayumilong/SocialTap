@@ -27,7 +27,6 @@ define(['dojo/_base/declare',
 			this.inherited(arguments);
 			var datasetId = parseInt(e.params[0]);
 
-			// Load dataset
 			domClass.add(this.containerNode, 'hidden');
 			var activityIndicator = domConstruct.create('span', {
 				'class': 'fa fa-spinner fa-spin',
@@ -64,6 +63,7 @@ define(['dojo/_base/declare',
 		},
 
 		_setDatasetAttr: function(/*Object*/ dataset) {
+			this._set('dataset', dataset);
 			if (dataset === null) {
 				this.reset();
 			}
@@ -81,7 +81,13 @@ define(['dojo/_base/declare',
 				}
 
 				domClass.remove(this.containerNode, 'hidden');
+
+				// TODO: Hide startImportButton if any imports are in progress
 			}
+		},
+
+		startImportButtonClicked: function() {
+			this.router.go('/' + this.get('dataset').id + '/start_import');
 		}
 	});
 });

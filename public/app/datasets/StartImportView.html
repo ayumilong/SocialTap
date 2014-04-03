@@ -1,0 +1,14 @@
+<div class="${baseClass}">
+	<div class="scrollable">
+		<h1>Import Data into <span data-dojo-attach-point="datasetNameNode">Dataset</span></h1>
+		<div style="margin: 0 20px;">
+			<label for="startImportSourceTypeSelect">Data source type</label>
+			<select id="startImportSourceTypeSelect" data-dojo-attach-point="sourceTypeSelectNode" data-dojo-attach-event="onchange:sourceTypeChanged">
+				<option value="file">File</option>
+				<option value="gnip">Gnip</option>
+			</select>
+			<div data-dojo-attach-point="formContainerNode" style="margin-top: 10px;"></div>
+			<button data-dojo-attach-event="onclick:cancelButtonClicked" class="danger">Cancel</button>
+		</div>
+	</div>
+</div>

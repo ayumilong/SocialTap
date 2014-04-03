@@ -23,7 +23,8 @@ define([
 		//        name: String // key for this field's value in request
 		//        placeholder: String  // valid for text and textarea
 		//        type: String   // type of input (text, textarea, checkbox, select)
-		//        options: Array // { label: String, value: String } valid for and select
+		//        options: Array // { label: String, value: String } valid for select
+		//        value: String  // valid for hidden
 		//     }
 		fields: null,
 
@@ -57,10 +58,13 @@ define([
 					formElementCounter++;
 					domAttr.set(input, 'id', id);
 					domConstruct.place(input, this.containerNode);
-					domConstruct.create('label', {
-						'for': id,
-						innerHTML: field.label || (field.name.charAt(0).toUpperCase() + field.name.slice(1))
-					}, input, 'before');
+
+					if (field.type !== 'hidden') {
+						domConstruct.create('label', {
+							'for': id,
+							innerHTML: field.label || (field.name.charAt(0).toUpperCase() + field.name.slice(1))
+						}, input, 'before');
+					}
 				}
 			}
 
@@ -70,6 +74,14 @@ define([
 			}, this.containerNode);
 
 			on(this.submitButton, 'click', lang.hitch(this, this.submit));
+		},
+
+		buildHidden: function(field) {
+			return domConstruct.create('input', {
+				name: field.name,
+				type: 'hidden',
+				value: field.value
+			});
 		},
 
 		buildTextHelper: function(field, tag, opts) {
@@ -96,7 +108,16 @@ define([
 			var value = {};
 			for (var i = 0; i < this.fields.length; i++) {
 				var field = this.fields[i];
-				value[field.name] = field.domNode.value;
+
+				var parts = field.name.split('.');
+				var val2 = value;
+				for (var j = 0; j < parts.length - 1; j++) {
+					if (val2[parts[j]] === undefined) {
+						val2[parts[j]] = {};
+					}
+					val2 = val2[parts[j]];
+				}
+				val2[parts[parts.length - 1]] = field.domNode.value;
 			}
 			return value;
 		},
@@ -157,13 +178,15 @@ define([
 
 		submit: function(e) {
 			e.preventDefault(); // Prevent default form submission.
-			console.log(this.getValue());
 
 			var request = this.getValue();
 			if (this.name !== undefined) {
 				request = {};
 				request[this.name] = this.getValue();
 			}
+
+			console.log('submitting form');
+			console.log(request);
 
 			domAttr.set(this.submitButton, 'disabled', 'disabled');
 			this.clearFieldErrors();
@@ -190,6 +213,7 @@ define([
 					this.emit('success', response.data);
 				}),
 				lang.hitch(this, function(err) {
+					console.error(err);
 					domAttr.remove(this.submitButton, 'disabled');
 					domConstruct.destroy(activityIndicator);
 
