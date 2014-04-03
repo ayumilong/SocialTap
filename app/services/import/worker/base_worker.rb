@@ -106,6 +106,11 @@ private
 					next
 				end
 
+				if import_op.status != :pending
+					log "Import operation is already running"
+					next
+				end
+
 				import_op.time_started = Time.zone.now
 				import_op.worker_hostname = Socket.gethostname
 				import_op.worker_pid = Process.pid
