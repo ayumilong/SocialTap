@@ -10,8 +10,6 @@ defaults: &defaults
         account_name: YOUR GNIP ACCOUNT NAME
         username: YOUR GNIP USERNAME
         password: YOUR GNIP PASSWORD
-    data_files:
-        import_directory: PATH TO DIRECTORY CONTAINING DATA FILES TO IMPORT
     reports:
         output_directory: PATH TO DIRECTORY TO GENERATE REPORT FILES IN
     Twitter:
