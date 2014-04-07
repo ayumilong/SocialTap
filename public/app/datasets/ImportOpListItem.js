@@ -1,13 +1,18 @@
 define(['dojo/_base/declare',
+		'dojo/_base/lang',
 		'dojo/date/locale',
+		'dojo/dom-attr',
 		'dojo/dom-class',
+		'dojo/dom-construct',
+		'dojo/on',
+		'dojo/request/xhr',
 		'dojo/text!./ImportOpListItem.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin'
-], function(declare, locale, domClass, template, _WidgetBase, _TemplatedMixin) {
+], function(declare, lang, locale, domAttr, domClass, domConstruct, on, xhr, template, _WidgetBase, _TemplatedMixin) {
 	return declare([_WidgetBase, _TemplatedMixin], {
 
-		'class': 'importOpListItem',
+		baseClass: 'importOp',
 
 		importOp: null,
 
@@ -51,21 +56,69 @@ define(['dojo/_base/declare',
 				domClass.add(this.stopTimeNode, 'hidden');
 			}
 
-			if (importOp.status === 'in_progress') {
-				this.statusNode.style.color = '#3bafda';
-				this.statusNode.innerHTML = 'In progress (' + importOp.worker_hostname + ' PID ' + importOp.worker_pid + ')';
-			}
-			else if (importOp.status == 'failed') {
-				this.statusNode.style.color = '#da4453';
-				this.statusNode.innerHTML = 'Failed (' + importOp.error_message + ')';
-			}
-			else {
-				this.statusNode.style.color = '';
-				if (importOp.status === 'completed') {
+			switch (importOp.status) {
+				case 'pending':
+					this.statusNode.style.color = '';
+					this.statusNode.innerHTML = 'Pending';
+					break;
+				case 'in_progress':
+					this.statusNode.style.color = '#3bafda';
+					this.statusNode.innerHTML = 'In progress (' + importOp.worker_hostname + ' PID ' + importOp.worker_pid + ')';
+					break;
+				case 'failed':
+					this.statusNode.style.color = '#da4453';
+					this.statusNode.innerHTML = 'Failed (' + importOp.error_message + ')';
+					break;
+				case 'aborted':
 					this.statusNode.style.color = '#8cc152';
-				}
-				this.statusNode.innerHTML = importOp.status.capitalize();
+					this.statusNode.innerHTML = 'Stopped by user';
+					break;
+				case 'completed':
+					this.statusNode.style.color = '#8cc152';
+					this.statusNode.innerHTML = 'Completed successfully';
+					break;
 			}
+
+			if (importOp.status === 'in_progress') {
+				this.stopButton = domConstruct.create('button', {
+					'class': 'danger',
+					innerHTML: 'Stop'
+				}, this.domNode);
+				this.stopClickSignal = on(this.stopButton, 'click', lang.hitch(this, this.stopImport));
+			} else if (this.stopButton) {
+				this.stopClickSignal.remove();
+				domConstruct.destroy(this.stopButton);
+				this.stopButton = null;
+			}
+		},
+
+		stopImport: function() {
+			if (!this.importOp) {
+				return;
+			}
+
+			domAttr.set(this.stopButton, 'disabled', 'disabled');
+			var spinner = domConstruct.create('span', {
+				'class': 'fa fa-spinner fa-spin',
+				style: {
+					'margin-right': '6px'
+				}
+			}, this.stopButton, 'first');
+			xhr.del('/api/v0/datasets/' + this.importOp.dataset_id + '/imports/' + this.importOp.id).response.then(
+				lang.hitch(this, function() {
+					domAttr.remove(this.stopButton, 'disabled');
+					domConstruct.destroy(spinner);
+					this.stopClickSignal.remove();
+					domConstruct.destroy(this.stopButton);
+					this.stopButton = null;
+					this.statusNode.style.color = '#8cc152';
+					this.statusNode.innerHTML = 'Stopped by user';
+				}),
+				lang.hitch(this, function(err) {
+					domAttr.remove(this.stopButton, 'disabled');
+					domConstruct.destroy(spinner);
+					console.error(err);
+				}));
 		}
 	});
 });
