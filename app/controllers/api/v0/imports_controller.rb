@@ -39,7 +39,8 @@ class Api::V0::ImportsController < ApplicationController
 private
 
 	def import_params
-		params.require(:import_operation).permit(:source_type, { :source_spec => [:path, :rule] })
+		spec_keys = params.require(:import_operation).fetch(:source_spec, {}).keys
+		params.require(:import_operation).permit(:source_type, { :source_spec => spec_keys })
 	end
 
 	def load_dataset
