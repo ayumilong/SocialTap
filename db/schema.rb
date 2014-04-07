@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(version: 20140210183708) do
     t.text     "source_spec"
     t.datetime "time_started"
     t.datetime "time_stopped"
+    t.boolean  "aborted"
     t.string   "error_message"
     t.string   "worker_hostname"
     t.integer  "worker_pid"

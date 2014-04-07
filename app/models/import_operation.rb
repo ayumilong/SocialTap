@@ -29,6 +29,10 @@ class ImportOperation < ActiveRecord::Base
 	#   The time this operation was stopped or nil if it is ongoing.
 	#   @return [ActiveSupport::TimeWithZone]
 
+	# @!attribute aborted
+	#   Whether this operation was aborted by the user (true) or ran to completion (false).
+	#   @return [Boolean]
+
 	# @!attribute error_message
 	#   Error message if this operation failed or was cancelled. Nil if this operation
 	#   finished successfully or is ongoing.
@@ -63,7 +67,9 @@ class ImportOperation < ActiveRecord::Base
 		if time_started.nil?
 			:pending
 		else
-			if in_progress?
+			if aborted?
+				:aborted
+			elsif in_progress?
 				:in_progress
 			elsif failed?
 				:failed

@@ -139,8 +139,11 @@ private
 				log "Received order to stop import op: #{op_id}"
 				if handling_import?(op_id)
 					log "Stopping import #{op_id}"
+					import_op = ImportOperation.find_by_id(op_id)
+					import_op.aborted = true
+					import_op.save
 					stop_import!(op_id)
-					import_stopped(ImportOperation.find_by_id(op_id))
+					import_stopped(import_op)
 				else
 					log "Ignoring"
 				end

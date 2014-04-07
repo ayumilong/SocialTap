@@ -8,6 +8,7 @@ class CreateImportOperations < ActiveRecord::Migration
 
       t.timestamp :time_started
       t.timestamp :time_stopped
+      t.boolean :aborted
       t.string :error_message
 
       t.string :worker_hostname
