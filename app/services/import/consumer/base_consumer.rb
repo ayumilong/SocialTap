@@ -4,7 +4,7 @@ module Consumer
 class BaseConsumer
 
 	# Maximum size of doc queue before it is flushed to Elasticsearch.
-	MAX_DOC_QUEUE_SIZE = 10000
+	MAX_DOC_QUEUE_SIZE = 5000
 
 	# @param [String] index The Elasticsearch index to store documents in.
 	# @param [String] type The Elasticsearch type to use for the stored documents.
@@ -34,22 +34,19 @@ class BaseConsumer
 
 		# Run Elasticsearch operations on background threads.
 		@worker_threads << Thread.new do
-			ops = Array.new
 
+			docs = Array.new
 			until queue.empty?
-				doc = queue.pop
-				ops.push({ index: { data: doc } })
+				docs.push(queue.pop)
 			end
 
-			es_client = ::Elasticsearch::Client.new({
-				host: APP_CONFIG['Elasticsearch']['hostname'],
-				port: APP_CONFIG['Elasticsearch']['port'],
-				log: false
-			})
-
-			es_client.bulk({ index: @index, type: @type, body: ops })
-
-			# TODO: Error handling for bulk request?
+			# When using the Elasticsearch client, all these request threads would not complete
+			# until the import worker process was interrupted. Works fine with cURL though.
+			url = "http://#{APP_CONFIG['Elasticsearch']['hostname']}:#{APP_CONFIG['Elasticsearch']['port']}/_bulk"
+			curl = Curl::Easy.new(url)
+			action = "{\"index\":{\"_index\":\"#{@index}\",\"_type\":\"#{@type}\"}"
+			curl.post_body = docs.map { |doc| "#{action}\n#{JSON.fast_generate(doc)}" } .join("\n") << "\n"
+			curl.http_post
 		end
 
 		purge_completed_workers
