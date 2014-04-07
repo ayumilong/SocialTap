@@ -28,20 +28,11 @@ define([
 		//     }
 		fields: null,
 
-		// _fieldValues: [private] Object
-		_fieldValues: null,
-
 		name: null,
 
 		submitLabel: 'Submit',
 
-		title: null,
-
 		url: null,
-
-		constructor: function() {
-			this._fieldValues = {};
-		},
 
 		buildRendering: function() {
 			this.inherited(arguments);
