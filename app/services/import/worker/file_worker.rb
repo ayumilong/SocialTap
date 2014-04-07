@@ -39,20 +39,22 @@ private
 
 		log "Importing '#{import_op.source_spec['path']}'..."
 
-		source = ::Import::Source::FileSource.new(import_op.source_spec)
-
 		consumer = ::Import::Consumer::BaseConsumer.new(import_op.dataset.es_index, import_op.dataset.es_type)
 
-		# Import docs from source until stopped or finished.
+		# Import docs from file until stopped or finished.
 		stopped = false
 		begin
-			source.each_doc do |doc|
-				consumer.consume_doc(doc)
+			File.open(import_op.source_spec['path']).each do |line|
+				line.chomp!
+				unless line.empty?
+					doc = JSON.parse(line)
+					consumer.consume_doc(doc)
 
-				stopped = @stop_queue.pop(true) rescue false
-				if stopped
-					log "Import stopped"
-					break
+					stopped = @stop_queue.pop(true) rescue false
+					if stopped
+						log "Import stopped"
+						break
+					end
 				end
 			end
 			log "Flushing consumer"
