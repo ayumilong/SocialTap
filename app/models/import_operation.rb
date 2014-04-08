@@ -12,6 +12,9 @@ class ImportOperation < ActiveRecord::Base
 	#   @return [String]
 	attr_readonly :source_type
 	validates :source_type, { presence: true }
+	def source_type=(source_type)
+		super(source_type.downcase)
+	end
 
 	# @!attribute source_spec
 	#   Specification of source. Format depends on source type.
@@ -19,7 +22,13 @@ class ImportOperation < ActiveRecord::Base
 	attr_readonly :source_spec
 	serialize :source_spec, JSON
 	validates :source_spec, { presence: true }
-	# TODO: Validate source specification
+	validate do |io|
+		validator_class = Object.const_get("#{source_type.capitalize}SourceValidator")
+		source_spec_errors = validator_class.new(io.source_spec).validate
+		source_spec_errors.each do |field, errors|
+			io.errors["source_spec.#{field}"] = errors
+		end
+	end
 
 	# @!attribute time_started
 	#   The time this operation was started.
