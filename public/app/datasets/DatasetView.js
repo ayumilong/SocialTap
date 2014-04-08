@@ -72,12 +72,28 @@ define(['dojo/_base/declare',
 				this.datasetNameNode.innerHTML = dataset.name;
 				this.datasetDescriptionNode.innerHTML = dataset.description || 'No description';
 
-				for (var i = 0; i < dataset.import_operations.length; i++) {
-					var li = new ImportOpListItem({
-						importOp: dataset.import_operations[i]
-					});
-					li.placeAt(this.importsListNode);
-					li.startup();
+				if (dataset.import_operations.length === 0) {
+					this.noImportsNode = this.noImportsNode || domConstruct.create('p', {
+						innerHTML: 'No data has been imported into this dataset',
+						style: {
+							'padding-left': '30px'
+						}
+					}, this.importsListNode, 'after');
+					domClass.add(this.importsListNode, 'hidden');
+				}
+				else {
+					if (this.noImportsNode) {
+						domConstruct.destroy(this.noImportsNode);
+						this.noImportsNode = null;
+					}
+					domClass.remove(this.importsListNode, 'hidden');
+					for (var i = 0; i < dataset.import_operations.length; i++) {
+						var li = new ImportOpListItem({
+							importOp: dataset.import_operations[i]
+						});
+						li.placeAt(this.importsListNode);
+						li.startup();
+					}
 				}
 
 				domClass.remove(this.containerNode, 'hidden');
