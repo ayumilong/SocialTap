@@ -16,7 +16,9 @@ def run!
 		log_directory = File.join(File.dirname(__FILE__), "../../../log/import/#{type}")
 		FileUtils.mkdir_p(log_directory) unless File.exist?(log_directory)
 		$stdout.reopen(File.join(log_directory, "#{Socket.gethostname}-#{Process.pid}.log"), "w")
+		$stdout.sync = true
 		$stderr.reopen(File.join(log_directory, "#{Socket.gethostname}-#{Process.pid}.err"), "w")
+		$stderr.sync = true
 	end
 
 	# Load Rails environment
