@@ -1,6 +1,6 @@
 class Api::V0::ImportsController < ApplicationController
 
-	before_filter :load_dataset
+	before_filter :load_dataset, only: [:create, :destroy]
 
 	# POST /api/v0/datasets/1/imports
 	# POST /api/v0/datasets/1/imports.json
@@ -34,6 +34,12 @@ class Api::V0::ImportsController < ApplicationController
 		rescue StandardError => e
 			render json: { error: e.message }, status: :internal_server_error
 		end
+	end
+
+	# GET /api/v0/imports/format_conversions
+	# GET /api/v0/imports/format_conversions.json
+	def format_conversions
+		render json: Import::Converter.available_conversions
 	end
 
 private

@@ -14,6 +14,7 @@ SocialTap::Application.routes.draw do
           post 'search'
         end
       end
+      get 'imports/format_conversions', to: 'imports#format_conversions'
       resources :inquiries, except: [:new, :edit] do
         member do
           get 'elasticsearch'
