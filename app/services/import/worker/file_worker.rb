@@ -41,6 +41,13 @@ private
 
 		consumer = ::Import::Consumer::BaseConsumer.new(import_op.dataset.es_index, import_op.dataset.es_type)
 
+		# Instantiate the appropriate type of format converter
+		converter = nil
+		if import_op.source_spec['convert'] == true
+			converter_type = "#{import_op.source_spec['from_format']}_to_#{import_op.source_spec['to_format']}".camelize
+			converter = Object.const_get("::Import::Converter::#{converter_type}").new
+		end
+
 		# Import docs from file until stopped or finished.
 		stopped = false
 		begin
@@ -48,6 +55,9 @@ private
 				line.chomp!
 				unless line.empty?
 					doc = JSON.parse(line)
+
+					doc = converter.convert(doc) unless converter.nil?
+
 					consumer.consume_doc(doc)
 
 					stopped = @stop_queue.pop(true) rescue false
