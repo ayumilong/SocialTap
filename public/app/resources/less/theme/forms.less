@@ -1,3 +1,7 @@
+form {
+	color: #434a54;
+}
+
 button, .button, label, input, textarea {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -45,10 +49,24 @@ button, .button, input, textarea {
 	margin-bottom: 12px;
 }
 
+select {
+	margin-bottom: 12px;
+}
+
 label, input, textarea {
-	color: #434a54;
 	display: block;
 	width: 100%;
+}
+
+.inline label {
+	display: inline;
+	width: inherit;
+}
+
+.inline input, .inline select {
+	display: inline;
+	margin-left: 10px;
+	width: inherit;
 }
 
 label {

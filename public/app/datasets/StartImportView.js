@@ -40,39 +40,86 @@ define(['dojo/_base/declare',
 				this.form.destroy();
 			}
 
-			var typeFields = [];
 			if (sourceType === 'file') {
-				typeFields = [
-					{
-						label: 'File to be imported',
-						name: 'source_spec.path',
-						placeholder: '/path/to/file/',
-						type: 'text'
+				this.form = new Form({
+					fields: [
+						{
+							type: 'hidden',
+							name: 'source_type',
+							value: 'file'
+						},
+						{
+							label: 'File to be imported',
+							name: 'source_spec.path',
+							placeholder: '/path/to/file/',
+							type: 'text'
+						},
+						{
+							label: 'Convert imported data',
+							name: 'source_spec.convert',
+							type: 'checkbox'
+						},
+						// TODO: From/To format options should be loaded from /api/v0/imports/format_conversions
+						{
+							label: 'From',
+							name: 'source_spec.from_format',
+							type: 'select',
+							options: [
+								{ label: 'Twitter', value: 'twitter' }
+							]
+						},
+						{
+							label: 'To',
+							name: 'source_spec.to_format',
+							type: 'select',
+							options: [
+								{ label: 'Activity Stream', value: 'activity_stream' }
+							]
+						}
+					],
+					modifyValue: function(val) {
+						if (val.source_spec.convert === false) {
+							delete val.source_spec.from_format;
+							delete val.source_spec.to_format;
+						}
+						return val;
+					},
+					name: 'import_operation',
+					url: '/api/v0/datasets/' + this.datasetId + '/imports'
+				});
+
+				domClass.add(this.form.fields[2].containerNode, 'inline');
+				domClass.add(this.form.fields[3].containerNode, 'inline hidden');
+				domClass.add(this.form.fields[4].containerNode, 'inline hidden');
+
+				this.form.on('field_change', lang.hitch(this, function(e) {
+					if (e.field === 'source_spec.convert') {
+						var f = e.value ? domClass.remove : domClass.add;
+						f(this.form.fields[3].containerNode, 'hidden');
+						f(this.form.fields[4].containerNode, 'hidden');
 					}
-				];
-			}
-			else if (sourceType === 'gnip') {
-				typeFields = [
-					{
-						label: 'Rule',
-						name: 'source_spec.rule',
-						placeholder: 'Gnip rule',
-						type: 'text'
-					}
-				];
+				}));
 			}
 
-			this.form = new Form({
-				fields: [
-					{
-						type: 'hidden',
-						name: 'source_type',
-						value: sourceType
-					}
-				].concat(typeFields),
-				name: 'import_operation',
-				url: '/api/v0/datasets/' + this.datasetId + '/imports'
-			});
+			else if (sourceType === 'gnip') {
+				this.form = new Form({
+					fields: [
+						{
+							type: 'hidden',
+							name: 'source_type',
+							value: 'gnip'
+						},
+						{
+							label: 'Rule',
+							name: 'source_spec.rule',
+							placeholder: 'Gnip rule',
+							type: 'text'
+						}
+					],
+					name: 'import_operation',
+					url: '/api/v0/datasets/' + this.datasetId + '/imports'
+				});
+			}
 
 			this.form.on('success', lang.hitch(this, function() {
 				this.router.go('/' + this.datasetId);

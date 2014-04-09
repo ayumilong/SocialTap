@@ -4,11 +4,12 @@ define([
 	'dojo/dom-attr',
 	'dojo/dom-class',
 	'dojo/dom-construct',
+	'dojo/dom-style',
 	'dojo/Evented',
 	'dojo/on',
 	'dojo/request/xhr',
 	'dijit/_WidgetBase'
-], function(declare, lang, domAttr, domClass, domConstruct, Evented, on, xhr, _WidgetBase) {
+], function(declare, lang, domAttr, domClass, domConstruct, domStyle, Evented, on, xhr, _WidgetBase) {
 
 	var formElementCounter = 0;
 
@@ -39,32 +40,66 @@ define([
 
 			this.containerNode = domConstruct.create('form', {}, this.domNode);
 
+			var addChangeHandler = lang.hitch(this, function(field) {
+				var eventName = (field.type.indexOf('text') === 0) ? 'keyup' : 'change';
+				on(field.domNode, eventName, lang.hitch(this, function(e) {
+					this.emit('field_change', {
+						field: field.name,
+						value: (field.type === 'checkbox') ? e.target.checked : e.target.value
+					});
+				}));
+			});
+
 			for (var i = 0; i < this.fields.length; i++) {
 				var field = this.fields[i];
 				var builderMethod = 'build' + field.type.charAt(0).toUpperCase() + field.type.slice(1);
 				if (this[builderMethod] !== undefined) {
-					var input = this[builderMethod](field);
-					this.fields[i].domNode = input;
+
+					var fieldNode = this[builderMethod](field);
+					this.fields[i].domNode = fieldNode;
+					if (field.style) {
+						domStyle.set(fieldNode, field.style);
+					}
+
+					if (field.type != 'hidden') {
+						addChangeHandler(field);
+					}
+
+					this.fields[i].containerNode = domConstruct.create('div', {}, this.containerNode);
+
 					var id = 'form-element-' + formElementCounter;
 					formElementCounter++;
-					domAttr.set(input, 'id', id);
-					domConstruct.place(input, this.containerNode);
+					domAttr.set(fieldNode, 'id', id);
+
+					domConstruct.place(fieldNode, this.fields[i].containerNode);
 
 					if (field.type !== 'hidden') {
-						domConstruct.create('label', {
+						this.fields[i].labelNode = domConstruct.create('label', {
+							'data-field-type': field.type,
 							'for': id,
 							innerHTML: field.label || (field.name.charAt(0).toUpperCase() + field.name.slice(1))
-						}, input, 'before');
+						}, fieldNode, 'before');
 					}
 				}
 			}
 
 			this.submitButton = domConstruct.create('button', {
 				'class': 'primary',
-				innerHTML: this.submitLabel
+				innerHTML: this.submitLabel,
+				style: {
+					'margin-top': '20px'
+				}
 			}, this.containerNode);
 
 			on(this.submitButton, 'click', lang.hitch(this, this.submit));
+		},
+
+		buildCheckbox: function(field) {
+			return domConstruct.create('input', {
+				checked: (field.value ? true : false),
+				name: field.name,
+				type: 'checkbox'
+			});
 		},
 
 		buildHidden: function(field) {
@@ -73,6 +108,25 @@ define([
 				type: 'hidden',
 				value: field.value
 			});
+		},
+
+		buildSelect: function(field) {
+			var selectNode = domConstruct.create('select', {
+				name: field.name
+			});
+
+			field.options.forEach(function(opt) {
+				var optNode = domConstruct.create('option', {
+					innerHTML: opt.label,
+					value: opt.value
+				}, selectNode);
+
+				if (opt.value == field.value) {
+					domAttr.set(optNode, 'selected', 'selected');
+				}
+			});
+
+			return selectNode;
 		},
 
 		buildTextHelper: function(field, tag, opts) {
@@ -108,10 +162,24 @@ define([
 					}
 					val2 = val2[parts[j]];
 				}
-				val2[parts[parts.length - 1]] = field.domNode.value;
+
+				if (field.type === 'checkbox') {
+					val2[parts[parts.length - 1]] = field.domNode.checked;
+				}
+				else {
+					val2[parts[parts.length - 1]] = field.domNode.value;
+				}
+
 			}
 			return value;
 		},
+
+		/*modifyValue: function(val) {
+			// summary:
+			//     Can be used by subclasses to modify value before it is submitted.
+			//     Ex. Remove some values if another value is false, etc.
+			return val;
+		},*/
 
 		setValues: function(values) {
 			for (var i = 0; i < this.fields.length; i++) {
@@ -170,10 +238,15 @@ define([
 		submit: function(e) {
 			e.preventDefault(); // Prevent default form submission.
 
-			var request = this.getValue();
+			var value = this.getValue();
+			if (this.modifyValue !== undefined) {
+				value = this.modifyValue(value);
+			}
+
+			var request = value;
 			if (this.name !== undefined) {
 				request = {};
-				request[this.name] = this.getValue();
+				request[this.name] = value;
 			}
 
 			console.log('submitting form');
