@@ -6,6 +6,11 @@ define([], function() {
 		return this.charAt(0).toUpperCase() + this.slice(1);
 	};
 
+	String.prototype.isCapitalized = function() {
+		var c = this.charAt(0);
+		return (c === c.toUpperCase() && c !== c.toLowerCase());
+	};
+
 	String.prototype.formatSymbolForDisplay = function() {
 		// summary:
 		//     Converts strings like 'activity_stream' to 'Activity Stream'

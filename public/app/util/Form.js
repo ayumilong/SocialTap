@@ -77,7 +77,7 @@ define([
 						this.fields[i].labelNode = domConstruct.create('label', {
 							'data-field-type': field.type,
 							'for': id,
-							innerHTML: field.label || (field.name.charAt(0).toUpperCase() + field.name.slice(1))
+							innerHTML: field.label || field.name.capitalize()
 						}, fieldNode, 'before');
 					}
 				}
@@ -226,8 +226,15 @@ define([
 						'class': 'alert error'
 					}, field.domNode, 'after');
 					for (var j = 0; j < errors.length; j++) {
+						var text;
+						if (errors[j].isCapitalized()) {
+							text = errors[j];
+						}
+						else {
+							text = (field.label || field.name.capitalize()) + ' ' + errors[j];
+						}
 						domConstruct.create('li', {
-							innerHTML: (field.label || (field.name.charAt(0).toUpperCase() + field.name.slice(1))) + ' ' + errors[j]
+							innerHTML: text
 						}, field.errorsNode);
 					}
 					break;
