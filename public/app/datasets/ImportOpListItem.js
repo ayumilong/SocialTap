@@ -87,10 +87,10 @@ define(['dojo/_base/declare',
 					break;
 			}
 
-			if (importOp.status === 'in_progress') {
+			if (importOp.status === 'in_progress' || importOp.status === 'pending') {
 				this.stopButton = domConstruct.create('button', {
 					'class': 'danger',
-					innerHTML: 'Stop'
+					innerHTML: (importOp.status === 'in_progress' ? 'Stop' : 'Cancel')
 				}, this.domNode);
 				this.stopClickSignal = on(this.stopButton, 'click', lang.hitch(this, this.stopImport));
 			} else if (this.stopButton) {
@@ -106,6 +106,10 @@ define(['dojo/_base/declare',
 			}
 
 			domAttr.set(this.stopButton, 'disabled', 'disabled');
+			if (this.stopErrorNode) {
+				domConstruct.destroy(this.stopErrorNode);
+				this.stopErrorNode = null;
+			}
 			var spinner = domConstruct.create('span', {
 				'class': 'fa fa-spinner fa-spin',
 				style: {
@@ -121,9 +125,18 @@ define(['dojo/_base/declare',
 					this.stopButton = null;
 					this.statusNode.style.color = '#8cc152';
 					this.statusNode.innerHTML = 'Stopped by user';
+
+					if (this.importOp.status === 'pending') {
+						this.destroy();
+					}
 				}),
 				lang.hitch(this, function(err) {
 					domAttr.remove(this.stopButton, 'disabled');
+					this.stopErrorNode = domConstruct.create('div', {
+						'class': 'alert error',
+						innerHTML: 'Unable to ' + (this.importOp.status === 'in_progress' ? 'stop' : 'cancel')  + ' import',
+						style: { width: '300px' }
+					}, this.stopButton, 'after');
 					domConstruct.destroy(spinner);
 					console.error(err);
 				}));

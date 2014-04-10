@@ -102,6 +102,7 @@ private
 				import_op = ImportOperation.find_by_id(op_id)
 
 				if import_op.nil?
+					# This can happen if the import was cancelled before it began
 					log "Unable to find import operation with ID: #{op_id}"
 					next
 				end

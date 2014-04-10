@@ -28,11 +28,19 @@ class Api::V0::ImportsController < ApplicationController
 	# DELETE /api/v0/datasets/1/imports/1.json
 	def destroy
 		@import_op = @dataset.import_operations.find_by_id(params[:id])
-		begin
-			@import_op.cancel!
+
+		if @import_op.status == :pending
+			@import_op.destroy
 			head :no_content
-		rescue StandardError => e
-			render json: { error: e.message }, status: :internal_server_error
+		elsif @import_op.status == :in_progress
+			begin
+				@import_op.cancel!
+				head :no_content
+			rescue StandardError => e
+				render json: { error: e.message }, status: :internal_server_error
+			end
+		else
+			render json: { error: "Cannot delete completed import" }, status: :bad_request
 		end
 	end
 
