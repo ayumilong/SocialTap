@@ -35,6 +35,7 @@ class GnipWorker < BaseWorker
 		end
 
 		@consumers = Hash.new
+		@converters = Hash.new
 
 		puts "Starting consumption"
 		@consumer_thread = Thread.new do
@@ -50,7 +51,14 @@ class GnipWorker < BaseWorker
 							# Once an import is stopped, its consumer is flushed and removed. Ignore
 							# any activities from that import's rule that are still in the queue.
 							if @consumers[op_id]
-								@consumers[op_id].consume_doc(activity)
+								if @converters[op_id]
+									# Since the activity may be imported into multiple datasets, pass
+									# the converter for this import a copy of the activity to prevent
+									# it from modifying the original.
+									@consumers[op_id].consume_doc(@converters[op_id].convert(activity.deep_dup))
+								else
+									@consumers[op_id].consume_doc(activity)
+								end
 							end
 						end
 					end
@@ -94,15 +102,25 @@ private
 	def start_import(import_op)
 		# Add rule to Gnip. Tag with import operation ID.
 		log "Start import #{import_op.id} with rule '#{import_op.source_spec['rule']}'"
-		connect_to_gnip_rules
+
 		@consumers[import_op.id] = ::Import::Consumer::BaseConsumer.new(import_op.dataset.es_index, import_op.dataset.es_type)
+
+		if import_op.source_spec['convert']
+			if import_op.source_spec['convert'] == true
+				converter_type = "#{import_op.source_spec['from_format']}_to_#{import_op.source_spec['to_format']}".camelize
+				@converters[import_op.id] = Object.const_get("::Import::Converter::#{converter_type}").new
+			end
+		end
+
 		begin
+			connect_to_gnip_rules
 			@gnip_rule_client.add(::GnipRule::Rule.new(import_op.source_spec['rule'], "socialtap:import:#{import_op.id}"))
 			log "Successfully added rule '#{import_op.source_spec['rule']}' to Gnip"
 		rescue StandardError => e
 			import_stopped(import_op, "Unable to upload rule")
 			log "Unable to upload rule for import #{import_op.id}"
 			@consumers.delete(import_op.id)
+			@converters.delete(import_op.id)
 		end
 	end
 
@@ -124,6 +142,7 @@ private
 		@consumers[op_id].wait
 		log "Import #{op_id} stopped"
 		@consumers.delete(op_id)
+		@converters.delete(op_id)
 	end
 
 end
