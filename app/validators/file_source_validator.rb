@@ -7,9 +7,13 @@ class FileSourceValidator
 	def validate
 		errors = Hash.new
 
-		path = File.expand_path(@spec['path'])
-		if !File.exists?(path) || !File.readable?(path)
-			errors[:path] = ["is unreadable"]
+		if @spec['path'].blank?
+			errors[:path] = "is required"
+		else
+			path = File.expand_path(@spec['path'])
+			if !File.exists?(path) || !File.readable?(path)
+				errors[:path] = "is unreadable"
+			end
 		end
 
 		errors

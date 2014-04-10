@@ -25,8 +25,14 @@ class ImportOperation < ActiveRecord::Base
 	validate do |io|
 		validator_class = Object.const_get("#{source_type.capitalize}SourceValidator")
 		source_spec_errors = validator_class.new(io.source_spec).validate
-		source_spec_errors.each do |field, errors|
-			io.errors["source_spec.#{field}"] = errors
+		source_spec_errors.each do |field, field_errors|
+			if field_errors.is_a? Array
+				field_errors.each do |err|
+					io.errors.add("source_spec.#{field}", err)
+				end
+			elsif field_errors.is_a? String
+				io.errors.add("source_spec.#{field}", field_errors)
+			end
 		end
 	end
 
