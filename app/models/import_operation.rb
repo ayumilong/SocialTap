@@ -34,6 +34,20 @@ class ImportOperation < ActiveRecord::Base
 				io.errors.add("source_spec.#{field}", field_errors)
 			end
 		end
+
+		# Check that the requested conversion is available
+		if io.source_spec['convert']
+			match = false
+			Import::Converter.available_conversions.each do |conversion|
+				if conversion[:from] == io.source_spec['from_format'] && conversion[:to] == io.source_spec['to_format']
+					match = true
+					break
+				end
+			end
+			if !match
+				io.errors.add("source_spec.to_format", "No conversion from #{io.source_spec['from_format'].titleize} to #{io.source_spec['to_format'].titleize} available")
+			end
+		end
 	end
 
 	# @!attribute time_started
