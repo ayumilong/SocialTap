@@ -39,7 +39,7 @@ private
 
 		log "Importing '#{import_op.source_spec['path']}'..."
 
-		consumer = ::Import::Consumer::BaseConsumer.new(import_op.dataset.es_index, import_op.dataset.es_type)
+		consumer = ::Import::Consumer::BaseConsumer.new(import_op.dataset.es_index, "import_#{import_op.id}")
 
 		# Instantiate the appropriate type of format converter
 		converter = nil

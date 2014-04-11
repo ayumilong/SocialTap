@@ -5,7 +5,6 @@ class CreateDatasets < ActiveRecord::Migration
       t.text :description
 
       t.string :es_index
-      t.string :es_type
 
       t.timestamps
     end

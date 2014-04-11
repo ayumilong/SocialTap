@@ -16,12 +16,6 @@ class Dataset < ActiveRecord::Base
 	attr_readonly :es_index
 	validates :es_index, { presence: true, uniqueness: { case_sensitive: false } }
 
-	# @!attribute es_type
-	#   Elasticsearch type to use for this dataset's documents.
-	#   @return [String]
-	attr_readonly :es_type
-	validates :es_type, { presence: true }
-
 	# @!attribute inquiries
 	#   Saved inquiries targeting this dataset.
 	#   @return [Array]
@@ -53,7 +47,6 @@ class Dataset < ActiveRecord::Base
 				end while Dataset.find_by_es_index(es_index)
 			end
 		end
-		self.es_type ||= "data"
 	end
 
 	after_commit :ensure_es_index_exists, on: :create
@@ -88,7 +81,7 @@ class Dataset < ActiveRecord::Base
 	# @return [Hash] The response from Elasticsearch.
 	def search(query = { query: { match_all: true }})
 		self.connect_to_es
-		@es.search({ index: self.es_index, type: self.es_type, body: query })
+		@es.search({ index: self.es_index, body: query })
 	end
 
 end

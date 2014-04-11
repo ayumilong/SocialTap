@@ -17,7 +17,6 @@ ActiveRecord::Schema.define(version: 20140210183708) do
     t.string   "name"
     t.text     "description"
     t.string   "es_index"
-    t.string   "es_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

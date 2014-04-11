@@ -103,7 +103,7 @@ private
 		# Add rule to Gnip. Tag with import operation ID.
 		log "Start import #{import_op.id} with rule '#{import_op.source_spec['rule']}'"
 
-		@consumers[import_op.id] = ::Import::Consumer::BaseConsumer.new(import_op.dataset.es_index, import_op.dataset.es_type)
+		@consumers[import_op.id] = ::Import::Consumer::BaseConsumer.new(import_op.dataset.es_index, "import_#{import_op.id}")
 
 		if import_op.convert?
 			converter_type = "#{import_op.from_format}_to_#{import_op.to_format}".camelize
