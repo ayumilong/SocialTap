@@ -12,7 +12,7 @@ class Api::V0::DatasetsController < ApplicationController
 	def show
 		@dataset = Dataset.find(params[:id])
 
-		render json: @dataset.as_json(:include => { :import_operations => { :methods => [:status] } } )
+		render json: @dataset.as_json(:include => { :import_operations => { :methods => [:status, :convert] } } )
 	end
 
 	# POST /api/v0/datasets

@@ -43,8 +43,8 @@ private
 
 		# Instantiate the appropriate type of format converter
 		converter = nil
-		if import_op.source_spec['convert'] == true
-			converter_type = "#{import_op.source_spec['from_format']}_to_#{import_op.source_spec['to_format']}".camelize
+		if import_op.convert?
+			converter_type = "#{import_op.from_format}_to_#{import_op.to_format}".camelize
 			converter = Object.const_get("::Import::Converter::#{converter_type}").new
 		end
 

@@ -6,6 +6,9 @@ class CreateImportOperations < ActiveRecord::Migration
       t.string :source_type
       t.text :source_spec
 
+      t.string :from_format
+      t.string :to_format
+
       t.timestamp :time_started
       t.timestamp :time_stopped
       t.boolean :aborted

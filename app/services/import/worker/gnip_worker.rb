@@ -105,11 +105,9 @@ private
 
 		@consumers[import_op.id] = ::Import::Consumer::BaseConsumer.new(import_op.dataset.es_index, import_op.dataset.es_type)
 
-		if import_op.source_spec['convert']
-			if import_op.source_spec['convert'] == true
-				converter_type = "#{import_op.source_spec['from_format']}_to_#{import_op.source_spec['to_format']}".camelize
-				@converters[import_op.id] = Object.const_get("::Import::Converter::#{converter_type}").new
-			end
+		if import_op.convert?
+			converter_type = "#{import_op.from_format}_to_#{import_op.to_format}".camelize
+			@converters[import_op.id] = Object.const_get("::Import::Converter::#{converter_type}").new
 		end
 
 		begin

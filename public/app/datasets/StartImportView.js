@@ -87,12 +87,12 @@ define(['dojo/_base/declare',
 					.concat([
 						{
 							label: 'Convert imported data',
-							name: 'source_spec.convert',
+							name: 'convert',
 							type: 'checkbox'
 						},
 						{
 							label: 'From',
-							name: 'source_spec.from_format',
+							name: 'from_format',
 							type: 'select',
 							options: typeConversions.map(function(c) { return c.from; }).uniqueValues().map(function(format) {
 								return { label: format.formatSymbolForDisplay(), value: format };
@@ -100,15 +100,15 @@ define(['dojo/_base/declare',
 						},
 						{
 							label: 'To',
-							name: 'source_spec.to_format',
+							name: 'to_format',
 							type: 'select',
 							options: []
 						}
 					]),
 					modifyValue: function(val) {
-						if (val.source_spec.convert === false) {
-							delete val.source_spec.from_format;
-							delete val.source_spec.to_format;
+						if (val.convert === false) {
+							delete val.from_format;
+							delete val.to_format;
 						}
 						return val;
 					},
@@ -126,13 +126,13 @@ define(['dojo/_base/declare',
 				this.updateConversionToOptions(this.form.fields[3].domNode.value);
 
 				this.form.on('field_change', lang.hitch(this, function(e) {
-					if (e.field === 'source_spec.convert') {
+					if (e.field === 'convert') {
 						var f = e.value ? domClass.remove : domClass.add;
 						f(this.form.fields[3].containerNode, 'hidden');
 						f(this.form.fields[4].containerNode, 'hidden');
 					}
 
-					if (e.field === 'source_spec.from_format') {
+					if (e.field === 'from_format') {
 						this.updateConversionToOptions(e.value);
 					}
 				}));

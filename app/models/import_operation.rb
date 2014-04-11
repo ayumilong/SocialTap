@@ -23,32 +23,40 @@ class ImportOperation < ActiveRecord::Base
 	serialize :source_spec, JSON
 	validates :source_spec, { presence: true }
 	validate do |io|
-		validator_class = Object.const_get("#{source_type.capitalize}SourceValidator")
-		source_spec_errors = validator_class.new(io.source_spec).validate
-		source_spec_errors.each do |field, field_errors|
-			if field_errors.is_a? Array
-				field_errors.each do |err|
-					io.errors.add("source_spec.#{field}", err)
-				end
-			elsif field_errors.is_a? String
-				io.errors.add("source_spec.#{field}", field_errors)
-			end
-		end
+
+		# Do validations specific to this import's source type
+		validator_class = Object.const_get("#{source_type.capitalize}ImportValidator")
+		validator_class.new(io).validate
 
 		# Check that the requested conversion is available
-		if io.source_spec['convert']
+		if io.convert?
 			match = false
 			Import::Converter.available_conversions.each do |conversion|
-				if conversion[:from] == io.source_spec['from_format'] && conversion[:to] == io.source_spec['to_format']
+				if conversion[:from] == io.from_format && conversion[:to] == io.to_format
 					match = true
 					break
 				end
 			end
 			if !match
-				io.errors.add("source_spec.to_format", "No conversion from #{io.source_spec['from_format'].titleize} to #{io.source_spec['to_format'].titleize} available")
+				io.errors.add("to_format", "No conversion from #{io.from_format.titleize} to #{io.to_format.titleize} available")
 			end
 		end
 	end
+
+	# Whether or not to convert to a different format on imoprt.
+	# @return [Boolean]
+	def convert?
+		from_format? && to_format?
+	end
+	alias_method :convert, :convert?
+
+	# @!attribute from_format
+	#   The format of documents in the original source.
+	#   @return [String]
+
+	# @!attribute to_format
+	#   The format to convert documents to when importing into Elasticsearch.
+	#   @return [String]
 
 	# @!attribute time_started
 	#   The time this operation was started.

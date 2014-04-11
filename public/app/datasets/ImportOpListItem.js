@@ -30,8 +30,8 @@ define(['dojo/_base/declare',
 				this.specNode.innerHTML = '"' + importOp.source_spec.rule + '"';
 			}
 
-			if (importOp.source_spec.convert === true) {
-				this.conversionNode.innerHTML = 'Format converted from ' + importOp.source_spec.from_format.formatSymbolForDisplay() + ' to ' + importOp.source_spec.to_format.formatSymbolForDisplay();
+			if (importOp.convert === true) {
+				this.conversionNode.innerHTML = 'Format converted from ' + importOp.from_format.formatSymbolForDisplay() + ' to ' + importOp.to_format.formatSymbolForDisplay();
 				domClass.remove(this.conversionNode, 'hidden');
 			}
 			else {

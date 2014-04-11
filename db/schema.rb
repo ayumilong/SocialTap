@@ -44,6 +44,8 @@ ActiveRecord::Schema.define(version: 20140210183708) do
     t.integer  "dataset_id"
     t.string   "source_type"
     t.text     "source_spec"
+    t.string   "from_format"
+    t.string   "to_format"
     t.datetime "time_started"
     t.datetime "time_stopped"
     t.boolean  "aborted"
