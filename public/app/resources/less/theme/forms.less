@@ -29,6 +29,7 @@ button, .button {
 		}
 		&:active, &:disabled {
 			background-color: darken(#3bafda, 15%);
+			background-color: darken(#3bafda, 5%);
 		}
 	}
 
@@ -38,7 +39,8 @@ button, .button {
 			background-color: #ed5565;
 		}
 		&:active, &:disabled {
-			background-color: #d9534f;
+			background-color: darken(#da4453, 15%);
+			color: darken(#da4453, 5%);
 		}
 
 	}
@@ -47,6 +49,27 @@ button, .button {
 button, .button, input, textarea {
 	border-radius: 4px;
 	margin-bottom: 12px;
+}
+
+fieldset {
+	border: 1px solid #aab2bd;
+	border-radius: 4px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	margin-bottom: 12px;
+	padding: 10px;
+
+	input {
+		display: inline-block;
+		width: 300px;
+	}
+
+	button {
+		display: inline-block;
+		margin-left: 8px;
+		width: 44px;
+	}
 }
 
 select {

@@ -7,9 +7,10 @@ define([
 	'dojo/dom-style',
 	'dojo/Evented',
 	'dojo/on',
+	'dojo/query',
 	'dojo/request/xhr',
 	'dijit/_WidgetBase'
-], function(declare, lang, domAttr, domClass, domConstruct, domStyle, Evented, on, xhr, _WidgetBase) {
+], function(declare, lang, domAttr, domClass, domConstruct, domStyle, Evented, on, query, xhr, _WidgetBase) {
 
 	var formElementCounter = 0;
 
@@ -94,6 +95,53 @@ define([
 			on(this.submitButton, 'click', lang.hitch(this, this.submit));
 		},
 
+		buildArray: function(field) {
+			var fieldsetNode = domConstruct.create('fieldset', {
+				'class': 'array',
+				name: field.name
+			});
+
+			var firstRow = domConstruct.create('div', {
+				innerHTML: '<input type="text">',
+			}, fieldsetNode);
+
+
+
+			var addButton = domConstruct.create('button', {
+				'class': 'primary',
+				innerHTML: '<span class="fa fa-plus"></span>'
+			}, firstRow);
+
+			on(addButton, 'click', function(e) {
+				e.preventDefault();
+
+				var row = domConstruct.create('div', {
+					innerHTML: '<input type="text">'
+				}, fieldsetNode);
+
+				var destroyButton = domConstruct.create('button', {
+					'class': 'danger',
+					innerHTML: '<span class="fa fa-minus"></span>'
+				}, row);
+
+				domConstruct.place(addButton, row);
+
+				on(destroyButton, 'click', function(e) {
+					e.preventDefault();
+
+					var rows = query('div', fieldsetNode);
+
+					if (row === rows[rows.length-1]) {
+						domConstruct.place(addButton, rows[rows.length - 2]);
+					}
+
+					domConstruct.destroy(row);
+				});
+			});
+
+			return fieldsetNode;
+		},
+
 		buildCheckbox: function(field) {
 			return domConstruct.create('input', {
 				checked: (field.value ? true : false),
@@ -160,24 +208,36 @@ define([
 
 		getValue: function() {
 			var value = {};
-			for (var i = 0; i < this.fields.length; i++) {
+			var i, j;
+			for (i = 0; i < this.fields.length; i++) {
 				var field = this.fields[i];
+
+				var fieldValue;
+				if (field.type === 'checkbox') {
+					fieldValue = field.domNode.checked;
+				}
+				else if (field.type == 'array') {
+					var inputNodes = query('input[type="text"]', field.domNode);
+					fieldValue = [];
+					for (j = 0; j < inputNodes.length; j++) {
+						if (inputNodes[j].value.length > 0) {
+							fieldValue.push(inputNodes[j].value);
+						}
+					}
+				}
+				else {
+					fieldValue = field.domNode.value;
+				}
 
 				var parts = field.name.split('.');
 				var val2 = value;
-				for (var j = 0; j < parts.length - 1; j++) {
+				for (j = 0; j < parts.length - 1; j++) {
 					if (val2[parts[j]] === undefined) {
 						val2[parts[j]] = {};
 					}
 					val2 = val2[parts[j]];
 				}
-
-				if (field.type === 'checkbox') {
-					val2[parts[parts.length - 1]] = field.domNode.checked;
-				}
-				else {
-					val2[parts[parts.length - 1]] = field.domNode.value;
-				}
+				val2[parts[parts.length - 1]] = fieldValue;
 
 			}
 			return value;
