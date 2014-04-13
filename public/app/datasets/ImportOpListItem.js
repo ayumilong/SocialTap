@@ -25,6 +25,9 @@ define(['dojo/_base/declare',
 
 			if (importOp.source_type === 'file') {
 				this.specNode.innerHTML = importOp.source_spec.path;
+				if (importOp.source_spec.preserve_fields !== undefined) {
+					this.specNode.innerHTML += '<br>Preserve fields: ' + importOp.source_spec.preserve_fields.map(function(f) { return '"' + f + '"'; }).join(', ');
+				}
 			}
 			else if (importOp.source_type === 'gnip') {
 				this.specNode.innerHTML = '"' + importOp.source_spec.rule + '"';

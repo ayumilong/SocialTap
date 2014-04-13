@@ -53,8 +53,10 @@ class Api::V0::ImportsController < ApplicationController
 private
 
 	def import_params
-		spec_keys = params.require(:import_operation).fetch(:source_spec, {}).keys
+		# Permit arbitrary JSON for source_spec.
+		spec_keys = get_nested_keys(params[:import_operation][:source_spec])
 		params.require(:import_operation).permit(:source_type, :from_format, :to_format, { :source_spec => spec_keys })
+
 	end
 
 	def load_dataset
@@ -64,4 +66,17 @@ private
 		end
 	end
 
+end
+
+def get_nested_keys(obj)
+	obj.keys.map do |key|
+		val = obj[key]
+		if val.is_a? Hash
+			{ key => get_keys(val) }
+		elsif val.is_a? Array
+			{ key => [] }
+		else
+			key
+		end
+	end
 end

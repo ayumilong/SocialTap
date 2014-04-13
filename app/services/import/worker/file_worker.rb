@@ -56,7 +56,32 @@ private
 				unless line.empty?
 					doc = JSON.parse(line)
 
-					doc = converter.convert(doc) unless converter.nil?
+					unless converter.nil?
+						original_doc = doc
+						doc = converter.convert(original_doc)
+
+						if import_op.source_spec['preserve_fields']
+							doc['socialtap'] = {}
+							doc['socialtap']['preserved_fields'] = {}
+
+							import_op.source_spec['preserve_fields'].each do |field_keypath|
+
+								# Extract value for the given key path from original document.
+								field_value = field_keypath.split('.').inject(original_doc) { |obj, key| obj[key] } rescue nil
+
+								# Set the value for the same keypath under 'socialtap.preserved_fields'
+								# in the converted doc
+								obj = doc['socialtap']['preserved_fields']
+								field_keypath.split('.').slice(0..-2).each do |key|
+									if obj[key].nil?
+										obj[key] = {}
+									end
+									obj = obj[key]
+								end
+								obj[field_keypath.split('.').last] = field_value
+							end
+						end
+					end
 
 					consumer.consume_doc(doc)
 

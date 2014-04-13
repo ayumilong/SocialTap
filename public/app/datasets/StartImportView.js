@@ -41,28 +41,6 @@ define(['dojo/_base/declare',
 				this.form.destroy();
 			}
 
-			var typeFields = [];
-			if (sourceType === 'file') {
-				typeFields = [
-					{
-						label: 'File to be imported',
-						name: 'source_spec.path',
-						placeholder: '/path/to/file/',
-						type: 'text'
-					},
-				];
-			}
-			else if (sourceType === 'gnip') {
-				typeFields = [
-					{
-						label: 'Rule',
-						name: 'source_spec.rule',
-						placeholder: 'Gnip rule',
-						type: 'text'
-					}
-				];
-			}
-
 			when(this.loadConversions(), lang.hitch(this, function(conversions) {
 
 				// Filter conversions based on source type
@@ -76,39 +54,64 @@ define(['dojo/_base/declare',
 					}
 				});
 
+				var fields = [
+					{
+						type: 'hidden',
+						name: 'source_type',
+						value: sourceType
+					},
+					{
+						label: 'Convert imported data',
+						name: 'convert',
+						type: 'checkbox'
+					},
+					{
+						label: 'From',
+						name: 'from_format',
+						type: 'select',
+						options: typeConversions.map(function(c) { return c.from; }).uniqueValues().map(function(format) {
+							return { label: format.formatSymbolForDisplay(), value: format };
+						})
+					},
+					{
+						label: 'To',
+						name: 'to_format',
+						type: 'select',
+						options: []
+					}
+				];
+
+				if (sourceType === 'file') {
+					fields.splice(1, 0, {
+						label: 'File to be imported',
+						name: 'source_spec.path',
+						placeholder: '/path/to/file/',
+						type: 'text'
+					});
+					fields.splice(5, 0, {
+						label: 'Preserve fields',
+						name: 'source_spec.preserve_fields',
+						type: 'array'
+					});
+				}
+				else if (sourceType === 'gnip') {
+					fields.splice(1, 0, {
+						label: 'Rule',
+						name: 'source_spec.rule',
+						placeholder: 'Gnip rule',
+						type: 'text'
+					});
+				}
+
 				this.form = new Form({
-					fields: [
-						{
-							type: 'hidden',
-							name: 'source_type',
-							value: sourceType
-						}
-					].concat(typeFields)
-					.concat([
-						{
-							label: 'Convert imported data',
-							name: 'convert',
-							type: 'checkbox'
-						},
-						{
-							label: 'From',
-							name: 'from_format',
-							type: 'select',
-							options: typeConversions.map(function(c) { return c.from; }).uniqueValues().map(function(format) {
-								return { label: format.formatSymbolForDisplay(), value: format };
-							})
-						},
-						{
-							label: 'To',
-							name: 'to_format',
-							type: 'select',
-							options: []
-						}
-					]),
+					fields: fields,
 					modifyValue: function(val) {
 						if (val.convert === false) {
 							delete val.from_format;
 							delete val.to_format;
+							if (sourceType === 'file') {
+								delete val.source_spec.preserve_fields;
+							}
 						}
 						return val;
 					},
@@ -122,6 +125,13 @@ define(['dojo/_base/declare',
 				domClass.add(this.form.getField('convert').containerNode, 'inline');
 				domClass.add(this.form.getField('from_format').containerNode, 'inline hidden');
 				domClass.add(this.form.getField('to_format').containerNode, 'inline hidden');
+				if (sourceType === 'file') {
+					domConstruct.create('p', {
+						innerHTML: 'These fields will be copied into the stored document after format conversion under the \'socialtap.preserved_fields\' key.',
+						style: { margin: '0 0 5px 0' }
+					}, this.form.getField('source_spec.preserve_fields').domNode, 'first');
+					domClass.add(this.form.getField('source_spec.preserve_fields').containerNode, 'hidden');
+				}
 
 				this.updateConversionToOptions(this.form.getField('from_format').domNode.value);
 
@@ -130,6 +140,9 @@ define(['dojo/_base/declare',
 						var f = e.value ? domClass.remove : domClass.add;
 						f(this.form.getField('from_format').containerNode, 'hidden');
 						f(this.form.getField('to_format').containerNode, 'hidden');
+						if (sourceType === 'file') {
+							f(this.form.getField('source_spec.preserve_fields').containerNode, 'hidden');
+						}
 					}
 
 					if (e.field === 'from_format') {
