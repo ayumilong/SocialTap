@@ -117,19 +117,19 @@ define(['dojo/_base/declare',
 				});
 
 				// Hide 'Convert' option if there are no conversions available
-				domClass[(typeConversions.length === 0) ? 'add' : 'remove'](this.form.fields[2].containerNode, 'hidden');
+				domClass[(typeConversions.length === 0) ? 'add' : 'remove'](this.form.getField('convert').containerNode, 'hidden');
 
-				domClass.add(this.form.fields[2].containerNode, 'inline');
-				domClass.add(this.form.fields[3].containerNode, 'inline hidden');
-				domClass.add(this.form.fields[4].containerNode, 'inline hidden');
+				domClass.add(this.form.getField('convert').containerNode, 'inline');
+				domClass.add(this.form.getField('from_format').containerNode, 'inline hidden');
+				domClass.add(this.form.getField('to_format').containerNode, 'inline hidden');
 
-				this.updateConversionToOptions(this.form.fields[3].domNode.value);
+				this.updateConversionToOptions(this.form.getField('from_format').domNode.value);
 
 				this.form.on('field_change', lang.hitch(this, function(e) {
 					if (e.field === 'convert') {
 						var f = e.value ? domClass.remove : domClass.add;
-						f(this.form.fields[3].containerNode, 'hidden');
-						f(this.form.fields[4].containerNode, 'hidden');
+						f(this.form.getField('from_format').containerNode, 'hidden');
+						f(this.form.getField('to_format').containerNode, 'hidden');
 					}
 
 					if (e.field === 'from_format') {
@@ -165,12 +165,12 @@ define(['dojo/_base/declare',
 
 		updateConversionToOptions: function(fromFormat) {
 			var toFormats = this.conversions.filter(function(c) { return c.from === fromFormat; }).map(function(c) { return c.to; }).uniqueValues();
-			domConstruct.empty(this.form.fields[4].domNode);
+			domConstruct.empty(this.form.getField('to_format').domNode);
 			toFormats.forEach(lang.hitch(this, function(f) {
 				domConstruct.create('option', {
 					innerHTML: f.formatSymbolForDisplay(),
 					value: f
-				}, this.form.fields[4].domNode);
+				}, this.form.getField('to_format').domNode);
 			}));
 		}
 

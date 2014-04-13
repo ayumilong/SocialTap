@@ -149,6 +149,15 @@ define([
 			return this.buildTextHelper(field, 'textarea');
 		},
 
+		getField: function(name) {
+			for (var i = 0; i < this.fields.length; i++) {
+				if (this.fields[i].name === name) {
+					return this.fields[i];
+				}
+			}
+			return null;
+		},
+
 		getValue: function() {
 			var value = {};
 			for (var i = 0; i < this.fields.length; i++) {
