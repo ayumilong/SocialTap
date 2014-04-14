@@ -64,6 +64,7 @@ define(['dojo/_base/declare',
 					this.name = null;
 					this.emit('logout');
 					d.resolve(true);
+					window.location = '#/';
 				}),
 				lang.hitch(this, function(err) {
 					console.error(err);
