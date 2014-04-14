@@ -18,7 +18,7 @@ gem 'sqlite3'
 gem 'elasticsearch'
 
 # To use ActiveModel has_secure_password
-gem 'bcrypt-ruby', '~> 3.0.0'
+gem 'bcrypt', '~> 3.1.2'
 
 # For Less compilation support - used by lib/tasks/less.rake
 gem 'less-rails'
