@@ -7,9 +7,9 @@
 		<div data-dojo-attach-point="advancedFiltersNode" class="hidden">
 			<fieldset data-dojo-attach-point="textQueryFieldsNode">
 				<legend>Include fields in text filter</legend>
-				<div><label for="bodyCheck">Tweet body</label><input type="checkbox" id="bodyCheck" value="body" checked="checked"></div>
-				<div><label for="usernameCheck">Username</label><input type="checkbox" id="usernameCheck" value="actor.displayName"></div>
-				<div><label for="hashtagsCheck">Hashtags</label><input type="checkbox" id="hashtagsCheck" value="twitter_entities.hashtags.text"></div>
+				<div class="inline"><label for="bodyCheck">Tweet body</label><input type="checkbox" id="bodyCheck" value="body" checked="checked"></div>
+				<div class="inline"><label for="usernameCheck">Username</label><input type="checkbox" id="usernameCheck" value="actor.displayName"></div>
+				<div class="inline"><label for="hashtagsCheck">Hashtags</label><input type="checkbox" id="hashtagsCheck" value="twitter_entities.hashtags.text"></div>
 			</fieldset>
 			<fieldset data-dojo-attach-point="dateFilterNode" class="dateFilter">
 				<legend>Filter by date</legend>
@@ -19,15 +19,15 @@
 				<input data-dojo-attach-point="dateRangeEndNode" type="date" id="inquiryDateFilterRangeEnd">
 				<p>Limit to</p>
 				<div style="width: 50%; float: left;">
-					<div><input id="sundayCheck" type="checkbox" value="0"><label for="sundayCheck">Sunday</label></div>
-					<div><input id="mondayCheck" type="checkbox" value="1"><label for="mondayCheck">Monday</label></div>
-					<div><input id="tuesdayCheck" type="checkbox" value="2"><label for="tuesdayCheck">Tuesday</label></div>
-					<div><input id="wednesdayCheck" type="checkbox" value="3"><label for="wednesdayCheck">Wednesday</label></div>
+					<div class="inline"><input id="sundayCheck" type="checkbox" value="0"><label for="sundayCheck">Sunday</label></div>
+					<div class="inline"><input id="mondayCheck" type="checkbox" value="1"><label for="mondayCheck">Monday</label></div>
+					<div class="inline"><input id="tuesdayCheck" type="checkbox" value="2"><label for="tuesdayCheck">Tuesday</label></div>
+					<div class="inline"><input id="wednesdayCheck" type="checkbox" value="3"><label for="wednesdayCheck">Wednesday</label></div>
 				</div>
 				<div style="width: 50%; float: left;">
-					<div><input id="thursdayCheck" type="checkbox" value="4"><label for="thursdayCheck">Thursday</label></div>
-					<div><input id="fridayCheck" type="checkbox" value="5"><label for="fridayCheck">Friday</label></div>
-					<div><input id="saturdayCheck" type="checkbox" value="6"><label for="saturdayCheck">Saturday</label></div>
+					<div class="inline"><input id="thursdayCheck" type="checkbox" value="4"><label for="thursdayCheck">Thursday</label></div>
+					<div class="inline"><input id="fridayCheck" type="checkbox" value="5"><label for="fridayCheck">Friday</label></div>
+					<div class="inline"><input id="saturdayCheck" type="checkbox" value="6"><label for="saturdayCheck">Saturday</label></div>
 				</div>
 			</fieldset>
 			<fieldset class="geoFilter">
@@ -44,12 +44,18 @@
 			</fieldset>
 			<fieldset class="sentimentFilter">
 				<legend>Filter by sentiment</legend>
-				<input type="checkbox" id="inquirySentimentFilterPositive">
-				<label for="inquirySentimentFilterPositive">Positive</label>
-				<input type="checkbox" id="inquirySentimentFilterNeutral">
-				<label for="inquirySentimentFilterNeutral">Neutral</label>
-				<input type="checkbox" id="inquirySentimentFilterNegative">
-				<label for="inquirySentimentFilterNegative">Negative</label>
+				<div class="inline">
+					<input type="checkbox" id="inquirySentimentFilterPositive">
+					<label for="inquirySentimentFilterPositive">Positive</label>
+				</div>
+				<div class="inline">
+					<input type="checkbox" id="inquirySentimentFilterNeutral">
+					<label for="inquirySentimentFilterNeutral">Neutral</label>
+				</div>
+				<div class="inline">
+					<input type="checkbox" id="inquirySentimentFilterNegative">
+					<label for="inquirySentimentFilterNegative">Negative</label>
+				</div>
 			</fieldset>
 			<fieldset class="inquiryInfo">
 				<legend>Description</legend>
