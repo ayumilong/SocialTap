@@ -1,0 +1,14 @@
+<div class="datasetsMenu">
+	<div data-dojo-attach-point="buttonNode">
+		<a class="button clear" data-dojo-attach-event="onmouseover:showMenu"><span data-dojo-attach-point="selectedDatasetNode">Select a Dataset</span> <i class="fa fa-caret-down"></i></a>
+	</div>
+	<div data-dojo-attach-point="menuNode" class="menuContainer hidden" style="position: absolute; top: 15px; z-index: 1;">
+		<div class="dropdownMenu" style="position: static; top: 0; margin-top: 35px;">
+			<ul data-dojo-attach-point="listNode"></ul>
+			<div class="hr"></div>
+			<ul>
+				<li><a data-dojo-attach-event="onclick:hideMenu" href="#/datasets/create">Create New Dataset</a><i class="fa fa-plus"></i></li>
+			</ul>
+		</div>
+	</div>
+</div>
