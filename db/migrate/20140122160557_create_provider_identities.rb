@@ -5,6 +5,10 @@ class CreateProviderIdentities < ActiveRecord::Migration
 			t.string :provider
 			t.string :uid
 
+			t.string :username
+			t.string :token
+			t.string :secret
+
 			t.timestamps
 
 			t.index [:provider, :uid]

@@ -1,5 +1,6 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
+		'dojo/cookie',
 		'dojo/dom-attr',
 		'dojo/dom-class',
 		'dojo/keys',
@@ -11,7 +12,7 @@ define(['dojo/_base/declare',
 		'dijit/_TemplatedMixin',
 		'dojo-mama/views/_ModuleViewMixin',
 		'./user'
-], function(declare, lang, domAttr, domClass, keys, on, xhr, router, template, _WidgetBase,
+], function(declare, lang, cookie, domAttr, domClass, keys, on, xhr, router, template, _WidgetBase,
 	_TemplatedMixin, _ModuleViewMixin, user)
 {
 	return declare([_WidgetBase, _TemplatedMixin, _ModuleViewMixin], {
@@ -21,6 +22,20 @@ define(['dojo/_base/declare',
 		route: '/login',
 		templateString: template,
 		title: 'Login',
+
+		activate: function() {
+			this.inherited(arguments);
+
+			if (cookie('connect_account_require_login')) {
+				this.errorsNode.innerHTML = 'You must login to connect an account';
+				domClass.remove(this.errorsNode, 'hidden');
+				cookie('connect_account_require_login', '', { expires: -1 });
+			}
+			else {
+				this.errorsNode.innerHTML = '';
+				domClass.add(this.errorsNode, 'hidden');
+			}
+		},
 
 		postCreate: function() {
 			this.inherited(arguments);

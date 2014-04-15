@@ -2,7 +2,12 @@ class Api::V0::UsersController < ApplicationController
 
   def me
     if signed_in?
-      render json: current_user
+      render json: current_user.as_json({
+      	include: [
+      		{ identity: { only: [:email, :name] } },
+      		{ provider_identity: { only: [:provider, :username] } }
+      	]
+      })
     else
       render json: nil, status: :unauthorized
     end

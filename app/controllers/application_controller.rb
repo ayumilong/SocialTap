@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::API
+	include ActionController::Helpers
+	include ActionController::Cookies
 
 	def require_login
 		unless signed_in?

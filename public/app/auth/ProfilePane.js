@@ -40,9 +40,18 @@ define(['dojo/_base/declare',
 
 		refreshInfo: function() {
 			if (user.isLoggedIn()) {
-				this.userNameNode.innerHTML = user.name;
+				console.warn(user);
+				this.userNameNode.innerHTML = user.info.name;
 				domClass.add(this.loginButton, 'hidden');
 				domClass.remove(this.profileButton, 'hidden');
+
+				if (user.info.provider_identity) {
+					console.warn('twitter account connected');
+					domClass.add(this.connectTwitterLink, 'hidden');
+				}
+				else {
+					domClass.remove(this.connectTwitterLink, 'hidden');
+				}
 			}
 			else {
 				this.userNameNode = 'User';

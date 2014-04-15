@@ -10,9 +10,10 @@ define(['dojo/_base/declare',
 		'dojo/text!./RegistrationForm.html',
 		'dijit/_WidgetBase',
 		'dijit/_TemplatedMixin',
-		'dojo-mama/views/_ModuleViewMixin'
+		'dojo-mama/views/_ModuleViewMixin',
+		'app/auth/user'
 ], function(declare, lang, domAttr, domClass, domConstruct, keys, on, xhr, router, template, _WidgetBase,
-	_TemplatedMixin, _ModuleViewMixin)
+	_TemplatedMixin, _ModuleViewMixin, user)
 {
 	return declare([_WidgetBase, _TemplatedMixin, _ModuleViewMixin], {
 
@@ -52,6 +53,7 @@ define(['dojo/_base/declare',
 					this.confirmField.value = '';
 					domAttr.remove(this.registerButton, 'disabled');
 					console.log(response);
+					user.update();
 					router.go('/');
 				}),
 				lang.hitch(this, function(err) {
