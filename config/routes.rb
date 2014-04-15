@@ -7,7 +7,7 @@ SocialTap::Application.routes.draw do
 
   namespace :api do
     namespace :v0 do
-      resources :users, except: [:new, :edit]
+      resources :users, except: [:new, :edit, :show]
       resources :datasets, except: [:new, :edit, :update] do
       	resources :imports, only: [:create, :destroy]
         member do
