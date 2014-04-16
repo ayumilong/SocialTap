@@ -1,6 +1,6 @@
-class CreateProviderIdentities < ActiveRecord::Migration
+class CreateConnectedAccounts < ActiveRecord::Migration
 	def change
-		create_table :provider_identities do |t|
+		create_table :connected_accounts do |t|
 			t.belongs_to :user
 			t.string :provider
 			t.string :uid

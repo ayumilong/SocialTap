@@ -13,6 +13,20 @@
 
 ActiveRecord::Schema.define(version: 20140210183708) do
 
+  create_table "connected_accounts", force: true do |t|
+    t.integer  "user_id"
+    t.string   "provider"
+    t.string   "uid"
+    t.string   "username"
+    t.string   "token"
+    t.string   "secret"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "connected_accounts", ["provider", "uid"], name: "index_connected_accounts_on_provider_and_uid"
+  add_index "connected_accounts", ["user_id"], name: "index_connected_accounts_on_user_id"
+
   create_table "datasets", force: true do |t|
     t.string   "name"
     t.text     "description"
@@ -64,20 +78,6 @@ ActiveRecord::Schema.define(version: 20140210183708) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  create_table "provider_identities", force: true do |t|
-    t.integer  "user_id"
-    t.string   "provider"
-    t.string   "uid"
-    t.string   "username"
-    t.string   "token"
-    t.string   "secret"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "provider_identities", ["provider", "uid"], name: "index_provider_identities_on_provider_and_uid"
-  add_index "provider_identities", ["user_id"], name: "index_provider_identities_on_user_id"
 
   create_table "reports", force: true do |t|
     t.integer  "dataset_id"

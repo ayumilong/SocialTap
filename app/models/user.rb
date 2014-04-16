@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 	has_many :inquiries, dependent: :destroy
 
 	has_one :identity, dependent: :destroy
-	has_one :provider_identity, dependent: :destroy
+	has_many :connected_accounts, dependent: :destroy
 
 	has_many :reports, dependent: :destroy
 

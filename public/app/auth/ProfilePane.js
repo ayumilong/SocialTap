@@ -45,7 +45,7 @@ define(['dojo/_base/declare',
 				domClass.add(this.loginButton, 'hidden');
 				domClass.remove(this.profileButton, 'hidden');
 
-				if (user.info.provider_identity) {
+				if (user.info.connected_accounts.length > 0) {
 					console.warn('twitter account connected');
 					domClass.add(this.connectTwitterLink, 'hidden');
 				}

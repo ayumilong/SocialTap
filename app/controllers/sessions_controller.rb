@@ -25,14 +25,14 @@ class SessionsController < ApplicationController
 			if signed_in?
 
 				# Prevent linking more than one Twitter account
-				unless current_user.provider_identity.nil?
+				unless current_user.connected_accounts.select { |acct| acct.provider == auth[:provider] } .empty?
 					cookies[:connect_account_already_connected] = true
 					redirect_to '/#/', status: :bad_request
 				end
 
-				identity = ProviderIdentity.where(provider: auth[:provider], uid: auth[:uid]).limit(1).first
+				identity = ConnectedAccount.where(provider: auth[:provider], uid: auth[:uid]).limit(1).first
 				if identity.nil?
-					identity = ProviderIdentity.create({
+					identity = ConnectedAccount.create({
 						provider: auth[:provider],
 						uid: auth[:uid],
 						username: auth.info[:nickname],

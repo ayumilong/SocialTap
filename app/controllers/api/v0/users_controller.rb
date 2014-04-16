@@ -7,7 +7,7 @@ class Api::V0::UsersController < ApplicationController
 			only: [:id, :name],
 			include: [
 				{ identity: { only: [:email, :name] } },
-				{ provider_identity: { only: [:provider, :username] } }
+				{ connected_accounts: { only: [:provider, :username] } }
 			]
 		})
 	end
