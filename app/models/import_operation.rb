@@ -11,7 +11,10 @@ class ImportOperation < ActiveRecord::Base
 	#   Type of source imported from in this operation.
 	#   @return [String]
 	attr_readonly :source_type
-	validates :source_type, { presence: true }
+	validates :source_type, {
+		presence: true,
+		inclusion: { in: %w(file gnip twitter), message: "is not a supported source type" }
+	}
 	def source_type=(source_type)
 		super(source_type.downcase)
 	end
@@ -25,8 +28,11 @@ class ImportOperation < ActiveRecord::Base
 	validate do |io|
 
 		# Do validations specific to this import's source type
-		validator_class = Object.const_get("#{source_type.capitalize}ImportValidator")
-		validator_class.new(io).validate
+		begin
+			validator_class = Object.const_get("#{source_type.capitalize}ImportValidator")
+			validator_class.new(io).validate
+		rescue
+		end
 
 		# Check that the requested conversion is available
 		if io.convert?

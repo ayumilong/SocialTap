@@ -32,6 +32,9 @@ define(['dojo/_base/declare',
 			else if (importOp.source_type === 'gnip') {
 				this.specNode.innerHTML = '"' + importOp.source_spec.rule + '"';
 			}
+			else if (importOp.source_type === 'twitter') {
+				this.specNode.innerHTML = importOp.source_spec.track.map(function(k) { return '\'' + k + '\''; }).join(', ');
+			}
 
 			if (importOp.convert === true) {
 				this.conversionNode.innerHTML = 'Format converted from ' + importOp.from_format.formatSymbolForDisplay() + ' to ' + importOp.to_format.formatSymbolForDisplay();

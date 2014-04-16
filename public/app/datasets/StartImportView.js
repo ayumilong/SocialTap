@@ -102,6 +102,13 @@ define(['dojo/_base/declare',
 						type: 'text'
 					});
 				}
+				else if (sourceType === 'twitter') {
+					fields.splice(1, 0, {
+						label: 'Track Topics',
+						name: 'source_spec.track',
+						type: 'array'
+					});
+				}
 
 				this.form = new Form({
 					fields: fields,
