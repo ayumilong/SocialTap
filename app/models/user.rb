@@ -7,8 +7,4 @@ class User < ActiveRecord::Base
 
 	has_many :reports, dependent: :destroy
 
-	validates :name, {
-		presence: true
-	}
-
 end

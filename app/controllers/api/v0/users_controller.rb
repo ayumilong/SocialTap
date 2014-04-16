@@ -4,7 +4,7 @@ class Api::V0::UsersController < ApplicationController
 
 	def me
 		render json: current_user.as_json({
-			only: [:id, :name],
+			only: [:id],
 			include: [
 				{ identity: { only: [:email, :name] } },
 				{ connected_accounts: { only: [:provider, :username] } }
@@ -17,7 +17,7 @@ class Api::V0::UsersController < ApplicationController
 	def index
 		@users = User.all
 
-		render json: @users.as_json(only: [:id, :name])
+		render json: @users.map { |u| { id: u.id, name: u.identity.name } }
 	end
 
 	# PATCH/PUT /api/v0/users/1

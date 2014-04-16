@@ -21,7 +21,7 @@ class SessionsController < ApplicationController
 				identity = Identity.find_by_id(auth[:uid])
 				if identity.user.nil?
 					logger.debug "Creating new user"
-					identity.user = User.create(name: auth[:info][:name])
+					identity.user = User.create()
 					identity.save
 				end
 

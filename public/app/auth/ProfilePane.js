@@ -40,8 +40,7 @@ define(['dojo/_base/declare',
 
 		refreshInfo: function() {
 			if (user.isLoggedIn()) {
-				console.warn(user);
-				this.userNameNode.innerHTML = user.info.name;
+				this.userNameNode.innerHTML = user.info.identity.name;
 				domClass.add(this.loginButton, 'hidden');
 				domClass.remove(this.profileButton, 'hidden');
 
