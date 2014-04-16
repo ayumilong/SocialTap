@@ -8,17 +8,27 @@ class SessionsController < ApplicationController
 		# Login with email and password
 		if auth[:provider] == 'identity'
 
-			# The Identity instance is automatically created by OmniAuth
-			identity = Identity.find_by_id(auth[:uid])
-			if identity.user.nil?
-				logger.debug "Creating new user"
-				identity.user = User.create(name: auth[:info][:name])
-				identity.save
+			if signed_in?
+				# Destroy the Identity created by OmniAuth if attempting to register a new
+				# account while already logged in.
+				identity = Identity.find_by_id(auth[:uid])
+				identity.destroy if identity.user.nil?
+
+				render json: { errors: ["You are already logged in"] }, status: :bad_request
+
+			else
+				# The Identity instance is automatically created by OmniAuth
+				identity = Identity.find_by_id(auth[:uid])
+				if identity.user.nil?
+					logger.debug "Creating new user"
+					identity.user = User.create(name: auth[:info][:name])
+					identity.save
+				end
+
+				self.current_user = identity.user
+
+				render json: true, status: :created
 			end
-
-			self.current_user = identity.user
-
-			render json: true, status: :created
 
 		# Connect an OAuth account
 		else

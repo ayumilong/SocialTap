@@ -59,6 +59,9 @@ define(['dojo/_base/declare',
 				lang.hitch(this, function(err) {
 					domAttr.remove(this.registerButton, 'disabled');
 
+					this.passwordField.value = '';
+					this.confirmField.value = '';
+
 					if (err.response.status == 400) {
 						var errorList = domConstruct.create('ul', {}, this.errorsNode);
 

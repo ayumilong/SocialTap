@@ -67,14 +67,17 @@ define(['dojo/_base/declare',
 					user.update();
 				}),
 				lang.hitch(this, function(err) {
+					console.error(err);
 					domAttr.remove(this.loginButton, 'disabled');
+					this.passwordField.value = '';
 
 					if (err.response.status == 401) {
 						this.errorsNode.innerHTML = 'Invalid email/password combination';
 						domClass.remove(this.errorsNode, 'hidden');
 					}
 					else {
-						console.error(err);
+						this.errorsNode.innerHTML = '<ul>' + err.response.data.errors.map(function(e) { return '<li>' + e + '</li>'; }).join('') + '</ul>';
+						domClass.remove(this.errorsNode, 'hidden');
 					}
 				})
 			);
