@@ -15,6 +15,11 @@ class TwitterImportValidator
 				break
 			end
 		end
+
+		# Require that the user who started the import have a Twitter account connected
+		if @import_op.started_by.connected_accounts.select { |acct| acct.provider == 'twitter' } .empty?
+			@import_op.errors.add("source_type", "This import type requires a connected Twitter account")
+		end
 	end
 
 end
