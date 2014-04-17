@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140210183708) do
+ActiveRecord::Schema.define(version: 20140417014439) do
 
   create_table "connected_accounts", force: true do |t|
     t.integer  "user_id"
@@ -27,18 +27,22 @@ ActiveRecord::Schema.define(version: 20140210183708) do
   add_index "connected_accounts", ["provider", "uid"], name: "index_connected_accounts_on_provider_and_uid"
   add_index "connected_accounts", ["user_id"], name: "index_connected_accounts_on_user_id"
 
+  create_table "dataset_access_permissions", force: true do |t|
+    t.integer  "dataset_id"
+    t.integer  "user_id"
+    t.string   "level"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "dataset_access_permissions", ["dataset_id", "user_id"], name: "index_dataset_access_permissions_on_dataset_id_and_user_id", unique: true
+
   create_table "datasets", force: true do |t|
     t.string   "name"
     t.text     "description"
     t.string   "es_index"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "datasets_users", force: true do |t|
-    t.integer "user_id"
-    t.integer "dataset_id"
-    t.boolean "is_owner"
   end
 
   create_table "identities", force: true do |t|

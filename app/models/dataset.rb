@@ -16,25 +16,30 @@ class Dataset < ActiveRecord::Base
 	attr_readonly :es_index
 	validates :es_index, { presence: true, uniqueness: { case_sensitive: false } }
 
+	# @!attribute dataset_access_permissions
+	#   Permissions for users' access to this dataset.
+	#   @return [ActiveRecord::Associations::CollectionProxy]
+	has_many :dataset_access_permissions
+
 	# @!attribute inquiries
 	#   Saved inquiries targeting this dataset.
-	#   @return [Array]
+	#   @return [ActiveRecord::Associations::CollectionProxy]
 	has_many :inquiries, dependent: :destroy
 
 	# @!attribute import_operations
 	#   Data imports into this dataset.
-	#   @return [Array]
+	#   @return [ActiveRecord::Associations::CollectionProxy]
 	has_many :import_operations, dependent: :destroy
 
 	# @!attribute reports
 	#   Reports generated from this dataset.
-	#   @return [Array]
+	#   @return [ActiveRecord::Associations::CollectionProxy]
 	has_many :reports, dependent: :destroy
 
 	# @!attribute users
 	#   Users with access to this dataset.
-	#   @return [Array]
-	has_and_belongs_to_many :users
+	#   @return [ActiveRecord::Associations::CollectionProxy]
+	has_many :users, through: :dataset_access_permissions
 
 	# Default Elasticsearch index and type.
 	after_initialize do
