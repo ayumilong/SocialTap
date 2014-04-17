@@ -59,6 +59,8 @@ ActiveRecord::Schema.define(version: 20140417014439) do
 
   create_table "import_operations", force: true do |t|
     t.integer  "dataset_id"
+    t.integer  "started_by_id"
+    t.integer  "stopped_by_id"
     t.string   "source_type"
     t.text     "source_spec"
     t.string   "from_format"

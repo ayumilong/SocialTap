@@ -2,6 +2,8 @@ class CreateImportOperations < ActiveRecord::Migration
   def change
     create_table :import_operations do |t|
       t.belongs_to :dataset
+      t.belongs_to :started_by
+      t.belongs_to :stopped_by
 
       t.string :source_type
       t.text :source_spec

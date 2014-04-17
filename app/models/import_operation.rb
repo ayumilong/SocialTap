@@ -7,6 +7,17 @@ class ImportOperation < ActiveRecord::Base
 	attr_readonly :dataset_id
 	belongs_to :dataset
 
+	# @!attribute started_by
+	#   The user that started this import.
+	#   @return [User]
+	belongs_to :started_by, class_name: "User"
+	validates :started_by, presence: true
+
+	# @!attribute stopped_by
+	#   The user that stopped this import.
+	#   @return [User]
+	belongs_to :stopped_by, class_name: "User"
+
 	# @!attribute source_type
 	#   Type of source imported from in this operation.
 	#   @return [String]

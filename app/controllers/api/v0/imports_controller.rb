@@ -1,17 +1,18 @@
 class Api::V0::ImportsController < ApplicationController
 
-	before_filter :load_dataset, only: [:create, :destroy]
+	before_action :require_login
+	before_action :load_dataset, only: [:create, :destroy]
+	before_action :require_admin!, only: [:create, :destroy]
 
 	# POST /api/v0/datasets/1/imports
 	# POST /api/v0/datasets/1/imports.json
 	def create
 
-		# TODO: Prevent multiple simultaneous imports?
-
 		@import_op = ImportOperation.new(import_params)
 		@import_op.dataset = @dataset
+		@import_op.started_by = current_user
 
-		if  @import_op.save
+		if @import_op.save
 			begin
 				@import_op.enqueue
 				render json: @import_op, status: :created
@@ -35,6 +36,8 @@ class Api::V0::ImportsController < ApplicationController
 		elsif @import_op.status == :in_progress
 			begin
 				@import_op.cancel!
+				@import_op.stopped_by = current_user
+				@import_op.save!
 				head :no_content
 			rescue StandardError => e
 				render json: { error: e.message }, status: :internal_server_error
@@ -63,6 +66,12 @@ private
 		@dataset = Dataset.find_by_id(params[:dataset_id])
 		if @dataset.nil?
 			render json: { error: "Dataset not found" }, status: :not_found
+		end
+	end
+
+	def require_admin!
+		unless current_user.can_alter_dataset(@dataset)
+			render json: { error: "You are not authorized to perform that action" }, status: :forbidden
 		end
 	end
 
