@@ -66,6 +66,9 @@ define({
 		{
 			route: '/vis/:dataset_id/sentiment_streamgraph',
 			title: 'Sentiment Stream'
+		},
+		{	route: '/vis/:dataset_id/pie_graph',
+			title: 'Pie Graph'
 		}
 	]
 });
