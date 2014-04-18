@@ -63,10 +63,9 @@ define({
 			route: '/vis/:dataset_id/sentiment_streamgraph',
 			title: 'Sentiment Stream'
 		},
-<<<<<<< HEAD
 		{	route: '/vis/:dataset_id/pie_graph',
 			title: 'Pie Graph'
-======= },
+		},
 		{
 			route: '/vis/:dataset_id/time_map',
 			title: 'Map by Time'
@@ -74,7 +73,6 @@ define({
 		{
 			route: '/vis/:dataset_id/retweet_chord',
 			title: 'Most Retweeted'
->>>>>>> 5578bbe60cae7c7d3b8ecbc2818c4c4a7ea4d94b
 		}
 	]
 });

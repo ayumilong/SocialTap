@@ -76,7 +76,7 @@ define(['dojo/_base/declare',
 			this.inherited(arguments);
 			this.searchTermInput = domConstruct.create('input', {'type' : 'text',
 			   	'value' : '',
-				'style' : 'position: absolute; top: 5px; left 5px; z-index: 1' }
+				'style' : 'position: absolute; top: 5px; left 5px; z-index: 1; width: 100px' }
 				, this.domNode);
 		},
 
@@ -177,20 +177,29 @@ define(['dojo/_base/declare',
 				.attr("font-size", "1.5em")
 				.text(function (d) { return d.data.label;});
 
+			arcs.append("text")
+				.attr("transform", function (d) { 
+					var textCoords = arc.centroid(d);
+					textCoords[1] = textCoords[1] + 30;
+					return "translate(" + textCoords + ")"; })
+				.attr("text-anchor", "middle")
+				.attr("font-size", "1.5em")
+				.text(function (d) { return d.data.data;});
+
 			//Drawing the search box
 			this.inherited(arguments);
 			this.searchTermInput = domConstruct.create('input', {'type' : 'text',
 			   	'value' : 'search',
-				'style' : 'position: absolute; top: 5px; left 5px; z-index: 1' }
+				'style' : 'position: absolute; top: 5px; left: 15px; z-index: 1; width: 100px' }
 				, this.domNode);
 
 			var searchButton = domConstruct.create('input', {
 						'type' : 'button',
 						'value' : 'Search',
-						'style' : 'position: absolute; top: 30px; left: 5px; z-index: 1',
+						'width' : 100,
+						'style' : 'position: absolute; top: 50px; left: 15px; z-index: 1; width: 80px',
 						'onclick': lang.hitch(this, this.reload)
 						}, this.domNode);	
-			console.log(searchButton);
 
 
 
@@ -232,7 +241,6 @@ define(['dojo/_base/declare',
 		},
 
 		reload: function() {
-			console.log("RELOADED!!!!");
 			this.emit('display_info', '');
 
 			if (!this.datasetId) {
