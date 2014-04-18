@@ -6,7 +6,8 @@ define(['dojo/_base/kernel',
 		'dojo/ready',
 		'dojo-mama/ModuleManager',
 		'app/dmConfig',
-		'app/auth/user'
+		'app/auth/user',
+		'app/util/extensions'
 ], function (kernel, lang, domClass, has, parser, ready, ModuleManager, dmConfig, user) {
 	ready(function() {
 

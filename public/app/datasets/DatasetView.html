@@ -1,0 +1,14 @@
+<div class="${baseClass}">
+	<div data-dojo-attach-point="errorNode" class="error alert hidden" style="margin: 20px;"></div>
+	<div data-dojo-attach-point="containerNode" class="scrollable">
+		<h1 data-dojo-attach-point="datasetNameNode"></h1>
+		<p data-dojo-attach-point="datasetDescriptionNode" style="margin: 0 20px;"></p>
+		<div style="margin-top: 25px;">
+			<h2>Data Imports</h2>
+			<ul data-dojo-attach-point="importsListNode" style="padding-left: 30px;"></ul>
+		</div>
+		<div style="margin: 15px 20px;">
+			<button data-dojo-attach-point="startImportButton" data-dojo-attach-event="onclick:startImportButtonClicked" class="primary" style="width: 150px;">Start New Import</button>
+		</div>
+	</div>
+</div>

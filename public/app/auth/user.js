@@ -11,12 +11,10 @@ define(['dojo/_base/declare',
 		//     ID of the current user.
 		id: null,
 
-		// name: String
-		//     Name of the current user.
-		name: null,
+		info: null,
 
 		isLoggedIn: function() {
-			return (this.id !== null && this.name !== null);
+			return (this.id !== null);
 		},
 
 		update: function() {
@@ -29,17 +27,17 @@ define(['dojo/_base/declare',
 			}).response.then(
 				lang.hitch(this, function(response) {
 					this.id = response.data.id;
-					this.name = response.data.name;
+					this.info = response.data;
 					this.emit('login', {
 						id: this.id,
-						name: this.name
+						name: this.info.identity.name
 					});
 					d.resolve(this);
 				}),
 				lang.hitch(this, function(err) {
 					if (err.response.status == 401) {
 						this.id = null;
-						this.name = null;
+						this.info = null;
 						if (this.isLoggedIn()) {
 							this.emit('logout');
 						}
@@ -61,9 +59,10 @@ define(['dojo/_base/declare',
 			}).response.then(
 				lang.hitch(this, function() {
 					this.id = null;
-					this.name = null;
+					this.info = null;
 					this.emit('logout');
 					d.resolve(true);
+					window.location = '#/';
 				}),
 				lang.hitch(this, function(err) {
 					console.error(err);

@@ -40,12 +40,8 @@ define({
 			title: 'Map'
 		},
 		{
-			route: '/vis/:dataset_id/line_graph',
-			title: 'Line Graph'
-		},
-		{
-			route: '/vis/:dataset_id/tree',
-			title: 'Tree'
+			route: '/vis/:dataset_id/bar_chart',
+			title: 'Time Chart'
 		},
 		{
 			route: '/vis/:dataset_id/hashtag_popularity',
@@ -67,8 +63,18 @@ define({
 			route: '/vis/:dataset_id/sentiment_streamgraph',
 			title: 'Sentiment Stream'
 		},
+<<<<<<< HEAD
 		{	route: '/vis/:dataset_id/pie_graph',
 			title: 'Pie Graph'
+======= },
+		{
+			route: '/vis/:dataset_id/time_map',
+			title: 'Map by Time'
+		},
+		{
+			route: '/vis/:dataset_id/retweet_chord',
+			title: 'Most Retweeted'
+>>>>>>> 5578bbe60cae7c7d3b8ecbc2818c4c4a7ea4d94b
 		}
 	]
 });

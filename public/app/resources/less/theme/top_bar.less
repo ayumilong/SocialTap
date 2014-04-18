@@ -1,0 +1,94 @@
+.topBar {
+	background: rgb(55,55,55);
+	height: 60px;
+	width: 100%;
+
+	> div {
+		display: inline-block;
+		height: 60px;
+		line-height: 60px;
+	}
+}
+
+.logo {
+	color: white;
+	font-size: 26px;
+	padding: 0 10px;
+	position: absolute;
+}
+
+.datasetsMenu {
+	position: absolute;
+	left: 160px;
+
+	.button {
+		font-size: 16px;
+		height: 30px;
+		line-height: 30px;
+		margin: 15px 0;
+		min-width: 0;
+		padding: 0 6px;
+		text-align: left;
+	}
+
+	.dropdownMenu {
+		top: 50px;
+		width: 270px;
+
+		li:hover {
+			.visMenu {
+				display: block;
+			}
+		}
+
+		i {
+			position: absolute;
+			font-size: 12px;
+			right: 12px;
+			top: 8px;
+		}
+
+		a.button {
+			color: white;
+			margin-left: 15px;
+		}
+	}
+
+	.visMenu {
+		display: none;
+		left: 100%;
+		top: -12px;
+		width: 270px;
+
+		&:hover {
+			display: block;
+		}
+	}
+
+
+}
+
+.profileMenu {
+	position: absolute;
+	right: 0;
+	top: 0;
+
+	.button {
+		color: white;
+		margin-right: 15px;
+		min-width: 0;
+		text-align: right;
+	}
+
+	.dropdownMenu {
+		ul {
+			text-align: right;
+
+			li {
+				a {
+					padding: 3px 15px 3px 0;
+				}
+			}
+		}
+	}
+}

@@ -7,12 +7,9 @@ defaults: &defaults
     rabbitmq:
         host: 127.0.0.1
     Gnip:
-        powertrack_stream_url: YOUR STREAM URL
-        powertrack_rules_url: YOUR RULES URL
+        account_name: YOUR GNIP ACCOUNT NAME
         username: YOUR GNIP USERNAME
         password: YOUR GNIP PASSWORD
-    data_files:
-        import_directory: PATH TO DIRECTORY CONTAINING DATA FILES TO IMPORT
     reports:
         output_directory: PATH TO DIRECTORY TO GENERATE REPORT FILES IN
     Twitter:
@@ -20,6 +17,11 @@ defaults: &defaults
         consumer_secret: TWITTER CONSUMER SECRET
     Sentiment140:
         app_id: YOUR SENTIMENT140 APP ID
+    Analysis:
+        default_workers: 4
+        job_mananger_hostname: localhost
+        sentiment140analyzer:
+            workers: 1
 
 development:
     <<: *defaults

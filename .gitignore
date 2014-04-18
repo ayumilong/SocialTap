@@ -56,5 +56,9 @@ pickle-email-*.html
 /lib/custom/**/*
 /lib/test*
 
+# Ignore generated documentation
+/doc
+/.yardoc
+
 sublime-project
 sublime-project.sublime-workspace

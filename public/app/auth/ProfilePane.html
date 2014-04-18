@@ -1,13 +1,15 @@
-<div class="${baseClass}">
-	<i data-dojo-attach-point="profileButton" class="fa fa-user"></i>
-	<div data-dojo-attach-point="menuNode" class="profileMenu hidden">
-		<div data-dojo-attach-point="loginNode" class="hidden">
-			<a data-dojo-attach-point="loginLink" href="#/auth/login">Log in</a>
-		</div>
-		<div data-dojo-attach-point="infoNode" class="hidden">
-			<p data-dojo-attach-point="userNameNode"></p>
-			<p><a href="#/reports">My Reports</a></p>
-			<button data-dojo-attach-point="logoutButton" class="button red"><i class="fa fa-sign-out"></i> Logout</button>
+<div class="profileMenu">
+	<div data-dojo-attach-point="buttonNode">
+		<a data-dojo-attach-point="loginButton" class="button primary" href="#/auth/login">Sign In</a>
+		<a data-dojo-attach-point="profileButton" class="button clear hidden" data-dojo-attach-event="onmouseover:showMenu"><span data-dojo-attach-point="userNameNode">User</span> <i class="fa fa-caret-down"></i></a>
+	</div>
+	<div data-dojo-attach-point="menuNode" class="menuContainer hidden" style="position: absolute; top: 15px; z-index: 1; right: 15px; width: 200px;">
+		<div class="dropdownMenu" style="position: static; top: 0; margin-top: 35px;">
+			<ul data-dojo-attach-point="listNode">
+				<li data-dojo-attach-point="connectTwitterLink" class="hidden"><a href="/auth/twitter">Connect Twitter Account</a></li>
+				<li><a href="#/reports">My Reports</a></li>
+				<li><a href="#/auth/logout" data-dojo-attach-point="logoutLink">Logout</a></li>
+			</ul>
 		</div>
 	</div>
 </div>

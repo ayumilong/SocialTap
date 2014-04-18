@@ -1,71 +1,92 @@
 class Dataset < ActiveRecord::Base
-  has_and_belongs_to_many :users
-  has_many :inquiries, dependent: :destroy
-  has_many :import_operations, dependent: :destroy
+	include EnforceReadonlyAttributes
 
-  has_many :reports, dependent: :destroy
+	# @!attribute name
+	#   The name of the dataset
+	#   @return [String]
+	validates :name, { presence: true, uniqueness: { case_sensitive: false } }
 
-  validates :name, presence: true
-  validates :source, presence: true
+	# @!attribute description
+	#   Description of dataset
+	#   @return [String]
 
-  #after_create :create_elasticsearch_index
+	# @!attribute es_index
+	#   Elasticsearch index containing this dataset's documents.
+	#   @return [String]
+	attr_readonly :es_index
+	validates :es_index, { presence: true, uniqueness: { case_sensitive: false } }
 
-  # Immediately start importing data after creation
-  #after_create :start_import
+	# @!attribute dataset_access_permissions
+	#   Permissions for users' access to this dataset.
+	#   @return [ActiveRecord::Associations::CollectionProxy]
+	has_many :dataset_access_permissions
 
-  before_destroy :stop_import, :if => :import_in_progress
+	# @!attribute inquiries
+	#   Saved inquiries targeting this dataset.
+	#   @return [ActiveRecord::Associations::CollectionProxy]
+	has_many :inquiries, dependent: :destroy
 
-  before_destroy :delete_from_elasticsearch
+	# @!attribute import_operations
+	#   Data imports into this dataset.
+	#   @return [ActiveRecord::Associations::CollectionProxy]
+	has_many :import_operations, dependent: :destroy
 
-  def es_index
-    self.id && "socialtap:dataset:#{self.id}"
-  end
+	# @!attribute reports
+	#   Reports generated from this dataset.
+	#   @return [ActiveRecord::Associations::CollectionProxy]
+	has_many :reports, dependent: :destroy
 
-  def es_mapping
-    "data"
-  end
+	# @!attribute users
+	#   Users with access to this dataset.
+	#   @return [ActiveRecord::Associations::CollectionProxy]
+	has_many :users, through: :dataset_access_permissions
 
-  def connect_to_es
-    @es ||= Elasticsearch::Client.new({
-      log: false,
-      host: APP_CONFIG["Elasticsearch"]["hostname"],
-      port: APP_CONFIG["Elasticsearch"]["port"]
-    })
-  end
+	# Default Elasticsearch index and type.
+	after_initialize do
+		if es_index.nil?
+			if name? # Generate default Elasticsearch index base on name.
+				self.es_index = "socialtap:#{name.parameterize}"
+			else # Generate random unique Elasticsearch index.
+				begin
+					self.es_index = "socialtap:#{SecureRandom.uuid}"
+				end while Dataset.find_by_es_index(es_index)
+			end
+		end
+	end
 
-  def create_elasticsearch_index
-    self.connect_to_es
-    @es.indices.create index: self.es_index
-  end
+	after_commit :ensure_es_index_exists, on: :create
 
-  def import_in_progress
-    !self.import_operations.select { |io| io.in_progress } .empty?
-  end
+	# Establish a connection to Elasticsearch.
+	def connect_to_es
+		@es ||= Elasticsearch::Client.new({
+			log: false,
+			host: APP_CONFIG["Elasticsearch"]["hostname"],
+			port: APP_CONFIG["Elasticsearch"]["port"]
+		})
+	end
 
-  def current_import_operation
-    self.import_operations.select { |io| io.in_progress } .first
-  end
+	# Create this dataset's Elasticsearch index if it does not already exist.
+	def ensure_es_index_exists
+		self.connect_to_es
+		@es.indices.create({ index: self.es_index }) unless @es.indices.exists({ index: self.es_index })
+	end
 
-  def last_import_operation
-    self.import_operations.sort_by(&:time_started).reverse.first
-  end
+	# Remove all documents in this dataset from Elasticsearch.
+	def delete_data!
+		self.connect_to_es
 
-  def start_import
-    raise NotImplementedError
-  end
+		# The fastest way to do this is delete and recreate the index.
+		@es.indices.delete({ index: self.es_index })
+		@es.indices.create({ index: self.es_index })
+		@es.indices.refresh({ index: self.es_index })
+	end
 
-  def stop_import
-    raise NotImplementedError
-  end
-
-  def delete_from_elasticsearch
-    self.connect_to_es
-    @es.indices.delete index: self.es_index
-  end
-
-  def search params
-    self.connect_to_es
-    @es.search index: self.es_index, type: self.es_mapping, body: params
-  end
+	# Run a query against this dataset.
+	# @param [Hash] query The Elasticsearch query to run.
+	# @return [Hash] The response from Elasticsearch.
+	def search(query = { query: { match_all: {} }})
+		self.connect_to_es
+		@es.search({ index: self.es_index, body: query })
+	end
 
 end

@@ -7,22 +7,20 @@ SocialTap::Application.routes.draw do
 
   namespace :api do
     namespace :v0 do
-      resources :users, except: [:new, :edit]
-      resources :vizs, except: [:new, :edit]
+      resources :users, except: [:new, :edit, :show]
       resources :datasets, except: [:new, :edit, :update] do
+      	resources :imports, only: [:create, :destroy]
         member do
-          get 'start_import'
-          get 'stop_import'
           post 'search'
         end
       end
+      get 'imports/format_conversions', to: 'imports#format_conversions'
       resources :inquiries, except: [:new, :edit] do
         member do
           get 'elasticsearch'
         end
       end
       resources :reports, except: [:new, :edit]
-      get 'import_files/path', to: 'import_files#path'
     end
   end
 

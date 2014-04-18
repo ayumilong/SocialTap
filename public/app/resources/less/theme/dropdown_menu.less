@@ -1,0 +1,53 @@
+.dropdownMenu {
+	background: #434a54;
+	border-radius: 4px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+	box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+	padding: 12px 0;
+	position: absolute;
+	z-index: 1;
+
+	.hr {
+		border-bottom: 1px solid rgb(101, 109, 120);
+		margin: 12px 0;
+	}
+
+	ul {
+		color: white;
+		line-height: 1.4;
+		list-style-type: none;
+		margin: 0;
+
+		li {
+			position: relative;
+
+			a {
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+				display: inline-block;
+				padding: 3px 0 3px 15px;
+				width: 100%;
+			}
+
+			&:hover {
+				background-color: rgb(101, 109, 120);
+			}
+
+			a:hover {
+				text-decoration: none;
+			}
+		}
+	}
+}
+
+.menuOverlay {
+	height: 100%;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+}

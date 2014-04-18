@@ -1,211 +1,109 @@
 define(['dojo/_base/declare',
 		'dojo/_base/lang',
 		'dojo/dom-attr',
+		'dojo/dom-class',
 		'dojo/dom-construct',
 		'dojo/request/xhr',
-		'dojox/mobile/Button',
-		'dojox/mobile/EdgeToEdgeList',
-		'dojox/mobile/Pane',
-		'dojo-mama/util/DataPane',
-		'dojo-mama/util/toaster',
-		'dojo-mama/views/BaseView',
+		'dojo/text!./DatasetView.html',
+		'dojo-mama/views/_ModuleViewMixin',
+		'dijit/_WidgetBase',
+		'dijit/_TemplatedMixin',
+		'dijit/registry',
 		'app/datasets/ImportOpListItem'
-], function(declare, lang, domAttr, domConstruct, xhr, Button, EdgeToEdgeList, Pane, DataPane, toaster, BaseView, ImportOpListItem) {
-	return declare([BaseView, DataPane], {
+], function(declare, lang, domAttr, domClass, domConstruct, xhr, template, _ModuleViewMixin, _WidgetBase,
+	_TemplatedMixin, registry, ImportOpListItem)
+{
+	return declare([_WidgetBase, _TemplatedMixin, _ModuleViewMixin], {
 
 		'class': 'datasetView',
-
-		// dataset: Object
-		//     The dataset to display.
-		dataset: null,
-
-		infoPane: null,
-
-		importButtonPane: null,
 
 		parentView: '/',
 
 		route: '/(\\d+)',
 
-		buildRendering: function() {
-			this.inherited(arguments);
-
-			this.infoPane = new Pane();
-			this.infoPane.placeAt(this.contentNode);
-			this.infoPane.startup();
-
-			domConstruct.create('div', {
-				'class': 'dmListDivider',
-				innerHTML: 'Data Imports',
-				style: {
-					marginTop: '15px'
-				}
-			}, this.contentNode);
-
-			this.importButtonPane = domConstruct.create('div', {}, this.contentNode);
-
-			this.importsList = new EdgeToEdgeList();
-			this.importsList.placeAt(this.contentNode);
-			this.importsList.startup();
-
-			domConstruct.create('div', {
-				'class': 'dmListDivider',
-				innerHTML: 'Edit',
-				style: {
-					marginTop: '15px'
-				}
-			}, this.contentNode);
-
-			var deleteButton = new Button({
-				'class': 'button',
-				label: 'Delete Dataset',
-				onClick: lang.hitch(this, this.onDeleteClicked),
-				style: {
-					marginLeft: '10px'
-				}
-			});
-			deleteButton.placeAt(this.contentNode);
-			deleteButton.startup();
-
-		},
-
-		beforeLoad: function() {
-			domConstruct.empty(this.infoPane.domNode);
-			this.importsList.destroyDescendants();
-		},
-
-		handleData: function(dataset) {
-			console.warn(dataset);
-			this.set('dataset', dataset);
-
-			this.set('title', dataset ? dataset.name : 'View Dataset');
-
-			this.infoPane.domNode.innerHTML = dataset ? ('<p>' + (dataset.description || 'No description') + '</p>') : '';
-
-			domConstruct.empty(this.importButtonPane);
-			if (dataset.import_in_progress) {
-				var stopButton = new Button({
-					'class': 'button',
-					'duration': 0,
-					'label': (dataset.type === 'GnipDataset') ? 'Pause Importing' : 'Stop Importing',
-					'onClick': lang.hitch(this, function() {
-						this.stopImport(dataset.id);
-					})
-				});
-				stopButton.placeAt(this.importButtonPane);
-				stopButton.startup();
-			}
-			else if (dataset.type === 'GnipDataset') {
-				var startButton = new Button({
-					'class': 'button',
-					'duration': 0,
-					'label': 'Resume Importing',
-					'onClick': lang.hitch(this, function() {
-						this.startImport(dataset.id);
-					})
-				});
-				startButton.placeAt(this.importButtonPane);
-				startButton.startup();
-			}
-
-			var i, li;
-			for (i = 0; i < dataset.import_operations.length; i++) {
-				li = new ImportOpListItem({
-					importOp: dataset.import_operations[i]
-				});
-				this.importsList.addChild(li);
-				li.startup();
-			}
-		},
-
-		onDeleteClicked: function() {
-			console.warn('Delete button clicked');
-
-			if (this.get('dataset') == null) {
-				return;
-			}
-
-			if (confirm('Are you sure you want to delete this dataset? This cannot be undone.')) {
-				toaster.clearMessages();
-				toaster.displayMessage({
-					text: 'Deleting dataset...',
-					type: 'information',
-					time: -1
-				});
-				xhr.del('/api/v0/datasets/' + this.get('dataset').id).response.then(
-					lang.hitch(this, function(response) {
-						console.log(response);
-						toaster.clearMessages();
-						this.router.go('/');
-					}),
-					lang.hitch(this, function(err) {
-						console.error(err);
-						toaster.clearMessages();
-						toaster.displayMessage({
-							text: 'An unknown error occurred.',
-							type: 'error',
-							time: -1
-						});
-					}));
-			}
-
-		},
+		templateString: template,
 
 		activate: function(e) {
 			this.inherited(arguments);
-			this.set('dataUrl', '/api/v0/datasets/' + e.params[0]);
+			var datasetId = parseInt(e.params[0]);
+
+			domClass.add(this.containerNode, 'hidden');
+			var activityIndicator = domConstruct.create('span', {
+				'class': 'fa fa-spinner fa-spin',
+				style: {
+					display: 'block',
+					'font-size': '40px',
+					margin: '30px auto',
+					'text-align': 'center'
+				}
+			}, this.domNode);
+			this.set('dataset', null);
+			xhr.get('/api/v0/datasets/' + datasetId, {
+				handleAs: 'json'
+			}).response.then(lang.hitch(this, function(response) {
+				domConstruct.destroy(activityIndicator);
+				this.set('dataset', response.data);
+			}), lang.hitch(this, function(err) {
+				domConstruct.destroy(activityIndicator);
+				this.errorNode.innerHTML = 'Unable to load dataset';
+				domClass.remove(this.errorNode, 'hidden');
+				console.error(err);
+			}));
 		},
 
-		startImport: function(dataset_id) {
-			xhr.get('/api/v0/datasets/' + dataset_id + '/start_import', {
-				handleAs: 'json'
-			}).response.then(
-				lang.hitch(this, function(response) {
-					if (response.data == true) {
-						this.reloadData();
-					}
-					else {
-						toaster.displayMessage({
-							text: 'Failed to start data import',
-							type: 'error',
-							time: -1
-						});
-					}
-				}),
-				lang.hitch(this, function(err) {
-					console.error(err);
-					toaster.displayMessage({
-						text: 'Failed to start data import',
-						type: 'error',
-						time: -1
-					});
-				}));
+		reset: function() {
+			domClass.add(this.containerNode, 'hidden');
+			domClass.add(this.errorNode, 'hidden');
+			this.errorNode.innerHTML = '';
+			this.datasetNameNode.innerHTML = '';
+			this.datasetDescriptionNode.innerHTML = '';
+			registry.findWidgets(this.importsListNode).forEach(function(w) {
+				w.destroy();
+			});
 		},
 
-		stopImport: function(dataset_id) {
-			xhr.get('/api/v0/datasets/' + dataset_id + '/stop_import', {
-				handleAs: 'json'
-			}).response.then(
-				lang.hitch(this, function(response) {
-					if (response.data == true) {
-						this.reloadData();
+		_setDatasetAttr: function(/*Object*/ dataset) {
+			this._set('dataset', dataset);
+			if (dataset === null) {
+				this.reset();
+			}
+			else {
+				console.log(dataset);
+				this.datasetNameNode.innerHTML = dataset.name;
+				this.datasetDescriptionNode.innerHTML = dataset.description || 'No description';
+
+				if (dataset.import_operations.length === 0) {
+					this.noImportsNode = this.noImportsNode || domConstruct.create('p', {
+						innerHTML: 'No data has been imported into this dataset',
+						style: {
+							'padding-left': '30px'
+						}
+					}, this.importsListNode, 'after');
+					domClass.add(this.importsListNode, 'hidden');
+				}
+				else {
+					if (this.noImportsNode) {
+						domConstruct.destroy(this.noImportsNode);
+						this.noImportsNode = null;
 					}
-					else {
-						toaster.displayMessage({
-							text: 'Failed to start data import',
-							type: 'error',
-							time: -1
+					domClass.remove(this.importsListNode, 'hidden');
+					for (var i = 0; i < dataset.import_operations.length; i++) {
+						var li = new ImportOpListItem({
+							importOp: dataset.import_operations[i]
 						});
+						li.placeAt(this.importsListNode);
+						li.startup();
 					}
-				}),
-				lang.hitch(this, function(err) {
-					console.error(err);
-					toaster.displayMessage({
-						text: 'Failed to start data import',
-						type: 'error',
-						time: -1
-					});
-				}));
+				}
+
+				domClass.remove(this.containerNode, 'hidden');
+
+				// TODO: Hide startImportButton if any imports are in progress
+			}
+		},
+
+		startImportButtonClicked: function() {
+			this.router.go('/' + this.get('dataset').id + '/start_import');
 		}
 	});
 });

@@ -11,29 +11,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140210183708) do
+ActiveRecord::Schema.define(version: 20140417014439) do
 
-  create_table "data_mappings", force: true do |t|
-    t.integer  "file_dataset_id"
-    t.string   "type"
-    t.string   "options"
+  create_table "connected_accounts", force: true do |t|
+    t.integer  "user_id"
+    t.string   "provider"
+    t.string   "uid"
+    t.string   "username"
+    t.string   "token"
+    t.string   "secret"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "connected_accounts", ["provider", "uid"], name: "index_connected_accounts_on_provider_and_uid"
+  add_index "connected_accounts", ["user_id"], name: "index_connected_accounts_on_user_id"
+
+  create_table "dataset_access_permissions", force: true do |t|
+    t.integer  "dataset_id"
+    t.integer  "user_id"
+    t.string   "level"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "dataset_access_permissions", ["dataset_id", "user_id"], name: "index_dataset_access_permissions_on_dataset_id_and_user_id", unique: true
 
   create_table "datasets", force: true do |t|
     t.string   "name"
     t.text     "description"
-    t.string   "type"
-    t.string   "source"
+    t.string   "es_index"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "datasets_users", force: true do |t|
-    t.integer "user_id"
-    t.integer "dataset_id"
-    t.boolean "is_owner"
   end
 
   create_table "identities", force: true do |t|
@@ -50,10 +59,18 @@ ActiveRecord::Schema.define(version: 20140210183708) do
 
   create_table "import_operations", force: true do |t|
     t.integer  "dataset_id"
+    t.integer  "started_by_id"
+    t.integer  "stopped_by_id"
+    t.string   "source_type"
+    t.text     "source_spec"
+    t.string   "from_format"
+    t.string   "to_format"
     t.datetime "time_started"
     t.datetime "time_stopped"
+    t.boolean  "aborted"
     t.string   "error_message"
-    t.integer  "pid"
+    t.string   "worker_hostname"
+    t.integer  "worker_pid"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -68,17 +85,6 @@ ActiveRecord::Schema.define(version: 20140210183708) do
     t.datetime "updated_at"
   end
 
-  create_table "provider_identities", force: true do |t|
-    t.integer  "user_id"
-    t.string   "provider"
-    t.string   "uid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "provider_identities", ["provider", "uid"], name: "index_provider_identities_on_provider_and_uid"
-  add_index "provider_identities", ["user_id"], name: "index_provider_identities_on_user_id"
-
   create_table "reports", force: true do |t|
     t.integer  "dataset_id"
     t.integer  "user_id"
@@ -90,7 +96,6 @@ ActiveRecord::Schema.define(version: 20140210183708) do
   end
 
   create_table "users", force: true do |t|
-    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
